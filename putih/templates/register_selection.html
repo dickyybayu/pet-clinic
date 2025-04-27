@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrasi Akun{% endblock %}
+
+{% block content %}
+<h2>REGISTRASI AKUN</h2>
+
+<div class="register-container">
+  <div class="register-column">
+    <h3>Pegawai</h3>
+    <a href="{% url 'register_role' 'frontdesk' %}" class="register-button">Front-Desk Officer</a>
+    <a href="{% url 'register_role' 'dokter' %}" class="register-button">Dokter Hewan</a>
+    <a href="{% url 'register_role' 'perawat' %}" class="register-button">Perawat Hewan</a>
+  </div>
+
+  <div class="vertical-line"></div>
+
+  <div class="register-column">
+    <h3>Klien</h3>
+    <a href="{% url 'register_role' 'klien_individu' %}" class="register-button">Individu</a>
+    <a href="{% url 'register_role' 'klien_perusahaan' %}" class="register-button">Perusahaan</a>
+  </div>
+</div>
+{% endblock %}
