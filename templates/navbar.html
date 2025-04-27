@@ -11,20 +11,51 @@
         }
         .navbar {
             display: flex;
+            justify-content: space-between;
             align-items: center;
             background-color: #333;
-            padding: 10px 20px;
+            padding: 15px 20px;
             color: white;
+            width: 100%;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .navbar .brand {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
+        }
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .navbar-right a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .navbar-right a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            margin-top: 60px; /* Provides space for the fixed navbar */
+            padding: 20px;
         }
     </style>
 </head>
 <body>
     <div class="navbar">
         <div class="brand">Pet Clinic</div>
+        <div class="navbar-right">
+        </div>
+    </div>
+    
+    <div class="content">
+        <!-- Your page content goes here -->
     </div>
 </body>
 </html>
