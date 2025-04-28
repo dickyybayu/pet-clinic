@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'auth_base.html' %}
 
 {% block title %}Home - Pet Clinic{% endblock %}
 
@@ -7,8 +7,8 @@
     <h2>Pet Clinic - 7</h2>
 
     <div class="home-buttons">
-        <a href="{% url 'login' %}" class="home-button">Login</a>
-        <a href="{% url 'register_selection' %}" class="home-button">Register</a>
+        <a href="{% url 'putih:login' %}" class="home-button">Login</a>
+        <a href="{% url 'putih:register_selection' %}" class="home-button">Register</a>
     </div>
 </div>
 {% endblock %}
