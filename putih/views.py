@@ -24,8 +24,29 @@ pengguna = [
          "no_identitas" : "2306206282",
          "tanggal_reg" : datetime(2023, 1, 20),
          "company_name" : "test.inc",
+    },      
+    {
+    "email"  : "akudokter@gmail.com",
+      "password" : "dokter123", 
+      "address" : "test",
+      "phone" : "123",
+      "worker_id" : "2306206283",
+      "start_date" : datetime(2023, 1, 20),
+      "end_date" : None,
+      "medic_id" : "123",
+      "doctor_id": "123",
+      "sertifikat" :[{
+          "sertifikat_id": "1",
+          "nama" : "aaa"
+      }, {
+          "sertifikat_id": "2",
+          "nama" : "bbb"
+      }],
+      "jadwal" : [{"hari" : "senin",
+        "jam_mulai" : "08:00",
+        "jam_selesai" : "17:00"}]
     }
-]
+    ]
 
 logged_pengguna = {}
 
@@ -98,7 +119,6 @@ def login_view(request):
         for user in pengguna:
             if user['email'] == email and user['password'] == password:
                 logged_pengguna = user
-                # messages.success(request, f"Welcome back, {user['first_name']}!")
                 return redirect('putih:show_profile')
 
         messages.error(request, 'Invalid email or password')
@@ -109,6 +129,8 @@ def login_view(request):
 def show_profile(request):
     global logged_pengguna
     print(logged_pengguna)
+    if logged_pengguna.get('doctor_id'):
+        return render(request, "profil_dokter.html", logged_pengguna)
     return render(request, "profil_klien.html", logged_pengguna)
 
 def logout(request):
@@ -269,6 +291,7 @@ def validate_update_data(address, phone, first_name=None, middle_name=None, last
     return errors
 
 def validate_password_update(old_password, new_password1, new_password2):
+
     errors = {}
 
     if not logged_pengguna or logged_pengguna.get('password') != old_password:
@@ -286,3 +309,8 @@ def validate_password_update(old_password, new_password1, new_password2):
         errors['new_password2'] = 'New passwords do not match.'
 
     return errors
+
+#<!-- DUMMY FATHUR -->
+def get_logged_user():
+    return logged_pengguna if logged_pengguna else None
+

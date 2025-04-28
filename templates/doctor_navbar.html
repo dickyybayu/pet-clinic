@@ -1,0 +1,290 @@
+<!-- DUMMY-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navbar</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
+    .navbar {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      padding: 15px 30px;
+      color: white;
+      width: 100%;
+      box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .brand {
+      font-size: 24px;
+      font-weight: 700;
+      flex: 0 0 200px;
+      text-align: left;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+    }
+    .brand-icon {
+      margin-right: 12px;
+      font-size: 28px;
+    }
+    .navbar-center {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      max-width: calc(100% - 400px);
+    }
+    .navbar-right {
+      flex: 0 0 180px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      position: relative;
+      white-space: nowrap;
+    }
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      font-weight: 600;
+    }
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 3px;
+      background-color: #6bd4ff;
+      border-radius: 2px;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropdown-btn {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    .dropdown-btn i {
+      margin-left: 8px;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #fff;
+      min-width: 200px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 1001;
+      border-radius: 8px;
+      overflow: hidden;
+      top: 100%;
+      right: 0;
+      margin-top: 5px;
+    }
+    .dropdown:focus-within .dropdown-content {
+      display: block;
+    }
+    .dropdown-item {
+      display: block;
+      color: #333;
+      padding: 12px 16px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+    .dropdown-item:hover {
+      background-color: #f5f7fa;
+      color: #2a5298;
+    }
+    .dropdown-divider {
+      height: 1px;
+      background-color: #eaedf2;
+      margin: 0;
+    }
+    .logout-btn {
+      background-color: #ff5252;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(255, 82, 82, 0.4);
+    }
+    .logout-btn:hover {
+      background-color: #ff3838;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 82, 82, 0.5);
+    }
+
+    @media (max-width: 1200px) {
+      .navbar-center {
+        gap: 8px;
+      }
+      .nav-link {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+    }
+    @media (max-width: 992px) {
+      .navbar {
+        justify-content: space-between;
+        padding: 15px;
+      }
+      .brand {
+        flex: 0 1 auto;
+      }
+      .navbar-center {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: #2a5298;
+        flex-direction: column;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        width: 100%;
+        max-width: 100%;
+        align-items: flex-start;
+        padding: 0 20px;
+        box-sizing: border-box;
+      }
+      .navbar-center.active {
+        max-height: 500px;
+        padding: 15px 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      .nav-link {
+        width: 100%;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+      .nav-link.active::after {
+        display: none;
+      }
+      .dropdown {
+        width: 100%;
+      }
+      .dropdown-btn {
+        width: 100%;
+        justify-content: space-between;
+        padding: 12px 0;
+        background: none;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+      .dropdown-content {
+        position: static;
+        background: none;
+        box-shadow: none;
+        min-width: 100%;
+        margin-top: 0;
+        padding-left: 15px;
+      }
+      .dropdown-item {
+        color: white;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+      .dropdown-item:hover {
+        background: none;
+        color: #6bd4ff;
+      }
+      .dropdown-divider {
+        display: none;
+      }
+      .navbar-right {
+        flex: 0 1 auto;
+      }
+    }
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 12px 15px;
+      }
+      .brand {
+        font-size: 20px;
+      }
+      .brand-icon {
+        font-size: 24px;
+      }
+      .logout-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+  <div class="navbar">
+    <div class="brand">
+      <i class="fas fa-paw brand-icon"></i> Pet Clinic
+    </div>
+    <div class="navbar-center" id="navbarCenter">
+      <a href="#" class="nav-link active">Dashboard</a>
+      <a href="#" class="nav-link">Daftar Jenis Hewan</a>
+      <a href="#" class="nav-link">Perawatan Hewan</a>
+      <a href="#" class="nav-link">Daftar Kunjungan</a>
+
+      <div class="dropdown">
+        <button class="dropdown-btn">
+          Menu Lainnya <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="dropdown-content">
+          <a href="#" class="dropdown-item">Manajemen Obat</a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">Manajemen Jenis Perawatan</a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">Manajemen Pemberian Obat</a>
+          <div class="dropdown-divider"></div>
+          <a href="/merah/show_vaksinasi" class="dropdown-item">Manajemen Vaksinasi Hewan</a>
+        </div>
+      </div>
+    </div>
+    <div class="navbar-right">
+      <form method="post" action="{% url 'putih:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">
+          <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>Logout
+        </button>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>
