@@ -1,52 +1,81 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container" style="max-width: 800px; margin: 30px auto; padding: 20px;">
-    <div class="row">
-        <div class="col-12">
-            <div class="card" style="border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
-                <div class="card-body" style="padding: 25px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 style="font-size: 24px; margin-bottom: 0; font-weight: bold; color: #333;">Profile Klien</h2>
-                        <div>
+<div style="margin-top: 30px;">
+    <div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); background-color: #f5f7fa;">
+        <div class="profile-card" style="width: 100%; max-width: 800px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px 20px; overflow: hidden;">
+            <div>
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                            {{ message }}
                         </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            </div>
+
+            <!-- Card Header -->
+            <div style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="font-size: 26px; margin: 0; font-weight: 600;">Profile Klien</h2>
+                    <div style="background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card Body -->
+            <div style="padding: 30px;">
+                <div class="profile-info">
+                    <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+                        <div style="width: 35%; font-weight: 600; color: #5a6477;">Nomor Identitas</div>
+                        <div style="width: 65%; color: #333;">{{ no_identitas }}</div>
                     </div>
                     
-                    <div class="profile-info" style="margin-top: 20px;">
-                        <div style="display: flex; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
-                            <div style="width: 30%; font-weight: 600; color: #666;">Nomor Identitas</div>
-                            <div style="width: 70%;">{{ no_identitas }}</div>
-                        </div>
-                        <div style="display: flex; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
-                            <div style="width: 30%; font-weight: 600; color: #666;">Email</div>
-                            <div style="width: 70%;">{{ email }}</div>
-                        </div>
-                        <div style="display: flex; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
-                            {% if logged_pengguna.company_name %}
-                            <div style="width: 30%; font-weight: 600; color: #666;">Nama Perusahaan</div>
-                            <div style="width: 70%;">{{ company_name }}</div>
-                            {% else %}
-                            <div style="width: 30%; font-weight: 600; color: #666;">Nama</div>
-                            <div style="width: 70%;">
-                                {{ first_name }}
-                                {% if middle_name %} {{ middle_name }}{% endif %}
-                                {{ last_name }}
-                            </div>
-                            {% endif %}
-                        </div>
-                        <div style="display: flex; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
-                            <div style="width: 30%; font-weight: 600; color: #666;">Tanggal Pendaftaran</div>
-                            <div style="width: 70%;">{{ tanggal_reg|date:"d F Y" }}</div>
-                        </div>
-                        <div style="display: flex; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
-                            <div style="width: 30%; font-weight: 600; color: #666;">Alamat</div>
-                            <div style="width: 70%;">{{ address }}</div>
-                        </div>
-                        <div style="display: flex; margin-bottom: 15px;">
-                            <div style="width: 30%; font-weight: 600; color: #666;">Nomor Telepon</div>
-                            <div style="width: 70%;">{{ phone }}</div>
-                        </div>
+                    <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+                        <div style="width: 35%; font-weight: 600; color: #5a6477;">Email</div>
+                        <div style="width: 65%; color: #333;">{{ email }}</div>
                     </div>
+                    
+                    <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+                        {% if company_name %}
+                        <div style="width: 35%; font-weight: 600; color: #5a6477;">Nama Perusahaan</div>
+                        <div style="width: 65%; color: #333; font-weight: 500;">{{ company_name }}</div>
+                        {% else %}
+                        <div style="width: 35%; font-weight: 600; color: #5a6477;">Nama</div>
+                        <div style="width: 65%; color: #333; font-weight: 500;">
+                            {{ first_name }}
+                            {% if middle_name %} {{ middle_name }}{% endif %}
+                            {{ last_name }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+                        <div style="width: 35%; font-weight: 600; color: #5a6477;">Tanggal Pendaftaran</div>
+                        <div style="width: 65%; color: #333;">{{ tanggal_reg|date:"d F Y" }}</div>
+                    </div>
+                    
+                    <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+                        <div style="width: 35%; font-weight: 600; color: #5a6477;">Alamat</div>
+                        <div style="width: 65%; color: #333;">{{ address }}</div>
+                    </div>
+                    
+                    <div style="display: flex;">
+                        <div style="width: 35%; font-weight: 600; color: #5a6477;">Nomor Telepon</div>
+                        <div style="width: 65%; color: #333;">{{ phone }}</div>
+                    </div>
+                </div>
+                
+                <!-- Footer Action Buttons -->
+                <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 15px;">
+                    <a href="/profil/update_password" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500; transition: all 0.2s ease;">Update Password</a>
+                    <a href="/profil/update" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; transition: all 0.2s ease;">Update Profile</a>
                 </div>
             </div>
         </div>
