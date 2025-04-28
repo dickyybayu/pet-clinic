@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Kunjungan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .form-container {
+            border: 1px solid #ccc;
+            padding: 30px;
+            border-radius: 8px;
+            width: 300px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-decoration: underline;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        select, input[type="datetime-local"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn-cancel, .btn-create {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-cancel {
+            background-color: #f0f0f0;
+        }
+        .btn-create {
+            background-color: #0d1117;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h1>Create Kunjungan</h1>
+
+    <form method="POST" action="{% url 'hijau:create_kunjungan' %}">
+        {% csrf_token %}
+
+        <label for="id_klien">ID Klien</label>
+        <select id="id_klien" name="id_klien" required>
+            <option value="">Pilih ID Klien</option>
+            <option value="FD0123">FD0123</option>
+            <option value="KII123">KII123</option>
+            <option value="PKE123">PKE123</option>
+        </select>
+
+        <label for="nama_hewan">Nama Hewan</label>
+        <select id="nama_hewan" name="nama_hewan" required>
+            <option value="">Pilih Nama Hewan</option>
+            <option value="Snowy">Snowy</option>
+            <option value="Blacky">Blacky</option>
+            <option value="Hamseung">Hamseung</option>
+        </select>
+
+        <label for="metode_kunjungan">Metode Kunjungan</label>
+        <select id="metode_kunjungan" name="metode_kunjungan" required>
+            <option value="">Pilih metode kunjungan</option>
+            <option value="Janji Temu">Janji Temu</option>
+            <option value="Walk-In">Walk-In</option>
+            <option value="Darurat">Darurat</option>
+        </select>
+
+        <label for="waktu_mulai">Waktu Mulai Penanganan</label>
+        <input type="datetime-local" id="waktu_mulai" name="waktu_mulai" required>
+
+        <label for="waktu_selesai">Waktu Selesai Penanganan</label>
+        <input type="datetime-local" id="waktu_selesai" name="waktu_selesai" required>
+
+        <div class="button-group">
+            <button type="button" class="btn-cancel">Cancel</button>
+            <button type="submit" class="btn-create">Create</button>
+        </div>
+
+    </form>
+</div>
+
+</body>
+</html>

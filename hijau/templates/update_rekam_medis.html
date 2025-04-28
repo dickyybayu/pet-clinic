@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Rekam Medis</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .form-container {
+      border: 1px solid #ccc;
+      padding: 30px;
+      border-radius: 8px;
+      width: 400px;
+    }
+    h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .button-group {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .btn-cancel, .btn-create {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn-cancel {
+      background-color: #ffffff;
+      border: 1px solid #d1d5db;
+      color: #374151;
+    }
+    .btn-create {
+      background-color: #0d1117;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>Update Rekam Medis</h2>
+
+  <label for="suhu_tubuh">Suhu Tubuh</label>
+  <input type="text" id="suhu_tubuh" value="36.8" readonly>
+
+  <label for="berat_badan">Berat Badan</label>
+  <input type="text" id="berat_badan" value="12.3" readonly>
+
+  <label for="jenis_perawatan">Jenis Perawatan</label>
+  <select id="jenis_perawatan" disabled>
+    <option selected>Vaksinasi</option>
+    <option>Medical Check-Up</option>
+    <option>Perawatan Cacingan</option>
+  </select>
+
+  <label for="catatan">Catatan</label>
+  <textarea id="catatan" readonly>Hewan dalam kondisi sehat, diberikan vaksin rabies dosis standar, tidak ada reaksi alergi setelah penyuntikan.</textarea>
+
+  <div class="button-group">
+    <button type="button" class="btn-cancel">Cancel</button>
+    <button type="button" class="btn-create">Create</button>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Rekam Medis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .form-container {
+            border: 1px solid #ccc;
+            padding: 30px;
+            border-radius: 8px;
+            width: 300px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn-cancel, .btn-create {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-cancel {
+            background-color: #f0f0f0;
+        }
+        .btn-create {
+            background-color: #0d1117;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h1>Create Rekam Medis</h1>
+
+    <form method="POST" action="{% url 'hijau:create_rekam_medis' %}">
+        {% csrf_token %}
+
+        <label for="suhu_tubuh">Suhu Tubuh</label>
+        <input type="text" id="suhu_tubuh" name="suhu_tubuh" placeholder="Suhu Tubuh Pasien (°C)" required>
+
+        <label for="berat_badan">Berat Badan</label>
+        <input type="text" id="berat_badan" name="berat_badan" placeholder="Berat Badan Pasien (kg)" required>
+
+        <label for="jenis_perawatan">Jenis Perawatan</label>
+        <select id="jenis_perawatan" name="jenis_perawatan" required>
+            <option value="">Pilih jenis perawatan</option>
+            <option value="Vaksinasi">Vaksinasi</option>
+            <option value="Medical Check-Up">Medical Check-Up</option>
+            <option value="Perawatan Cacingan">Perawatan Cacingan</option>
+        </select>
+
+        <label for="catatan">Catatan</label>
+        <textarea id="catatan" name="catatan" placeholder="Catatan Medis" required></textarea>
+
+        <div class="button-group">
+            <button type="button" class="btn-cancel">Cancel</button>
+            <button type="button" class="btn-create" onclick="window.location.href='{% url 'hijau:show_rekam_medis' %}'">Create</button>
+        </div>
+        
+
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Rekam Medis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .rekam-medis-container {
+            border: 1px solid #ccc;
+            padding: 30px;
+            border-radius: 8px;
+            width: 500px;
+            position: relative;
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .btn-update {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background-color: #0d1117;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+        .data-row {
+            display: flex;
+            margin-bottom: 12px;
+        }
+        .label {
+            width: 150px;
+            font-weight: bold;
+        }
+        .value {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="rekam-medis-container">
+    <h2>Rekam Medis</h2>
+    <button class="btn-update" onclick="window.location.href='{% url 'hijau:update_rekam_medis' %}'">Update</button>
+
+    <div style="margin-top: 20px;">
+        <div class="data-row">
+            <div class="label">Suhu Tubuh</div>
+            <div class="value">36.8°C</div>
+        </div>
+        <div class="data-row">
+            <div class="label">Berat Badan</div>
+            <div class="value">12.3 kg</div>
+        </div>
+        <div class="data-row">
+            <div class="label">Perawatan</div>
+            <div class="value">Vaksinasi</div>
+        </div>
+        <div class="data-row" style="align-items: flex-start;">
+            <div class="label">Catatan Medis</div>
+            <div class="value">
+                Hewan dalam kondisi sehat, diberikan vaksin rabies dosis standar, tidak ada reaksi alergi setelah penyuntikan.
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -50,13 +50,61 @@
             color: black;
             font-weight: bold;
         }
+        /* Modal Style */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .modal-content h2 {
+            color: #dc2626;
+            margin-top: 0;
+        }
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .btn-modal-create {
+            background-color: #0d1117;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-modal-ok {
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
     <h2>List Kunjungan</h2>
 
-    <a href="#" class="btn-create">+ Create New Kunjungan</a>
+    <a href="{% url 'hijau:create_kunjungan'%}" class="btn-create">+ Create New Kunjungan</a>
 
     <table>
         <thead>
@@ -79,7 +127,7 @@
                 <td>Janji Temu</td>
                 <td>03-04-2025 14:30:13</td>
                 <td>03-04-2025 16:30:16</td>
-                <td><button class="btn btn-rekam">Lihat Rekam Medis</button></td>
+                <td><button class="btn btn-rekam" onclick="openModal()">Lihat Rekam Medis</button></td>
                 <td class="button-container">
                     <button class="btn btn-update">Update</button>
                     <button class="btn btn-delete">Delete</button>
@@ -92,7 +140,7 @@
                 <td>Walk-In</td>
                 <td>05-08-2025 12:30:27</td>
                 <td>05-08-2025 13:30:19</td>
-                <td><button class="btn btn-rekam">Lihat Rekam Medis</button></td>
+                <td><button class="btn btn-rekam" onclick="openModal()">Lihat Rekam Medis</button></td>
                 <td class="button-container">
                     <button class="btn btn-update">Update</button>
                     <button class="btn btn-delete">Delete</button>
@@ -105,7 +153,7 @@
                 <td>Darurat</td>
                 <td>01-09-2025 16:30:51</td>
                 <td>01-09-2025 18:00:33</td>
-                <td><button class="btn btn-rekam">Lihat Rekam Medis</button></td>
+                <td><button class="btn btn-rekam" onclick="openModal()">Lihat Rekam Medis</button></td>
                 <td class="button-container">
                     <button class="btn btn-update">Update</button>
                     <button class="btn btn-delete">Delete</button>
@@ -113,6 +161,40 @@
             </tr>
         </tbody>
     </table>
+
+    <!-- Modal -->
+    <div id="rekamMedisModal" class="modal">
+        <div class="modal-content">
+            <h2>Rekam Medis tidak Tersedia</h2>
+            <p>Maaf, sepertinya belum ada rekam medis yang dibuat untuk kunjungan ini.</p>
+            <div class="modal-buttons">
+                <button class="btn-modal-create" onclick="redirectToCreate()">Create</button>
+                <button class="btn-modal-ok" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function openModal() {
+        document.getElementById('rekamMedisModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('rekamMedisModal').style.display = 'none';
+    }
+
+    function redirectToCreate() {
+        window.location.href = "{% url 'hijau:create_rekam_medis' %}";
+    }
+
+    // Optional: tutup modal kalau klik di luar modal
+    window.onclick = function(event) {
+        var modal = document.getElementById('rekamMedisModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+    </script>
 
 </body>
 </html>
