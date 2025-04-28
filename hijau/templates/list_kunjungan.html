@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>List Kunjungan</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f8f8f8;
+        }
+        .button-container {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-create {
+            background-color: #0d1117;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .btn-update {
+            background-color: #0d1117;
+        }
+        .btn-delete {
+            background-color: #e74c3c;
+        }
+        .btn-rekam {
+            background-color: #bdc3c7;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>List Kunjungan</h2>
+
+    <a href="#" class="btn-create">+ Create New Kunjungan</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID Kunjungan</th>
+                <th>ID Klien</th>
+                <th>Nama Hewan</th>
+                <th>Metode Kunjungan</th>
+                <th>Waktu Mulai Penanganan</th>
+                <th>Waktu Akhir Penanganan</th>
+                <th>Rekam Medis</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>KJN001</td>
+                <td>FDO123</td>
+                <td>Snowy</td>
+                <td>Janji Temu</td>
+                <td>03-04-2025 14:30:13</td>
+                <td>03-04-2025 16:30:16</td>
+                <td><button class="btn btn-rekam">Lihat Rekam Medis</button></td>
+                <td class="button-container">
+                    <button class="btn btn-update">Update</button>
+                    <button class="btn btn-delete">Delete</button>
+                </td>
+            </tr>
+            <tr>
+                <td>KJN002</td>
+                <td>KII123</td>
+                <td>Blacky</td>
+                <td>Walk-In</td>
+                <td>05-08-2025 12:30:27</td>
+                <td>05-08-2025 13:30:19</td>
+                <td><button class="btn btn-rekam">Lihat Rekam Medis</button></td>
+                <td class="button-container">
+                    <button class="btn btn-update">Update</button>
+                    <button class="btn btn-delete">Delete</button>
+                </td>
+            </tr>
+            <tr>
+                <td>KJN003</td>
+                <td>PKE123</td>
+                <td>Hamseung</td>
+                <td>Darurat</td>
+                <td>01-09-2025 16:30:51</td>
+                <td>01-09-2025 18:00:33</td>
+                <td><button class="btn btn-rekam">Lihat Rekam Medis</button></td>
+                <td class="button-container">
+                    <button class="btn btn-update">Update</button>
+                    <button class="btn btn-delete">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
