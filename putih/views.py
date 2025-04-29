@@ -26,6 +26,7 @@ pengguna = [
          "company_name" : "test.inc",
     },
     {
+        "no_pegawai" : "1234",
         "email" : "emailfrontdesk@gmail.com",
         "password" : "Frontdesk123!!",
         "phone" : "123",
@@ -34,12 +35,17 @@ pengguna = [
         "role" : "Frontdesk",
     },
     {
+        "doctor_id" : "123",
         "no_pegawai": "2306206283",
         "password" : "Akun123!!",
         "start_date" : datetime(2023, 1, 20),
         "end_date" : datetime(2023, 1, 20),
         "email" : "akundokter@gmail.com",
         "role"  : "Doctor"
+    },
+    {
+        "role" : "perawat",
+        "no_perawat" : "12345"
     }
     ]
 
@@ -110,7 +116,6 @@ def register_klien(request):
     else:
         return render(request, 'register_klien_individu.html') 
 
-
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -133,11 +138,15 @@ def show_profile(request):
     global logged_pengguna
     print(logged_pengguna)
     if logged_pengguna.get('doctor_id'):
-        return render(request, "profil_dokter.html", logged_pengguna)
+        return show_profile_dokter(request)
+    if logged_pengguna.get('no_pegawai'):
+        return show_profile_frontdesk(request)
+    if logged_pengguna.get('no_perawat'):
+        return show_profile_perawat(request)
     return render(request, "profil_klien.html", logged_pengguna)
 
 def show_profile_frontdesk(request):
-    return render(request, "profil_frontdesk.html", logged_pengguna)
+    return render(request, "profil_front_desk.html", logged_pengguna)
 
 def show_profile_dokter(request):
     return render(request, "profil_dokter.html", logged_pengguna)
@@ -202,7 +211,7 @@ def update_perawat(request):
     return render(request, 'update_perawat.html')
 
 def update_frontdesk(request):
-    return render(request, 'update_frontdesk.html')
+    return render(request, 'update_front_desk.html')
 
 def update_password_placeholder(request):
     return render(request, 'update_password_placeholder.html')
