@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create New Pet</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      padding: 40px;
+    }
+    .form-container {
+      background-color: white;
+      max-width: 500px;
+      margin: 60px auto;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      border: 2px solid #ccc;
+    }
+    h4 {
+      color: #002147;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .form-label {
+      font-weight: bold;
+      color: #002147;
+    }
+    .btn-primary-custom {
+      background-color: #0d47a1;
+      color: white;
+      padding: 10px 20px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .btn-primary-custom:hover {
+      background-color: #08306b;
+      transform: translateY(-2px);
+    }
+    .btn-cancel {
+      background-color: #ccc;
+      color: #002147;
+      padding: 10px 20px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      margin-right: 10px;
+    }
+    .form-control::placeholder {
+      color: #aaa;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h4>Create New Pet</h4>
+    <form>
+      {% if role == "Front-Desk Officer" %}
+      <div class="mb-3">
+        <label class="form-label">Pemilik</label>
+        <select class="form-select" required>
+          <option value="" selected disabled>Pilih pemilik</option>
+          {% for klien in daftar_klien %}
+            <option value="{{ klien.id }}">{{ klien.nama }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+
+      <div class="mb-3">
+        <label class="form-label">Jenis Hewan</label>
+        <select class="form-select" required>
+          <option value="" selected disabled>Pilih jenis hewan</option>
+          {% for jenis in daftar_jenis %}
+            <option value="{{ jenis.id }}">{{ jenis.nama }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Nama Hewan Peliharaan</label>
+        <input type="text" class="form-control" placeholder="Nama Hewan" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Tanggal Lahir Hewan</label>
+        <input type="date" class="form-control" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">URL Foto Hewan</label>
+        <input type="url" class="form-control" placeholder="https://example.com" required />
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <a href="{% url 'kuning:hewan_list' %}" class="btn btn-cancel">Cancel</a>
+        <button type="submit" class="btn btn-primary-custom">Create</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
