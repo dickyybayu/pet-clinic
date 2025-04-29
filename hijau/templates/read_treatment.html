@@ -136,8 +136,7 @@
 <body>
   <div class="container">
     <h2>List Treatments</h2>
-    <a href="{% url 'hijau:create_treatment' %}" class="btn-create">+ Create New Treatment</a>
-
+    
     <table>
       <thead>
         <tr>
@@ -150,7 +149,6 @@
           <th>Front Desk Officer</th>
           <th>Jenis Perawatan</th>
           <th>Catatan Medis</th>
-          <th>Aksi</th>
         </tr>
       </thead>
       <tbody>
@@ -164,10 +162,7 @@
           <td>Tina</td>
           <td>TRM001 - Dental Care</td>
           <td>Oke</td>
-          <td class="button-container">
-            <a href="{% url 'hijau:update_treatment' %}" class="btn btn-update">Update</a>
-            <button class="btn btn-delete" onclick="openDeleteModal('KJN001', 'TRM001')">Delete</button>
-          </td>
+
         </tr>
         <tr>
           <td>2</td>
@@ -179,10 +174,7 @@
           <td>Tini</td>
           <td>TRM002 - Parasite Control</td>
           <td>Sudah baik</td>
-          <td class="button-container">
-            <a href="{% url 'hijau:update_treatment' %}" class="btn btn-update">Update</a>
-            <button class="btn btn-delete" onclick="openDeleteModal('KJN002', 'TRM002')">Delete</button>
-          </td>
+
         </tr>
         <tr>
           <td>3</td>
@@ -194,10 +186,6 @@
           <td>Tono</td>
           <td>TRM003 - Flea Treatment</td>
           <td>Sehat</td>
-          <td class="button-container">
-            <a href="{% url 'hijau:update_treatment' %}" class="btn btn-update">Update</a>
-            <button class="btn btn-delete" onclick="openDeleteModal('KJN003', 'TRM003')">Delete</button>
-          </td>
         </tr>
       </tbody>
     </table>

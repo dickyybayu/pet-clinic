@@ -28,3 +28,12 @@ def show_rekam_medis(request):
 
 def update_rekam_medis(request):
     return render(request, 'update_rekam_medis.html')
+
+def read_kunjungan(request):
+    return render(request, 'read_kunjungan.html')
+
+def read_treatment(request):
+    return render(request, 'read_treatment.html')
+
+def read_rekam_medis(request):
+    return render(request, 'read_rekam_medis.html')
