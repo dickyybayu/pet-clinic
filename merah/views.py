@@ -27,7 +27,7 @@ kunjungan = [
     "no_dokter_hewan": "123",
     "kode_vaksin": "VAK456",
     "tipe_kunjungan": "Pemeriksaan Umum",
-    "timetamp_awal": "2023-10-02 09:30:00",
+    "timetamp_awal": datetime(2023,10,2,9,30,0),
     "timetamp_akhir": None,
     "suhu": 39.0,
     "berat_badan": 12.3
@@ -69,8 +69,8 @@ def show_vaksinasi(request):
     print(logged_pengguna)
     context = []
     for kunj in kunjungan:
-        if kunj['tipe_kunjungan'] == 'Vaksinasi' and kunj['kode_vaksin'] is not None:
-            if kunj['no_dokter_hewan'] == logged_pengguna.get('doctor_id', None):
+        if kunj['kode_vaksin']:
+            if kunj['no_dokter_hewan'] == logged_pengguna.get('doctor_id'):
                 for vak in vaksin:
                     if vak['kode_vaksin'] == kunj['kode_vaksin']:
                         context.append({
@@ -81,4 +81,3 @@ def show_vaksinasi(request):
                         })
     print(context)
     return render(request, 'show_vaksinasi.html', {'vaksin_data': context})
-
