@@ -4,6 +4,28 @@ from putih.views import get_logged_user
 from datetime import datetime
 from django.contrib import messages
 
+logged_doctor = {
+    "email"  : "akudokter@gmail.com",
+      "password" : "dokter123", 
+      "address" : "test",
+      "phone" : "123",
+      "worker_id" : "2306206283",
+      "start_date" : datetime(2023, 1, 20),
+      "end_date" : None,
+      "medic_id" : "123",
+      "doctor_id": "123",
+      "sertifikat" :[{
+          "sertifikat_id": "1",
+          "nama" : "aaa"
+      }, {
+          "sertifikat_id": "2",
+          "nama" : "bbb"
+      }],
+      "jadwal" : [{"hari" : "senin",
+        "jam_mulai" : "08:00",
+        "jam_selesai" : "17:00"}]
+        }
+
 #dummy data 
 kunjungan = [
   {
@@ -53,7 +75,7 @@ vaksin = [
 ]
 
 def show_vaksinasi(request):
-    logged_pengguna = get_logged_user()
+    logged_pengguna = logged_doctor
     print(logged_pengguna)
     context = []
     for kunj in kunjungan:
@@ -71,7 +93,7 @@ def show_vaksinasi(request):
     return render(request, 'show_vaksinasi.html', {'vaksin_data': context})
 
 def create_vaksinasi(request):
-    logged_pengguna = get_logged_user()
+    logged_pengguna = logged_doctor
 
     if request.method == 'POST':
         selected_kunjungan = request.POST.get('selected_kunjungan')
@@ -107,7 +129,7 @@ def create_vaksinasi(request):
     return render(request, 'create_vaksinasi.html', context)
 
 def update_vaksinasi(request, id_kunjungan):
-    logged_pengguna = get_logged_user()
+    logged_pengguna = logged_doctor
 
     kunj = next(
         (k for k in kunjungan if k['id_kunjungan'] == id_kunjungan and k['no_dokter_hewan'] == logged_pengguna.get('doctor_id')),
