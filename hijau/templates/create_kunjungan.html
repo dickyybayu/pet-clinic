@@ -1,91 +1,111 @@
-{%include "navbar.html"%}
+{% include "navbar.html" %}
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Create Kunjungan</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 80px;
-            display: flex;
-            justify-content: center;
-        }
-        .form-container {
-            border: 1px solid #ccc;
-            padding: 30px;
-            border-radius: 8px;
-            width: 300px;
-        }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            text-decoration: underline;
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-        select, input[type="datetime-local"] {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .button-group {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .btn-cancel, .btn-create {
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .btn-cancel {
-            background-color: #f0f0f0;
-        }
-        .btn-create {
-            background-color: #0d1117;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Create Kunjungan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+    }
+    .container {
+      margin-top: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 80px);
+    }
+    .form-card {
+      width: 100%;
+      max-width: 600px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      padding: 30px;
+      margin: 30px 20px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 25px;
+      color: #4a5568;
+      text-decoration: underline;
+    }
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #374151;
+    }
+    select,
+    input[type="datetime-local"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .button-group {
+      margin-top: 30px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .btn-cancel,
+    .btn-create {
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-cancel {
+      background-color: #f0f2f5;
+      color: #4a5568;
+      border: 1px solid #d1d5db;
+    }
+    .btn-create {
+      background-color: #5a85e2;
+      color: white;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <div class="form-card">
+      <h1>Create Kunjungan</h1>
 
-<div class="form-container">
-    <h1>Create Kunjungan</h1>
-
-    <form method="POST" action="{% url 'hijau:create_kunjungan' %}">
+      <form method="POST" action="{% url 'hijau:create_kunjungan' %}">
         {% csrf_token %}
 
         <label for="id_klien">ID Klien</label>
         <select id="id_klien" name="id_klien" required>
-            <option value="">Pilih ID Klien</option>
-            <option value="FD0123">FD0123</option>
-            <option value="KII123">KII123</option>
-            <option value="PKE123">PKE123</option>
+          <option value="">Pilih ID Klien</option>
+          <option value="FD0123">FD0123</option>
+          <option value="KII123">KII123</option>
+          <option value="PKE123">PKE123</option>
         </select>
 
         <label for="nama_hewan">Nama Hewan</label>
         <select id="nama_hewan" name="nama_hewan" required>
-            <option value="">Pilih Nama Hewan</option>
-            <option value="Snowy">Snowy</option>
-            <option value="Blacky">Blacky</option>
-            <option value="Hamseung">Hamseung</option>
+          <option value="">Pilih Nama Hewan</option>
+          <option value="Snowy">Snowy</option>
+          <option value="Blacky">Blacky</option>
+          <option value="Hamseung">Hamseung</option>
         </select>
 
         <label for="metode_kunjungan">Metode Kunjungan</label>
         <select id="metode_kunjungan" name="metode_kunjungan" required>
-            <option value="">Pilih metode kunjungan</option>
-            <option value="Janji Temu">Janji Temu</option>
-            <option value="Walk-In">Walk-In</option>
-            <option value="Darurat">Darurat</option>
+          <option value="">Pilih metode kunjungan</option>
+          <option value="Janji Temu">Janji Temu</option>
+          <option value="Walk-In">Walk-In</option>
+          <option value="Darurat">Darurat</option>
         </select>
 
         <label for="waktu_mulai">Waktu Mulai Penanganan</label>
@@ -95,12 +115,11 @@
         <input type="datetime-local" id="waktu_selesai" name="waktu_selesai" required>
 
         <div class="button-group">
-            <button type="button" class="btn-cancel">Cancel</button>
-            <button type="submit" class="btn-create">Create</button>
+          <a href="{% url 'hijau:list_kunjungan' %}" class="btn-cancel">Cancel</a>
+          <button type="submit" class="btn-create">Create</button>
         </div>
-
-    </form>
-</div>
-
+      </form>
+    </div>
+  </div>
 </body>
 </html>

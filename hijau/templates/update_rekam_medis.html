@@ -1,4 +1,4 @@
-{%include "navbar.html"%}
+{% include "navbar.html" %}
 
 <!DOCTYPE html>
 <html lang="id">
@@ -7,92 +7,128 @@
   <title>Update Rekam Medis</title>
   <style>
     body {
-      padding-top: 80px; /* biar gak ketutupan navbar */
-
       font-family: Arial, sans-serif;
-      margin: 40px;
+      margin: 0;
+      padding: 0;
+      padding-top: 80px;
+      background-color: #f5f7fa;
+    }
+
+    .container {
       display: flex;
       justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
     }
-    .form-container {
-      border: 1px solid #ccc;
+
+    .form-card {
+      width: 100%;
+      max-width: 600px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
       padding: 30px;
-      border-radius: 8px;
-      width: 400px;
     }
+
     h2 {
       font-size: 24px;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      color: #4a5568;
     }
+
     label {
       display: block;
-      margin-top: 15px;
-      font-weight: bold;
+      margin-top: 20px;
+      font-weight: 600;
       font-size: 14px;
+      color: #374151;
     }
+
     input[type="text"], select, textarea {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
+      margin-top: 8px;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
       box-sizing: border-box;
+      background-color: #f9fafb;
+      color: #4b5563;
     }
+
+    select:disabled,
+    input[readonly],
+    textarea[readonly] {
+      background-color: #f9fafb;
+      color: #4b5563;
+    }
+
     textarea {
       resize: vertical;
-      min-height: 80px;
+      min-height: 100px;
     }
+
     .button-group {
-      margin-top: 20px;
+      margin-top: 30px;
       display: flex;
       justify-content: flex-end;
-      gap: 10px;
+      gap: 12px;
     }
-    .btn-cancel, .btn-create {
-      padding: 8px 16px;
-      border-radius: 6px;
-      border: none;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .btn-cancel {
-      background-color: #ffffff;
-      border: 1px solid #d1d5db;
-      color: #374151;
-    }
+
+    .btn-cancel,
     .btn-create {
-      background-color: #0d1117;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-cancel {
+      background-color: #f0f2f5;
+      color: #4a5568;
+      border: 1px solid #d1d5db;
+    }
+
+    .btn-create {
+      background-color: #5a85e2;
       color: white;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <div class="form-card">
+      <h2>Update Rekam Medis</h2>
 
-<div class="form-container">
-  <h2>Update Rekam Medis</h2>
+      <form method="POST">
+        {% csrf_token %}
 
-  <label for="suhu_tubuh">Suhu Tubuh</label>
-  <input type="text" id="suhu_tubuh" value="36.8" readonly>
+        <label for="suhu_tubuh">Suhu Tubuh</label>
+        <input type="text" id="suhu_tubuh" name="suhu_tubuh" value="36.8" readonly>
 
-  <label for="berat_badan">Berat Badan</label>
-  <input type="text" id="berat_badan" value="12.3" readonly>
+        <label for="berat_badan">Berat Badan</label>
+        <input type="text" id="berat_badan" name="berat_badan" value="12.3" readonly>
 
-  <label for="jenis_perawatan">Jenis Perawatan</label>
-  <select id="jenis_perawatan" disabled>
-    <option selected>Vaksinasi</option>
-    <option>Medical Check-Up</option>
-    <option>Perawatan Cacingan</option>
-  </select>
+        <label for="jenis_perawatan">Jenis Perawatan</label>
+        <select id="jenis_perawatan" name="jenis_perawatan" disabled>
+          <option selected>Vaksinasi</option>
+          <option>Medical Check-Up</option>
+          <option>Perawatan Cacingan</option>
+        </select>
 
-  <label for="catatan">Catatan</label>
-  <textarea id="catatan" readonly>Hewan dalam kondisi sehat, diberikan vaksin rabies dosis standar, tidak ada reaksi alergi setelah penyuntikan.</textarea>
+        <label for="catatan">Catatan</label>
+        <textarea id="catatan" name="catatan" readonly>
+Hewan dalam kondisi sehat, diberikan vaksin rabies dosis standar, tidak ada reaksi alergi setelah penyuntikan.
+        </textarea>
 
-  <div class="button-group">
-    <button type="button" class="btn-cancel">Cancel</button>
-    <button type="button" class="btn-create">Create</button>
+        <div class="button-group">
+          <a href="{% url 'hijau:show_rekam_medis' %}" class="btn-cancel">Cancel</a>
+          <button type="submit" class="btn-create">Create</button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
-
 </body>
 </html>

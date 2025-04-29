@@ -1,153 +1,141 @@
-{%include "navbar.html"%}
+{% include "navbar.html" %}
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Update Kunjungan</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 80px;
+      padding: 0;
+      background-color: #f5f7fa;
     }
     .container {
-      max-width: 500px;
-      margin: 0 auto;
-      border: 1px solid #ccc;
-      padding: 20px;
+      max-width: 600px;
+      margin: 80px auto;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      padding: 30px;
     }
     h1 {
-      font-size: 20px;
-      margin-top: 0;
-      margin-bottom: 20px;
+      font-size: 24px;
+      margin-bottom: 25px;
+      color: #4a5568;
     }
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     label {
       display: block;
+      font-weight: 600;
       font-size: 14px;
-      margin-bottom: 5px;
+      color: #374151;
+      margin-bottom: 8px;
     }
     select, input {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 6px;
+      font-size: 14px;
       box-sizing: border-box;
     }
-    .dropdown-content {
-      display: none;
-      width: 100%;
-      background-color: #f1f2f6;
-      border: 1px solid #ccc;
-      margin-top: 2px;
-    }
-    .dropdown-item {
-      padding: 8px;
-      background-color: #d6dae4;
+    input[readonly] {
+      background-color: #f9fafb;
+      color: #4b5563;
     }
     .buttons {
       display: flex;
       justify-content: flex-end;
-      margin-top: 20px;
+      gap: 12px;
+      margin-top: 30px;
+    }
+    .cancel-btn, .update-btn {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
     }
     .cancel-btn {
-      background-color: #f1f2f6;
-      color: #000;
-      border: 1px solid #ccc;
-      padding: 8px 16px;
-      margin-right: 10px;
-      cursor: pointer;
+      background-color: #f0f2f5;
+      color: #4a5568;
+      border: 1px solid #d1d5db;
     }
     .update-btn {
-      background-color: #333;
+      background-color: #5a85e2;
       color: white;
-      border: none;
-      padding: 8px 16px;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Update Kunjungan</h1>
-    
-    <div class="form-group">
-      <label for="idKlien">ID Klien</label>
-      <select id="idKlien">
-        <option value="FDO123" selected>FDO123</option>
-      </select>
-      <div class="dropdown-content">
-        <div class="dropdown-item">FDO123</div>
-        <div class="dropdown-item">KI123</div>
-        <div class="dropdown-item">PKE123</div>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="idKlien">ID Klien</label>
+        <select id="idKlien" name="id_klien">
+          <option value="FDO123" selected>FDO123</option>
+          <option value="KI123">KI123</option>
+          <option value="PKE123">PKE123</option>
+        </select>
       </div>
-    </div>
-    
-    <div class="form-group">
-      <label for="namaHewan">Nama Hewan</label>
-      <select id="namaHewan">
-        <option value="Snowy" selected>Snowy</option>
-      </select>
-      <div class="dropdown-content">
-        <div class="dropdown-item">Snowy</div>
-        <div class="dropdown-item">Blacky</div>
-        <div class="dropdown-item">Hamstrong</div>
+
+      <div class="form-group">
+        <label for="namaHewan">Nama Hewan</label>
+        <select id="namaHewan" name="nama_hewan">
+          <option value="Snowy" selected>Snowy</option>
+          <option value="Blacky">Blacky</option>
+          <option value="Hamstrong">Hamstrong</option>
+        </select>
       </div>
-    </div>
-    
-    <div class="form-group">
-      <label for="dokterHewan">Dokter Hewan</label>
-      <select id="dokterHewan">
-        <option value="Dr. Rizki" selected>Dr. Rizki</option>
-      </select>
-      <div class="dropdown-content">
-        <div class="dropdown-item">Dr. Rizki</div>
-        <div class="dropdown-item">Dr. Safira</div>
-        <div class="dropdown-item">Dr. Nainu</div>
+
+      <div class="form-group">
+        <label for="dokterHewan">Dokter Hewan</label>
+        <select id="dokterHewan" name="dokter_hewan">
+          <option value="Dr. Rizki" selected>Dr. Rizki</option>
+          <option value="Dr. Safira">Dr. Safira</option>
+          <option value="Dr. Nainu">Dr. Nainu</option>
+        </select>
       </div>
-    </div>
-    
-    <div class="form-group">
-      <label for="perawatHewan">Perawat Hewan</label>
-      <select id="perawatHewan">
-        <option value="Tina" selected>Tina</option>
-      </select>
-      <div class="dropdown-content">
-        <div class="dropdown-item">Tina</div>
-        <div class="dropdown-item">Tini</div>
-        <div class="dropdown-item">Tono</div>
+
+      <div class="form-group">
+        <label for="perawatHewan">Perawat Hewan</label>
+        <select id="perawatHewan" name="perawat_hewan">
+          <option value="Tina" selected>Tina</option>
+          <option value="Tini">Tini</option>
+          <option value="Tono">Tono</option>
+        </select>
       </div>
-    </div>
-    
-    <div class="form-group">
-      <label for="metodeKunjungan">Metode Kunjungan</label>
-      <select id="metodeKunjungan">
-        <option value="Janji Temu" selected>Janji Temu</option>
-      </select>
-      <div class="dropdown-content">
-        <div class="dropdown-item">Janji Temu</div>
-        <div class="dropdown-item">Walk-In</div>
-        <div class="dropdown-item">Darurat</div>
+
+      <div class="form-group">
+        <label for="metodeKunjungan">Metode Kunjungan</label>
+        <select id="metodeKunjungan" name="metode_kunjungan">
+          <option value="Janji Temu" selected>Janji Temu</option>
+          <option value="Walk-In">Walk-In</option>
+          <option value="Darurat">Darurat</option>
+        </select>
       </div>
-    </div>
-    
-    <div class="form-group">
-      <label for="waktuMulai">Waktu Mulai Penanganan</label>
-      <input type="text" id="waktuMulai" value="03-04-2025 14:30:13" readonly>
-    </div>
-    
-    <div class="form-group">
-      <label for="waktuSelesai">Waktu Selesai Penanganan</label>
-      <input type="text" id="waktuSelesai" value="03-04-2025 16:30:16" readonly>
-    </div>
-    
-    <div class="buttons">
-      <button class="cancel-btn">Cancel</button>
-      <button class="update-btn">Update</button>
-    </div>
+
+      <div class="form-group">
+        <label for="waktuMulai">Waktu Mulai Penanganan</label>
+        <input type="text" id="waktuMulai" name="waktu_mulai" value="03-04-2025 14:30:13" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="waktuSelesai">Waktu Selesai Penanganan</label>
+        <input type="text" id="waktuSelesai" name="waktu_selesai" value="03-04-2025 16:30:16" readonly>
+      </div>
+
+      <div class="buttons">
+        <a href="{% url 'hijau:list_kunjungan' %}" class="cancel-btn">Cancel</a>
+        <button type="submit" class="update-btn">Update</button>
+      </div>
+    </form>
   </div>
 </body>
 </html>

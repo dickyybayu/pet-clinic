@@ -1,99 +1,115 @@
-{%include "navbar.html"%}
+{% include "navbar.html" %}
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Create Rekam Medis</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 80px;
-            display: flex;
-            justify-content: center;
-        }
-        .form-container {
-            border: 1px solid #ccc;
-            padding: 30px;
-            border-radius: 8px;
-            width: 300px;
-        }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        input[type="text"], select, textarea {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        .button-group {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .btn-cancel, .btn-create {
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .btn-cancel {
-            background-color: #f0f0f0;
-        }
-        .btn-create {
-            background-color: #0d1117;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Create Rekam Medis</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+    }
+    .container {
+      margin-top: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 80px);
+    }
+    .form-card {
+      width: 100%;
+      max-width: 600px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      padding: 30px;
+      margin: 30px 20px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 25px;
+      color: #4a5568;
+    }
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #374151;
+    }
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    .button-group {
+      margin-top: 30px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .btn-cancel,
+    .btn-create {
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-cancel {
+      background-color: #f0f2f5;
+      color: #4a5568;
+      border: 1px solid #d1d5db;
+    }
+    .btn-create {
+      background-color: #5a85e2;
+      color: white;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <div class="form-card">
+      <h1>Create Rekam Medis</h1>
 
-<div class="form-container">
-    <h1>Create Rekam Medis</h1>
-
-    <form method="POST" action="{% url 'hijau:create_rekam_medis' %}">
+      <form method="POST" action="{% url 'hijau:create_rekam_medis' %}">
         {% csrf_token %}
 
-        <label for="suhu_tubuh">Suhu Tubuh</label>
-        <input type="text" id="suhu_tubuh" name="suhu_tubuh" placeholder="Suhu Tubuh Pasien (°C)" required>
+        <label for="suhu_tubuh">Suhu Tubuh (°C)</label>
+        <input type="text" id="suhu_tubuh" name="suhu_tubuh" placeholder="Contoh: 38.5" required>
 
-        <label for="berat_badan">Berat Badan</label>
-        <input type="text" id="berat_badan" name="berat_badan" placeholder="Berat Badan Pasien (kg)" required>
+        <label for="berat_badan">Berat Badan (kg)</label>
+        <input type="text" id="berat_badan" name="berat_badan" placeholder="Contoh: 5.4" required>
 
         <label for="jenis_perawatan">Jenis Perawatan</label>
         <select id="jenis_perawatan" name="jenis_perawatan" required>
-            <option value="">Pilih jenis perawatan</option>
-            <option value="Vaksinasi">Vaksinasi</option>
-            <option value="Medical Check-Up">Medical Check-Up</option>
-            <option value="Perawatan Cacingan">Perawatan Cacingan</option>
+          <option value="">Pilih jenis perawatan</option>
+          <option value="Vaksinasi">Vaksinasi</option>
+          <option value="Medical Check-Up">Medical Check-Up</option>
+          <option value="Perawatan Cacingan">Perawatan Cacingan</option>
         </select>
 
-        <label for="catatan">Catatan</label>
-        <textarea id="catatan" name="catatan" placeholder="Catatan Medis" required></textarea>
+        <label for="catatan">Catatan Medis</label>
+        <textarea id="catatan" name="catatan" placeholder="Masukkan catatan dokter..." required></textarea>
 
         <div class="button-group">
-            <button type="button" class="btn-cancel">Cancel</button>
-            <button type="button" class="btn-create" onclick="window.location.href='{% url 'hijau:show_rekam_medis' %}'">Create</button>
+          <a href="{% url 'hijau:list_kunjungan' %}" class="btn-cancel">Cancel</a>
+          <button type="button" class="btn-create" onclick="window.location.href='{% url 'hijau:show_rekam_medis' %}'">Create</button>
         </div>
-        
-
-    </form>
-</div>
-
+      </form>
+    </div>
+  </div>
 </body>
 </html>
