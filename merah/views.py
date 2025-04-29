@@ -1,8 +1,9 @@
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from putih.views import get_logged_user
 from datetime import datetime
 from django.contrib import messages
+import uuid
+
 
 logged_doctor = {
     "email"  : "akudokter@gmail.com",
@@ -183,3 +184,67 @@ def delete_vaksinasi(request, id_kunjungan):
         messages.error(request, "Kunjungan tidak ditemukan.")
 
     return redirect('merah:show_vaksinasi')
+
+
+def is_vaksin_used(kode_vaksin):
+    used_vaksin = {kunjungan_entry["kode_vaksin"] for kunjungan_entry in kunjungan if kunjungan_entry["kode_vaksin"]}
+    return kode_vaksin in used_vaksin
+
+def create_vaksin(request):
+    if request.method == 'POST':
+        kode_vaksin = uuid.uuid4()
+
+        # Validasi nama_vaksin
+        nama_vaksin = request.POST.get('nama_vaksin')
+        if not nama_vaksin or len(nama_vaksin) > 50:
+            messages.error(request, "Nama vaksin tidak valid. Nama vaksin harus ada dan tidak lebih dari 50 karakter.")
+            return redirect('merah:create_vaksin')
+        
+        # Validasi harga
+        harga = request.POST.get('harga')
+        try:
+            harga = int(harga)
+            if harga <= 0:
+                messages.error(request, "Harga vaksin tidak valid. Harga harus lebih besar dari 0.")
+                return redirect('merah:create_vaksin')
+        except ValueError:
+            messages.error(request, "Harga vaksin harus berupa angka.")
+            return redirect('merah:create_vaksin')
+        
+        # Validasi stok
+        stok = request.POST.get('stok')
+        try:
+            stok = int(stok)
+            if stok < 0:
+                messages.error(request, "Stok vaksin tidak valid. Stok tidak boleh kurang dari 0.")
+                return redirect('merah:create_vaksin')
+        except ValueError:
+            messages.error(request, "Stok vaksin harus berupa angka.")
+            return redirect('merah:create_vaksin')
+
+        vaksin.append({
+            "kode_vaksin": kode_vaksin,
+            "nama_vaksin": nama_vaksin,
+            "harga": harga,
+            "stok": stok,
+        })
+        
+        messages.success(request, "Vaksin berhasil ditambahkan.")
+        return redirect('merah:show_vaksin')
+    
+    return render(request, 'create_vaksin.html')
+
+def show_vaksin(request): 
+    all_vaccines = []
+    for vaccine in vaksin:
+        vaccine['is_used'] = is_vaksin_used(vaccine['kode_vaksin'])
+        all_vaccines.append(vaccine)
+
+    return render(request, 'show_vaksin.html', {'vaccines': all_vaccines})
+    
+
+def update_vaksin():
+    pass
+
+def delete_vaksin():
+    pass

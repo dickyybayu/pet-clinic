@@ -1,0 +1,61 @@
+{% extends 'perawat_base.html' %}
+
+{% block content %}
+<div style="margin-top: 30px;">
+    <div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); background-color: #f5f7fa;">
+        <div class="profile-card" style="width: 100%; max-width: 1000px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px 20px; overflow: hidden;">
+            <div>
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            </div>
+
+            <!-- Card Header -->
+            <div style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="font-size: 26px; margin: 0; font-weight: 600;">Tambah Vaksin</h2>
+                    <div style="background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19.82 2.76a1.82 1.82 0 0 0-2.57 0L8.18 11.84a3 3 0 0 0-.67 1l-1.45 4.37a1 1 0 0 0 1.25 1.25l4.37-1.45a3 3 0 0 0 1.03-.67l9.08-9.07a1.82 1.82 0 0 0 0-2.57zM7 12l5 5"></path>
+                            <path d="M3 21h18"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div style="padding: 30px;">
+                <!-- Create Vaccine Form -->
+                <form method="POST" style="max-width: 500px; margin: 0 auto;">
+                    {% csrf_token %}
+                    <div style="margin-bottom: 15px;">
+                        <label for="nama_vaksin" style="font-size: 16px; color: #5a6477;">Nama Vaksin:</label>
+                        <input type="text" id="nama_vaksin" name="nama_vaksin" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 14px; color: #333;" required>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label for="harga" style="font-size: 16px; color: #5a6477;">Harga:</label>
+                        <input type="text" id="harga" name="harga" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 14px; color: #333;" required min="1">
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label for="stok" style="font-size: 16px; color: #5a6477;">Stok:</label>
+                        <input type="text" id="stok" name="stok" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 14px; color: #333;" required min="1">
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; gap: 15px;">
+                        <a href="{% url 'merah:show_vaksin' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500; transition: all 0.2s ease;">Batal</a>
+                        <button type="submit" style="padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; border: none; cursor: pointer;">Tambah Vaksin</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>  
+</div>
+{% endblock %}
