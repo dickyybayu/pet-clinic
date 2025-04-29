@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Treatment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            width: 400px;
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+        }
+        .form-container h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        select, input[type="text"], input[type="button"], input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .readonly-input {
+            background-color: #e2e8f0;
+            pointer-events: none;
+        }
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .btn-cancel {
+            padding: 8px 18px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .btn-update {
+            padding: 8px 18px;
+            background-color: #0d1117;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .btn-update:hover {
+            background-color: #1a1f26;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h1>Update Treatment</h1>
+    <form action="/update-treatment" method="POST">
+        <div class="form-group">
+            <label for="kunjungan">Kunjungan</label>
+            <input type="text" id="kunjungan" name="kunjungan" class="readonly-input" value="KJN001" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="jenis-perawatan">Jenis Perawatan</label>
+            <select id="jenis-perawatan" name="jenis-perawatan">
+                <option>Jenis Perawatan</option>
+                <option value="TRM001">TRM001 - Dental Care</option>
+                <option value="TRM002">TRM002 - Parasite Control</option>
+                <option value="TRM003">TRM003 - Flea Treatment</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="catatan-medis">Catatan Medis</label>
+            <input type="text" id="catatan-medis" name="catatan-medis" value="Hewan nya dijaga terus ya!">
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn-cancel" onclick="window.location.href='/treatment-list';">Cancel</button>
+            <button type="submit" class="btn-update">Update</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

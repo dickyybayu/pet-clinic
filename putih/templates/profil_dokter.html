@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile Dokter</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    .profile-section { margin-bottom: 30px; }
+    .info-row { display: flex; margin-bottom: 10px; }
+    .label { width: 200px; font-weight: bold; }
+    .value { flex: 1; }
+    .btn-group { margin-bottom: 30px; }
+    .btn { padding: 8px 16px; border-radius: 6px; border: none; font-size: 14px; cursor: pointer; margin-right: 10px; }
+    .btn-password { background-color: #ef4444; color: white; }
+    .btn-update { background-color: #0d1117; color: white; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+    th { background-color: #f9fafb; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<h2>Profile Dokter</h2>
+<div class="btn-group">
+    <button class="btn btn-password" onclick="window.location.href='{% url 'putih:update_password' %}'">Update Password</button>
+    <button class="btn btn-update" onclick="window.location.href='{% url 'putih:update_dokter' %}'">Update Profile</button>
+</div>
+
+<div class="profile-section">
+  <div class="info-row"><div class="label">Nomor Identitas</div><div class="value">c4fd2f14-0202-4526-b1f4-5fcde0c28783</div></div>
+  <div class="info-row"><div class="label">Nomor Izin Praktik</div><div class="value">SIP-HEWAN-12345</div></div>
+  <div class="info-row"><div class="label">Email</div><div class="value">bobby.muhammad@petclinic.com</div></div>
+  <div class="info-row"><div class="label">Tanggal Diterima</div><div class="value">23 Januari 2025</div></div>
+  <div class="info-row"><div class="label">Tanggal Akhir Kerja</div><div class="value">-</div></div>
+  <div class="info-row"><div class="label">Alamat</div><div class="value">Jl. Melati Indah No. 23, Kel. Sukamaju, Kec. Cibinong, Kab. Bogor, Jawa Barat, 16914</div></div>
+  <div class="info-row"><div class="label">Nomor Telepon</div><div class="value">081234567893</div></div>
+</div>
+
+<h3>Daftar Sertifikat</h3>
+<table>
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Nomor Sertifikat</th>
+      <th>Nama Sertifikat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>123/DH/456</td><td>BNSP Dokter Hewan Praktis</td></tr>
+    <tr><td>2</td><td>456/DH/456</td><td>Sertifikat PB PDHI</td></tr>
+    <tr><td>3</td><td>789/DH/789</td><td>Sertifikat Organisasi Profesi</td></tr>
+  </tbody>
+</table>
+
+<h3>Daftar Jadwal Praktik</h3>
+<table>
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Hari</th>
+      <th>Jam</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>Senin</td><td>13.00 - 15.00</td></tr>
+    <tr><td>2</td><td>Rabu</td><td>13.00 - 15.00</td></tr>
+    <tr><td>3</td><td>Jumat</td><td>14.00 - 16.00</td></tr>
+  </tbody>
+</table>
+
+</body>
+</html>

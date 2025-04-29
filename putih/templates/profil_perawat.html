@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile Perawat</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    .profile-section { margin-bottom: 30px; }
+    .info-row { display: flex; margin-bottom: 10px; }
+    .label { width: 200px; font-weight: bold; }
+    .value { flex: 1; }
+    .btn-group { margin-bottom: 30px; }
+    .btn { padding: 8px 16px; border-radius: 6px; border: none; font-size: 14px; cursor: pointer; margin-right: 10px; }
+    .btn-password { background-color: #ef4444; color: white; }
+    .btn-update { background-color: #0d1117; color: white; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+    th { background-color: #f9fafb; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<h2>Profile Perawat</h2>
+<div class="btn-group">
+  <button class="btn btn-password" onclick="window.location.href='{% url 'putih:update_password' %}'">Update Password</button>
+
+  <button class="btn btn-update" onclick="window.location.href='{% url 'putih:update_perawat' %}'">Update Profile</button>
+</div>
+
+<div class="profile-section">
+  <div class="info-row"><div class="label">Nomor Identitas</div><div class="value">1845ad38-ef76-49cd-b46e-350ba3f0ef59</div></div>
+  <div class="info-row"><div class="label">Nomor Izin Praktik</div><div class="value">SIP-PERAWAT-12345</div></div>
+  <div class="info-row"><div class="label">Email</div><div class="value">sandy.permata@petclinic.com</div></div>
+  <div class="info-row"><div class="label">Tanggal Diterima</div><div class="value">24 Januari 2025</div></div>
+  <div class="info-row"><div class="label">Tanggal Akhir Kerja</div><div class="value">-</div></div>
+  <div class="info-row"><div class="label">Alamat</div><div class="value">Jl. Melati Indah No. 24, Kel. Sukamaju, Kec. Cibinong, Kab. Bogor, Jawa Barat, 16914</div></div>
+  <div class="info-row"><div class="label">Nomor Telepon</div><div class="value">081234567894</div></div>
+</div>
+
+<h3>Daftar Sertifikat</h3>
+<table>
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Nomor Sertifikat</th>
+      <th>Nama Sertifikat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>123/PH/456</td><td>Paraprofesional Kedokteran Hewan</td></tr>
+    <tr><td>2</td><td>456/PH/456</td><td>Keperawatan Hewan Profesional</td></tr>
+    <tr><td>3</td><td>789/PH/789</td><td>Sertifikat Organisasi Profesi</td></tr>
+  </tbody>
+</table>
+
+</body>
+</html>

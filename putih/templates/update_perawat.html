@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Profile Perawat Hewan</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .form-container { border: 1px solid #ccc; padding: 30px; border-radius: 8px; width: 500px; }
+        h2 { font-size: 24px; margin-bottom: 20px; }
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 14px; }
+        input[type="text"] { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        .button-group { margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; }
+        .btn-cancel, .btn-update { padding: 8px 16px; border-radius: 6px; border: none; font-size: 14px; cursor: pointer; }
+        .btn-cancel { background-color: #ffffff; border: 1px solid #d1d5db; color: #374151; }
+        .btn-update { background-color: #0d1117; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Update Profile Perawat Hewan</h2>
+
+    <label for="sertifikat_kompetensi_perawat">Sertifikat Kompetensi</label>
+    <input type="text" id="sertifikat_kompetensi_perawat" placeholder="Sertifikat Kompetensi Perawat Hewan" required>
+
+    <label for="tanggal_akhir_kerja">Tanggal Akhir Kerja</label>
+    <input type="text" id="tanggal_akhir_kerja" placeholder="Tanggal Akhir Kerja Perawat Hewan" required>
+
+    <div class="button-group">
+        <button type="button" class="btn-cancel">Cancel</button>
+        <button type="submit" class="btn-update">Update</button>
+    </div>
+</div>
+
+</body>
+</html>

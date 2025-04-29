@@ -24,6 +24,22 @@ pengguna = [
          "no_identitas" : "2306206282",
          "tanggal_reg" : datetime(2023, 1, 20),
          "company_name" : "test.inc",
+    },
+    {
+        "email" : "emailfrontdesk@gmail.com",
+        "password" : "Frontdesk123!!",
+        "phone" : "123",
+        "start_date" : datetime(2023, 1, 20),
+        "address" : "test",
+        "role" : "Frontdesk",
+    },
+    {
+        "no_pegawai": "2306206283",
+        "password" : "Akun123!!",
+        "start_date" : datetime(2023, 1, 20),
+        "end_date" : datetime(2023, 1, 20),
+        "email" : "akundokter@gmail.com",
+        "role"  : "Doctor"
     }
 ]
 
@@ -111,6 +127,15 @@ def show_profile(request):
     print(logged_pengguna)
     return render(request, "profil_klien.html", logged_pengguna)
 
+def show_profile_frontdesk(request):
+    return render(request, "profil_frontdesk.html", logged_pengguna)
+
+def show_profile_dokter(request):
+    return render(request, "profil_dokter.html", logged_pengguna)
+
+def show_profile_perawat(request):
+    return render(request, "profil_perawat.html", logged_pengguna)
+
 def logout(request):
     global logged_pengguna
     logged_pengguna = {}
@@ -154,6 +179,24 @@ def update_klien(request):
         **logged_pengguna,
     }
     return render(request, 'update_klien.html', context)
+
+def update_klien_individu(request):
+    return render(request, 'update_klien_individu.html')
+
+def update_klien_perusahaan(request):
+    return render(request, 'update_klien_perusahaan.html')
+
+def update_dokter(request):
+    return render(request, 'update_dokter.html')
+
+def update_perawat(request):
+    return render(request, 'update_perawat.html')
+
+def update_frontdesk(request):
+    return render(request, 'update_frontdesk.html')
+
+def update_password_placeholder(request):
+    return render(request, 'update_password_placeholder.html')
 
 def update_password(request):
     if request.method == 'POST':
