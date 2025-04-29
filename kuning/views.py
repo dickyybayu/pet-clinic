@@ -59,7 +59,7 @@ def delete_jenis_hewan(request, id_jenis):
     return render(request, 'delete_jenis_hewan.html', context)
 
 def list_hewan(request):
-    role = request.GET.get('role', 'Klien')
+    role = request.GET.get('role', 'Front-Desk Officer')
     context = {
         'role': role,
         'hewan_list': DUMMY_HEWAN,
@@ -90,9 +90,7 @@ def update_hewan(request, id_hewan):
     return render(request, 'update_hewan.html', context)
 
 def delete_hewan(request, id_hewan):
-    role = request.GET.get('role', 'Klien')
-    if role != 'Front-Desk Officer':
-        return render(request, 'unauthorized.html')  
+    role = request.GET.get('role', 'Klien') 
 
     selected_hewan = next((h for h in DUMMY_HEWAN if h['id'] == id_hewan), None)
     context = {
