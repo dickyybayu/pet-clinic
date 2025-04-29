@@ -26,7 +26,6 @@ logged_doctor = {
         "jam_mulai" : "08:00",
         "jam_selesai" : "17:00"}]
         }
-
 #dummy data 
 kunjungan = [
   {
@@ -73,6 +72,66 @@ vaksin = [
         "stok": 0,
     },
     
+]
+
+clients =[ 
+        {
+         "email" : "akuindividuklien@gmail.com",
+         "password" : "Akun123!!",
+         "address" : "test",
+         "phone" : "123",
+         "no_identitas" : "2306206281",
+         "tanggal_reg" : datetime(2023, 1, 20),
+         "first_name" : "test",
+         "middle_name" : "test",
+         "last_name" : "test",
+    },
+    {
+         "email" : "akuperusahaanklien@gmail.com",
+         "password" : "Perusahaan123!!",
+         "address" : "test",
+         "phone" : "123",
+         "no_identitas" : "2306206282",
+         "tanggal_reg" : datetime(2023, 1, 20),
+         "company_name" : "test.inc",
+    },
+]
+
+pets = [ {
+    "nama" : "el wiwi",
+    "no_identitas_klien" : "2306206282",
+    "tanggal_lahir" : datetime(2020, 1, 1),
+    "id_jenis" : "1"
+},
+{
+    "nama" : "el wowo",
+    "no_identitas_klien" : "2306206282",
+    "tanggal_lahir" : datetime(2020, 1, 1),
+    "id_jenis" : "2"
+},
+{
+    "nama" : "el wawa",
+    "no_identitas_klien" : "2306206281",
+    "tanggal_lahir" : datetime(2020, 1, 1),
+    "id_jenis" : "1"
+},
+{
+    "nama" : "el wuwa",
+    "no_identitas_klien" : "2306206282",
+    "tanggal_lahir" : datetime(2020, 1, 1),
+    "id_jenis" : "2"
+}
+]
+
+jenis_hewan = [
+    {
+        "id" : "1",
+        "nama_jenis" : "kucing"
+    },
+    {
+        "id" : "2",
+        "nama_jenis" : "anjing"
+    }
 ]
 
 def show_vaksinasi(request):
@@ -185,7 +244,6 @@ def delete_vaksinasi(request, id_kunjungan):
 
     return redirect('merah:show_vaksinasi')
 
-
 def is_vaksin_used(kode_vaksin):
     used_vaksin = {kunjungan_entry["kode_vaksin"] for kunjungan_entry in kunjungan if kunjungan_entry["kode_vaksin"]}
     return kode_vaksin in used_vaksin
@@ -242,7 +300,6 @@ def show_vaksin(request):
 
     return render(request, 'show_vaksin.html', {'vaccines': all_vaccines})
     
-
 def update_vaksin(request, kode_vaksin):
     vaksin_to_update = next((v for v in vaksin if str(v["kode_vaksin"]) == str(kode_vaksin)), None)
 
@@ -310,3 +367,34 @@ def delete_vaksin(request, kode_vaksin):
         messages.error(request, "Vaksin tidak ditemukan.")
 
     return redirect('merah:show_vaksin')
+
+def show_data_klien(request):
+    for client in clients:
+        if "company_name" in client:
+            client["jenis"] = "Perusahaan"
+            client["nama"] = client["company_name"]
+        else:
+            client["jenis"] = "Individu"
+            client["nama"] = f"{client['first_name']} {client['middle_name']} {client['last_name']}"
+
+    return render(request, "show_data_klien.html", {"clients": clients})
+
+
+
+def show_klien_detail(request, no_identitas):
+    client = next((c for c in clients if c["no_identitas"] == no_identitas), None)
+    client_info = {k: v for k, v in client.items() if k != "password"}
+    if "company_name" in client:
+        client["nama"] = client["company_name"]
+    else:
+        client["nama"] = f"{client['first_name']} {client['middle_name']} {client['last_name']}"
+
+    client_pets = [pet for pet in pets if pet["no_identitas_klien"] == no_identitas]
+    for pet in client_pets:
+        jenis = next((j for j in jenis_hewan if j["id"] == pet["id_jenis"]), {"nama_jenis": "Tidak diketahui"})
+        pet["nama_jenis"] = jenis["nama_jenis"]
+
+    return render(request, "show_klien_detail.html", {
+        "client": client_info,
+        "pets": client_pets,
+    })
