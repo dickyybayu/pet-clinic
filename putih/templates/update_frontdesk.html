@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Update Profile Klien Individu</title>
+  <title>Update Profile Front-Desk Officer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -75,27 +75,18 @@
 <body>
   <div class="container">
     <div class="form-card">
-      <h2>Update Profile Klien Individu</h2>
+      <h2>Update Profile Front-Desk Officer</h2>
 
       <form method="POST">
         {% csrf_token %}
-        <label for="alamat">Alamat</label>
-        <input type="text" id="alamat" name="alamat" placeholder="Alamat Klien Individu" required>
-
         <label for="nomor_telepon">Nomor Telepon</label>
-        <input type="text" id="nomor_telepon" name="nomor_telepon" placeholder="Nomor Telepon Klien Individu" required>
+        <input type="text" id="nomor_telepon" name="nomor_telepon" placeholder="Nomor Telepon Front-Desk Officer" required>
 
-        <label for="nama_depan">Nama Depan</label>
-        <input type="text" id="nama_depan" name="nama_depan" placeholder="Nama Depan Klien Individu" required>
-
-        <label for="nama_tengah">Nama Tengah</label>
-        <input type="text" id="nama_tengah" name="nama_tengah" placeholder="Nama Tengah Klien Individu">
-
-        <label for="nama_belakang">Nama Belakang</label>
-        <input type="text" id="nama_belakang" name="nama_belakang" placeholder="Nama Belakang Klien Individu" required>
+        <label for="tanggal_akhir_kerja">Tanggal Akhir Kerja</label>
+        <input type="text" id="tanggal_akhir_kerja" name="tanggal_akhir_kerja" placeholder="Tanggal Akhir Kerja Front-Desk Officer" required>
 
         <div class="button-group">
-          <a href="{% url 'putih:show_profile' %}" class="btn-cancel">Cancel</a>
+          <a href="{% url 'putih:show_profile_frontdesk' %}" class="btn-cancel">Cancel</a>
           <button type="submit" class="btn-update">Update</button>
         </div>
       </form>

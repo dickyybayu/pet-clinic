@@ -1,0 +1,81 @@
+{% extends 'doctor_base.html' %}
+
+{% block content %}
+<div style="margin-top: 30px;">
+    <div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); background-color: #f5f7fa;">
+        <div class="profile-card" style="width: 100%; max-width: 1000px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px 20px; overflow: hidden;">
+            <div>
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            </div>
+
+            <!-- Card Header -->
+            <div style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="font-size: 26px; margin: 0; font-weight: 600;">Tambah Vaksinasi</h2>
+                    <div style="background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 5v14M5 12h14"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card Body -->
+            <div style="padding: 30px;">
+                <form method="POST" action="{% url 'merah:create_vaksinasi' %}">
+                    {% csrf_token %}
+                    
+                    <!-- Kunjungan Selection -->
+                    <div style="margin-bottom: 20px;">
+                        <label for="selected_kunjungan" style="display: block; margin-bottom: 8px; font-weight: 500; color: #4a5568;">Pilih Kunjungan</label>
+                        <select name="selected_kunjungan" id="selected_kunjungan" style="width: 100%; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 6px; background-color: #fff; color: #4a5568; font-size: 16px;" required>
+                            <option value="">-- Pilih Kunjungan --</option>
+                            {% for k in kunjungan %}
+                                <option value="{{ k.id_kunjungan }}">{{ k.id_kunjungan }} - {{ k.nama_hewan }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Vaksin Selection -->
+                    <div style="margin-bottom: 30px;">
+                        <label for="selected_vaksin" style="display: block; margin-bottom: 8px; font-weight: 500; color: #4a5568;">Pilih Vaksin</label>
+                        <select name="selected_vaksin" id="selected_vaksin" style="width: 100%; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 6px; background-color: #fff; color: #4a5568; font-size: 16px;" required>
+                            <option value="">-- Pilih Vaksin --</option>
+                            {% for v in vaksin %}
+                                <option value="{{ v.kode_vaksin }}">{{ v.kode_vaksin }} - {{ v.nama_vaksin }} (Stok: {{ v.stok }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Warning Messages -->
+                    {% if kunjungan|length == 0 %}
+                    <div style="padding: 15px; background-color: #fef9c3; border-radius: 6px; margin-bottom: 20px; color: #854d0e;">
+                        <p style="margin: 0; font-size: 15px;">Tidak ada kunjungan yang tersedia untuk vaksinasi. Semua kunjungan sudah divaksinasi atau tidak ada kunjungan untuk dokter ini.</p>
+                    </div>
+                    {% endif %}
+
+                    {% if vaksin|length == 0 %}
+                    <div style="padding: 15px; background-color: #fef9c3; border-radius: 6px; margin-bottom: 20px; color: #854d0e;">
+                        <p style="margin: 0; font-size: 15px;">Tidak ada vaksin yang tersedia saat ini. Silakan periksa stok vaksin.</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Footer Action Buttons -->
+                    <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+                        <a href="{% url 'merah:show_vaksinasi' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500; transition: all 0.2s ease;">Kembali</a>
+                        <button type="submit" style="padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s ease;">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -159,8 +159,6 @@
   <div class="container">
     <h2>List Kunjungan</h2>
 
-    <a href="{% url 'hijau:create_kunjungan' %}" class="btn-create">+ Create New Kunjungan</a>
-
     <table>
       <thead>
         <tr>
@@ -171,7 +169,6 @@
           <th>Waktu Mulai</th>
           <th>Waktu Selesai</th>
           <th>Rekam Medis</th>
-          <th>Aksi</th>
         </tr>
       </thead>
       <tbody>
@@ -182,11 +179,8 @@
           <td>Janji Temu</td>
           <td>03-04-2025 14:30</td>
           <td>03-04-2025 16:30</td>
-          <td><button class="btn btn-rekam" onclick="openModal()">Lihat</button></td>
-          <td class="button-container">
-            <button class="btn btn-update" onclick="window.location.href='{% url 'hijau:update_kunjungan' %}'">Update</button>
-            <button class="btn btn-delete" onclick="openDeleteModal('KJN001')">Delete</button>
-          </td>
+          <td><button type="button" class="btn-create" onclick="window.location.href='{% url 'hijau:read_rekam_medis' %}'">Lihat</button></td>
+
         </tr>
         <!-- Tambahkan baris lain sesuai data -->
       </tbody>

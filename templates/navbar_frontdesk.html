@@ -127,10 +127,12 @@
         </div>
         <div class="navbar-center">
             <a href="#" class="nav-link active">Dashboard</a>
+            <a href="#" class="nav-link">Kelola Jenis Hewan</a>
             <a href="#" class="nav-link">Kelola Hewan Peliharaan</a>
-            <a href="#" class="nav-link">Daftar Kunjungan</a>
-            <a href="#" class="nav-link">Daftar Vaksinasi</a>
+            <a href="#" class="nav-link">Kelola Kunjungan</a>
+            <a href="#" class="nav-link">Daftar Klien</a>
         </div>
+        
         <div class="navbar-right">
             <form method="post" action="{% url 'putih:logout' %}">
                 {% csrf_token %}
