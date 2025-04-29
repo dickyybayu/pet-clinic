@@ -1,4 +1,3 @@
-<!-- DUMMY-->
 {% extends 'auth_base.html' %}
 {% block title %}Form Register - Klien Individu{% endblock %}
 
@@ -20,7 +19,7 @@
     </div>
   {% endif %}
 
-  <form method="post" action="{% url 'putih:register_klien_individu' %}">
+  <form method="post" action="{% url 'putih:register_klien' %}">
     {% csrf_token %}
     <div class="form-group">
       <label>Email <span class="required">*</span></label>

@@ -68,26 +68,29 @@ def register_klien(request):
         no_identitas = str(uuid.uuid4())
         tanggal_reg = datetime.now().strftime("%d-%m-%Y")
         
-        if request.POST.get('company_name'):
+        if request.POST.get('company_name'):  # If company_name exists, process as company client
             company_name = request.POST.get('company_name')
-            error_message = validate_registration_data(email, no_identitas, password, phone, company_name)
+            error_message = validate_registration_data(email, no_identitas, password, phone, company_name=company_name)
+            
             if error_message:
                 return render(request, 'register_klien_perusahaan.html', {'error_message': error_message})
+            
             pengguna.append({
-            "email": email,
-            "password": password,
-            "address": address,
-            "phone": phone,
-            "no_identitas": no_identitas,
-            "tanggal_reg": tanggal_reg,
-            "company_name": company_name
-        }) 
+                "email": email,
+                "password": password,
+                "address": address,
+                "phone": phone,
+                "no_identitas": no_identitas,
+                "tanggal_reg": tanggal_reg,
+                "company_name": company_name
+            }) 
 
-        else:
+        else:  # If company_name doesn't exist, process as individual client
             first_name = request.POST.get('first_name')
             middle_name = request.POST.get('middle_name', "")
             last_name = request.POST.get('last_name')
             error_message = validate_registration_data(email, no_identitas, password, phone, first_name, middle_name, last_name)
+            
             if error_message:
                 return render(request, 'register_klien_individu.html', {'error_message': error_message})
 
@@ -101,12 +104,17 @@ def register_klien(request):
                 "first_name": first_name,
                 "middle_name": middle_name,
                 "last_name": last_name,
-            }) 
+            })
 
         messages.success(request, 'Registration successful!')
         return redirect('putih:login')
-    
-    return render(request, 'register_klien_individu.html')
+
+    # Dynamic render based on the role
+    if request.POST.get('company_name'):
+        return render(request, 'register_klien_perusahaan.html')
+    else:
+        return render(request, 'register_klien_individu.html') 
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -216,7 +224,7 @@ def validate_registration_data(email, no_identitas, password, phone, first_name=
     # Unik
     if any(user['email'] == email for user in pengguna):
         return 'Email already exists'
-    if any(user['no_identitas'] == no_identitas for user in pengguna):
+    if any(user.get('no_identitas') == no_identitas for user in pengguna):
         return 'No Identitas already exists'
     
     # Panjang Var
@@ -231,23 +239,23 @@ def validate_registration_data(email, no_identitas, password, phone, first_name=
     if not phone.isnumeric():
         return 'No Telepon must be numeric'
     
-    # Name Fields
-    name_fields = [
-        ('Nama Depan', first_name, FIELD_LENGTH_LIMITS['first_name']),
-        ('Nama Tengah', middle_name, FIELD_LENGTH_LIMITS['middle_name']),
-        ('Nama Belakang', last_name, FIELD_LENGTH_LIMITS['last_name']),
-        ('Nama Perusahaan', company_name, FIELD_LENGTH_LIMITS['company_name']),
-    ]
-    
-    for field_name, field_value, limit in name_fields:
-        if field_value and len(field_value) > limit:
-            return f'{field_name} exceeds character limit'
+    if not company_name:
+        name_fields = [
+            ('First Name', first_name, FIELD_LENGTH_LIMITS['first_name']),
+            ('Last Name', last_name, FIELD_LENGTH_LIMITS['last_name']),
+        ]
         
-        if not field_value:
-            return f"{field_name} is required."
-        elif len(field_value) > limit:
-            return f"{field_name} exceeds character limit."
+        for field_name, field_value, limit in name_fields:
+            if field_value and len(field_value) > limit:
+                return f"{field_name} exceeds character limit."
+            
+        if middle_name and len(middle_name) > FIELD_LENGTH_LIMITS['middle_name']:
+            return 'Middle Name exceeds character limit'
 
+                
+    if company_name and len(company_name) > FIELD_LENGTH_LIMITS['company_name']:
+        return "Company Name exceeds character limit."
+    
     return None
 
 def validate_update_data(address, phone, first_name=None, middle_name=None, last_name=None, company_name=None):
@@ -284,6 +292,9 @@ def validate_update_data(address, phone, first_name=None, middle_name=None, last
         for field_name, field_value, limit in name_fields:
             if field_value and len(field_value) > limit:
                 errors[field_name.lower().replace(" ", "_")] = f"{field_name} exceeds character limit."
+
+        if middle_name and len(middle_name) > FIELD_LENGTH_LIMITS['middle_name']:
+            errors['middle_name'] = 'Middle Name exceeds character limit'
     
     if company_name and len(company_name) > FIELD_LENGTH_LIMITS['company_name']:
         errors['company_name'] = "Company Name exceeds character limit."
