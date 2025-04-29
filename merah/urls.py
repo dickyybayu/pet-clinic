@@ -10,4 +10,7 @@ urlpatterns = [
     path('delete_vaksinasi/<str:id_kunjungan>/', views.delete_vaksinasi, name='delete_vaksinasi'),
     path('show_vaksin/', views.show_vaksin, name='show_vaksin'),
     path('create_vaksin/', views.create_vaksin, name='create_vaksin'),
+    path('update_vaksin/<str:kode_vaksin>/', views.update_vaksin, name='update_vaksin'),
+    path('update_stok_vaksin/<str:kode_vaksin>/', views.update_stok_vaksin, name='update_stok_vaksin'),
+    path('delete_vaksin/<str:kode_vaksin>/', views.delete_vaksin, name='delete_vaksin'),
 ]

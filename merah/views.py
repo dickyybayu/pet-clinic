@@ -243,8 +243,70 @@ def show_vaksin(request):
     return render(request, 'show_vaksin.html', {'vaccines': all_vaccines})
     
 
-def update_vaksin():
-    pass
+def update_vaksin(request, kode_vaksin):
+    vaksin_to_update = next((v for v in vaksin if str(v["kode_vaksin"]) == str(kode_vaksin)), None)
 
-def delete_vaksin():
-    pass
+    if not vaksin_to_update:
+        messages.error(request, "Vaksin tidak ditemukan.")
+        return redirect('merah:show_vaksin')
+
+    if request.method == 'POST':
+        nama_vaksin = request.POST.get('nama_vaksin')
+        harga = request.POST.get('harga')
+
+        if not nama_vaksin or len(nama_vaksin) > 50:
+            messages.error(request, "Nama vaksin tidak valid.")
+            return redirect('merah:update_vaksin', kode_vaksin=kode_vaksin)
+
+        try:
+            harga = int(harga)
+            if harga <= 0:
+                raise ValueError
+        except ValueError:
+            messages.error(request, "Harga vaksin tidak valid.")
+            return redirect('merah:update_vaksin', kode_vaksin=kode_vaksin)
+
+        vaksin_to_update["nama_vaksin"] = nama_vaksin
+        vaksin_to_update["harga"] = harga
+        messages.success(request, "Vaksin berhasil diperbarui.")
+        return redirect('merah:show_vaksin')
+
+    return render(request, 'update_vaksin.html', {'vaksin': vaksin_to_update})
+
+def update_stok_vaksin(request, kode_vaksin):
+    vaksin_to_update = next((v for v in vaksin if str(v["kode_vaksin"]) == str(kode_vaksin)), None)
+
+    if not vaksin_to_update:
+        messages.error(request, "Vaksin tidak ditemukan.")
+        return redirect('merah:show_vaksin')
+
+    if request.method == 'POST':
+        stok = request.POST.get('stok')
+
+        stok = request.POST.get('stok')
+        try:
+            stok = int(stok)
+            if stok < 0:
+                messages.error(request, "Stok vaksin tidak valid. Stok tidak boleh kurang dari 0.")
+                return redirect('merah:update_stok_vaksin')
+        except ValueError:
+            messages.error(request, "Stok vaksin harus berupa angka.")
+            return redirect('merah:update_stok_vaksin')
+
+        vaksin_to_update["stok"] = stok
+
+        messages.success(request, "Stok vaksin berhasil diperbarui.")
+        return redirect('merah:show_vaksin')
+
+    return render(request, 'update_stok_vaksin.html', {'vaksin': vaksin_to_update})
+
+def delete_vaksin(request, kode_vaksin):
+    selected_vaksin = next((v for v in vaksin if v['kode_vaksin'] == kode_vaksin), None)
+    
+    if kode_vaksin:
+        vaksin.remove(selected_vaksin)
+        messages.success(request, f"Vaksin {selected_vaksin.get('nama_vaksin')} dengan ID {kode_vaksin} berhasil dihapus.")
+    else:
+        messages.error(request, "Vaksin tidak ditemukan.")
+
+    return redirect('merah:show_vaksin')
