@@ -1,0 +1,47 @@
+{% extends 'doctor_base.html' %}
+{% block content %}
+<div style="margin-top: 30px;">
+    <div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); background-color: #f5f7fa;">
+        <div class="profile-card" style="width: 100%; max-width: 1000px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px 20px; overflow: hidden;">
+            
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Card Header -->
+            <div style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white; text-align: center;">
+                <h2 style="font-size: 26px; font-weight: 600;">Update Stok Vaksin</h2>
+                <p style="margin-top: 8px; font-size: 18px; font-weight: 500;">
+                    {{ vaksin.kode_vaksin }} - {{ vaksin.nama_vaksin }}
+                </p>
+            </div>
+
+            <!-- Card Body -->
+            <div style="padding: 30px;">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <!-- Stok Vaksin -->
+                    <div style="margin-bottom: 20px;">
+                        <label for="stok" style="display: block; margin-bottom: 8px; font-weight: 500;">Stok Vaksin</label>
+                        <input type="text" name="stok" id="stok" value="{{ vaksin.stok }}" required
+                               style="width: 100%; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 16px;" />
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+                        <a href="{% url 'merah:show_vaksin' %}" style="padding: 10px 20px; background-color: #f0f2f5; border-radius: 6px; color: #4a5568; text-decoration: none; font-weight: 500;">Kembali</a>
+                        <button type="submit" style="padding: 10px 20px; background-color: #5a85e2; color: white; border: none; border-radius: 6px; font-weight: 500;">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
