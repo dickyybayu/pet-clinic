@@ -1,10 +1,10 @@
-{% include 'navbar_dokter.html' %}
+{% include 'navbar_frontdesk.html' %}
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Profile Dokter</title>
+  <title>Profile Front-Desk Officer</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -21,7 +21,7 @@
     }
     .profile-card {
       width: 100%;
-      max-width: 1000px;
+      max-width: 900px;
       background-color: white;
       border-radius: 12px;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
@@ -80,32 +80,13 @@
       background-color: #5a85e2;
       color: white;
     }
-    h3 {
-      color: #5a6477;
-      margin-top: 40px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 12px;
-      text-align: center;
-    }
-    th {
-      background-color: #f9fafb;
-      font-weight: bold;
-      color: #333;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="profile-card">
       <div class="card-header">
-        <h2>Profile Dokter</h2>
+        <h2>Profile Front-Desk Officer</h2>
         <div style="background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center;">
           <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -115,50 +96,17 @@
       </div>
 
       <div class="card-body">
-        <div class="info-row"><div class="label">Nomor Identitas</div><div class="value">c4fd2f14-0202-4526-b1f4-5fcde0c28783</div></div>
-        <div class="info-row"><div class="label">Nomor Izin Praktik</div><div class="value">SIP-HEWAN-12345</div></div>
-        <div class="info-row"><div class="label">Email</div><div class="value">bobby.muhammad@petclinic.com</div></div>
-        <div class="info-row"><div class="label">Tanggal Diterima</div><div class="value">23 Januari 2025</div></div>
+        <div class="info-row"><div class="label">Nomor Identitas</div><div class="value">aacbdde1-feaf-454b-bc7d-0eed3a345907</div></div>
+        <div class="info-row"><div class="label">Email</div><div class="value">amalia.putri@petclinic.com</div></div>
+        <div class="info-row"><div class="label">Tanggal Diterima</div><div class="value">25 Januari 2025</div></div>
         <div class="info-row"><div class="label">Tanggal Akhir Kerja</div><div class="value">-</div></div>
-        <div class="info-row"><div class="label">Alamat</div><div class="value">Jl. Melati Indah No. 23, Kel. Sukamaju, Kec. Cibinong, Kab. Bogor, Jawa Barat, 16914</div></div>
-        <div class="info-row"><div class="label">Nomor Telepon</div><div class="value">081234567893</div></div>
+        <div class="info-row"><div class="label">Alamat</div><div class="value">Jl. Melati Indah No. 25, Kel. Sukamaju, Kec. Cibinong, Kab. Bogor, Jawa Barat, 16914</div></div>
+        <div class="info-row"><div class="label">Nomor Telepon</div><div class="value">081234567895</div></div>
 
         <div class="footer-buttons">
           <a href="{% url 'putih:update_password' %}" class="btn-password">Update Password</a>
-          <a href="{% url 'putih:update_dokter' %}" class="btn-update">Update Profile</a>
+          <a href="{% url 'putih:update_frontdesk' %}" class="btn-update">Update Profile</a>
         </div>
-
-        <h3>Daftar Sertifikat</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Nomor Sertifikat</th>
-              <th>Nama Sertifikat</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>1</td><td>123/DH/456</td><td>BNSP Dokter Hewan Praktis</td></tr>
-            <tr><td>2</td><td>456/DH/456</td><td>Sertifikat PB PDHI</td></tr>
-            <tr><td>3</td><td>789/DH/789</td><td>Sertifikat Organisasi Profesi</td></tr>
-          </tbody>
-        </table>
-
-        <h3>Daftar Jadwal Praktik</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Hari</th>
-              <th>Jam</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>1</td><td>Senin</td><td>13.00 - 15.00</td></tr>
-            <tr><td>2</td><td>Rabu</td><td>13.00 - 15.00</td></tr>
-            <tr><td>3</td><td>Jumat</td><td>14.00 - 16.00</td></tr>
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
