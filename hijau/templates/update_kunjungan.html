@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Kunjungan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 20px;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    select, input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .dropdown-content {
+      display: none;
+      width: 100%;
+      background-color: #f1f2f6;
+      border: 1px solid #ccc;
+      margin-top: 2px;
+    }
+    .dropdown-item {
+      padding: 8px;
+      background-color: #d6dae4;
+    }
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    .cancel-btn {
+      background-color: #f1f2f6;
+      color: #000;
+      border: 1px solid #ccc;
+      padding: 8px 16px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+    .update-btn {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Update Kunjungan</h1>
+    
+    <div class="form-group">
+      <label for="idKlien">ID Klien</label>
+      <select id="idKlien">
+        <option value="FDO123" selected>FDO123</option>
+      </select>
+      <div class="dropdown-content">
+        <div class="dropdown-item">FDO123</div>
+        <div class="dropdown-item">KI123</div>
+        <div class="dropdown-item">PKE123</div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="namaHewan">Nama Hewan</label>
+      <select id="namaHewan">
+        <option value="Snowy" selected>Snowy</option>
+      </select>
+      <div class="dropdown-content">
+        <div class="dropdown-item">Snowy</div>
+        <div class="dropdown-item">Blacky</div>
+        <div class="dropdown-item">Hamstrong</div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="dokterHewan">Dokter Hewan</label>
+      <select id="dokterHewan">
+        <option value="Dr. Rizki" selected>Dr. Rizki</option>
+      </select>
+      <div class="dropdown-content">
+        <div class="dropdown-item">Dr. Rizki</div>
+        <div class="dropdown-item">Dr. Safira</div>
+        <div class="dropdown-item">Dr. Nainu</div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="perawatHewan">Perawat Hewan</label>
+      <select id="perawatHewan">
+        <option value="Tina" selected>Tina</option>
+      </select>
+      <div class="dropdown-content">
+        <div class="dropdown-item">Tina</div>
+        <div class="dropdown-item">Tini</div>
+        <div class="dropdown-item">Tono</div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="metodeKunjungan">Metode Kunjungan</label>
+      <select id="metodeKunjungan">
+        <option value="Janji Temu" selected>Janji Temu</option>
+      </select>
+      <div class="dropdown-content">
+        <div class="dropdown-item">Janji Temu</div>
+        <div class="dropdown-item">Walk-In</div>
+        <div class="dropdown-item">Darurat</div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="waktuMulai">Waktu Mulai Penanganan</label>
+      <input type="text" id="waktuMulai" value="03-04-2025 14:30:13" readonly>
+    </div>
+    
+    <div class="form-group">
+      <label for="waktuSelesai">Waktu Selesai Penanganan</label>
+      <input type="text" id="waktuSelesai" value="03-04-2025 16:30:16" readonly>
+    </div>
+    
+    <div class="buttons">
+      <button class="cancel-btn">Cancel</button>
+      <button class="update-btn">Update</button>
+    </div>
+  </div>
+</body>
+</html>

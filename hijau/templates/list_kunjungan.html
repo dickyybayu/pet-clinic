@@ -98,6 +98,44 @@
             border-radius: 6px;
             cursor: pointer;
         }
+        
+        /* Delete Confirmation Modal Style */
+        .delete-modal-content {
+            width: 400px;
+            text-align: left;
+            padding: 20px;
+        }
+        .delete-modal-title {
+            color: #e74c3c;
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .delete-modal-message {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .delete-buttons {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .btn-cancel {
+            background-color: #f1f2f6;
+            color: #000;
+            border: 1px solid #ccc;
+            padding: 8px 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .btn-confirm-delete {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -129,8 +167,8 @@
                 <td>03-04-2025 16:30:16</td>
                 <td><button class="btn btn-rekam" onclick="openModal()">Lihat Rekam Medis</button></td>
                 <td class="button-container">
-                    <button class="btn btn-update">Update</button>
-                    <button class="btn btn-delete">Delete</button>
+                    <button class="btn btn-update" onclick="window.location.href='{% url 'hijau:update_kunjungan' %}'">Update</button>
+                    <button class="btn btn-delete" onclick="openDeleteModal('KJN001')">Delete</button>
                 </td>
             </tr>
             <tr>
@@ -142,8 +180,8 @@
                 <td>05-08-2025 13:30:19</td>
                 <td><button class="btn btn-rekam" onclick="openModal()">Lihat Rekam Medis</button></td>
                 <td class="button-container">
-                    <button class="btn btn-update">Update</button>
-                    <button class="btn btn-delete">Delete</button>
+                    <button class="btn btn-update" onclick="window.location.href='{% url 'hijau:update_kunjungan' %}'">Update</button>
+                    <button class="btn btn-delete" onclick="openDeleteModal('KJN002')">Delete</button>
                 </td>
             </tr>
             <tr>
@@ -155,14 +193,14 @@
                 <td>01-09-2025 18:00:33</td>
                 <td><button class="btn btn-rekam" onclick="openModal()">Lihat Rekam Medis</button></td>
                 <td class="button-container">
-                    <button class="btn btn-update">Update</button>
-                    <button class="btn btn-delete">Delete</button>
+                    <button class="btn btn-update" onclick="window.location.href='{% url 'hijau:update_kunjungan' %}'">Update</button>
+                    <button class="btn btn-delete" onclick="openDeleteModal('KJN003')">Delete</button>
                 </td>
             </tr>
         </tbody>
     </table>
 
-    <!-- Modal -->
+    <!-- Rekam Medis Modal -->
     <div id="rekamMedisModal" class="modal">
         <div class="modal-content">
             <h2>Rekam Medis tidak Tersedia</h2>
@@ -174,7 +212,22 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content delete-modal-content">
+            <h1 class="delete-modal-title">Delete Kunjungan</h1>
+            <p class="delete-modal-message">
+                Apakah kamu yakin untuk menghapus KUNJUNGAN dengan ID <span id="kunjunganId"></span>?
+            </p>
+            <div class="delete-buttons">
+                <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn-confirm-delete" onclick="confirmDelete()">Confirm Deletion</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+    // Rekam Medis Modal Functions
     function openModal() {
         document.getElementById('rekamMedisModal').style.display = 'block';
     }
@@ -187,11 +240,36 @@
         window.location.href = "{% url 'hijau:create_rekam_medis' %}";
     }
 
-    // Optional: tutup modal kalau klik di luar modal
+    // Delete Confirmation Modal Functions
+    function openDeleteModal(id) {
+        document.getElementById('kunjunganId').textContent = id;
+        document.getElementById('deleteModal').style.display = 'block';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    function confirmDelete() {
+        const id = document.getElementById('kunjunganId').textContent;
+        // Here you would typically send a request to your backend to delete the item
+        // For now, we'll just simulate it with an alert
+        alert('Kunjungan with ID ' + id + ' has been deleted.');
+        closeDeleteModal();
+        // You can redirect to refresh the page or handle it however you prefer
+        // window.location.reload(); or window.location.href = "{% url 'hijau:list_kunjungan' %}";
+    }
+
+    // Optional: close modals when clicking outside
     window.onclick = function(event) {
-        var modal = document.getElementById('rekamMedisModal');
-        if (event.target == modal) {
+        var rekamModal = document.getElementById('rekamMedisModal');
+        var deleteModal = document.getElementById('deleteModal');
+        
+        if (event.target == rekamModal) {
             closeModal();
+        }
+        if (event.target == deleteModal) {
+            closeDeleteModal();
         }
     }
     </script>

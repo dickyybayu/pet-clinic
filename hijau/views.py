@@ -8,6 +8,9 @@ def list_kunjungan(request):
 def create_kunjungan(request):
     return render(request, 'create_kunjungan.html')
 
+def update_kunjungan(request):
+    return render(request, 'update_kunjungan.html')
+
 def create_rekam_medis(request):   
     return render(request, 'create_rekam_medis.html')
 

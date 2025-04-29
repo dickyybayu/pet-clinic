@@ -13,5 +13,6 @@ urlpatterns = [
     path('create_rekam_medis', create_rekam_medis, name='create_rekam_medis'),
     path('show_rekam_medis', show_rekam_medis, name='show_rekam_medis'),
     path('update_rekam_medis', update_rekam_medis, name='update_rekam_medis'),
+    path('update_kunjungan', update_kunjungan, name='update_kunjungan'),
     
 ]
