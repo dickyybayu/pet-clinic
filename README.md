@@ -7,5 +7,5 @@
 | -- | -- | -- |
 | Semua | Semua | Putih |
 | Ilham Satya Nusabhakti | 2306210714 | Hijau |
-| Fathurrahman Kesuma Ridwan | 2306152222 | Merah |
+| Fathurrahman Kesuma Ridwan | 2306206282 | Merah |
 | Dicky Bayu Sadewo | 2306275784 | Kuning |
