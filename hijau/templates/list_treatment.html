@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>List Treatments</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        .btn-create {
+            background-color: #0d1117;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+            float: right;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 60px;
+            border: 2px solid black;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f8f8f8;
+        }
+        .button-container {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-update {
+            background-color: #0d1117;
+        }
+        .btn-delete {
+            background-color: #e74c3c;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 400px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .modal-title {
+            color: #e74c3c;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-cancel {
+            background-color: #f8f8f8;
+            color: black;
+            padding: 8px 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .btn-confirm {
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>List Treatments</h2>
+
+    <a href="{% url 'hijau:create_treatment' %}" class="btn-create">+ Create New Treatment</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Kunjungan</th>
+                <th>ID Klien</th>
+                <th>Nama Hewan</th>
+                <th>Perawat Hewan</th>
+                <th>Dokter Hewan</th>
+                <th>Front Desk Officer</th>
+                <th>Jenis Perawatan</th>
+                <th>Catatan Medis</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>KJN001</td>
+                <td>FD0123</td>
+                <td>Snowy</td>
+                <td>Joko</td>
+                <td>Dr. Rizki</td>
+                <td>Tina</td>
+                <td>TRM001 - Dental Care</td>
+                <td>Oke</td>
+                <td class="button-container">
+                    <a href="{% url 'hijau:update_treatment' %}" class="btn btn-update">Update</a>
+                    <button class="btn btn-delete" onclick="openDeleteModal('KJN001', 'TRM001')">Delete</button>
+                </td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>KJN002</td>
+                <td>KII123</td>
+                <td>Blacky</td>
+                <td>Agus</td>
+                <td>Dr. Safira</td>
+                <td>Tini</td>
+                <td>TRM002 - Parasite Control</td>
+                <td>Sudah baik</td>
+                <td class="button-container">
+                    <a href="{% url 'hijau:update_treatment' %}" class="btn btn-update">Update</a>
+                    <button class="btn btn-delete" onclick="openDeleteModal('KJN002', 'TRM002')">Delete</button>
+                </td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>KJN003</td>
+                <td>PKE123</td>
+                <td>Hamseung</td>
+                <td>Budi</td>
+                <td>Dr. Nanu</td>
+                <td>Tono</td>
+                <td>TRM003 - Flea Treatment</td>
+                <td>Sehat</td>
+                <td class="button-container">
+                    <a href="{% url 'hijau:update_treatment' %}" class="btn btn-update">Update</a>
+                    <button class="btn btn-delete" onclick="openDeleteModal('KJN003', 'TRM003')">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Modal HTML -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">Delete Treatment</div>
+            <p id="deleteMessage"></p>
+            <div class="modal-buttons">
+                <a href="{% url 'hijau:update_treatment' %}" class="btn btn-update">Update</a>
+                <button class="btn-confirm" id="confirmDeleteButton">Confirm Deletion</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Modal -->
+    <script>
+    function openDeleteModal(kunjunganId, perawatanId) {
+        document.getElementById('deleteMessage').innerHTML = `Apakah kamu yakin untuk menghapus Perawatan untuk Kunjungan <b style="color: #e74c3c;">${kunjunganId}</b> dengan Perawatan <b style="color: #e74c3c;">${perawatanId}</b>?`;
+        document.getElementById('confirmDeleteButton').onclick = function() {
+            // Arahkan ke URL hapus, contoh URL kamu nanti sesuaikan ya
+            window.location.href = `/delete-treatment/${kunjunganId}/${perawatanId}`;
+        };
+        document.getElementById('deleteModal').style.display = 'block';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+    </script>
+
+</body>
+</html>
