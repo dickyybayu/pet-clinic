@@ -14,5 +14,8 @@ urlpatterns = [
     path('show_rekam_medis', show_rekam_medis, name='show_rekam_medis'),
     path('update_rekam_medis', update_rekam_medis, name='update_rekam_medis'),
     path('update_kunjungan', update_kunjungan, name='update_kunjungan'),
+    path('read_kunjungan', read_kunjungan, name='read_kunjungan'),
+    path('read_treatment', read_treatment, name='read_treatment'),
+    path('read_rekam_medis', read_rekam_medis, name='read_rekam_medis'),
     
 ]

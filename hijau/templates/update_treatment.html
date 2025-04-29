@@ -1,102 +1,118 @@
+{% include "navbar.html" %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Update Treatment</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .form-container {
-            width: 400px;
-            padding: 30px;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-        }
-        .form-container h1 {
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        select, input[type="text"], input[type="button"], input[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-        .readonly-input {
-            background-color: #e2e8f0;
-            pointer-events: none;
-        }
-        .button-group {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        .btn-cancel {
-            padding: 8px 18px;
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .btn-update {
-            padding: 8px 18px;
-            background-color: #0d1117;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .btn-update:hover {
-            background-color: #1a1f26;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Update Treatment</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      padding-top: 80px;
+      background-color: #f5f7fa;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .form-card {
+      width: 100%;
+      max-width: 600px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      padding: 30px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 25px;
+      color: #4a5568;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    input[readonly] {
+      background-color: #f0f4f8;
+      color: #4b5563;
+    }
+
+    .button-group {
+      margin-top: 30px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .btn-cancel, .btn-update {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-cancel {
+      background-color: #f0f2f5;
+      color: #4a5568;
+      border: 1px solid #d1d5db;
+    }
+
+    .btn-update {
+      background-color: #5a85e2;
+      color: white;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <div class="form-card">
+      <h1>Update Treatment</h1>
+      <form action="{% url 'hijau:update_treatment' %}" method="POST">
+        {% csrf_token %}
+        
+        <label for="kunjungan">Kunjungan</label>
+        <input type="text" id="kunjungan" name="kunjungan" value="KJN001" readonly>
 
-<div class="form-container">
-    <h1>Update Treatment</h1>
-    <form action="/update-treatment" method="POST">
-        <div class="form-group">
-            <label for="kunjungan">Kunjungan</label>
-            <input type="text" id="kunjungan" name="kunjungan" class="readonly-input" value="KJN001" readonly>
-        </div>
+        <label for="jenis-perawatan">Jenis Perawatan</label>
+        <select id="jenis-perawatan" name="jenis_perawatan" required>
+          <option value="TRM001">TRM001 - Dental Care</option>
+          <option value="TRM002">TRM002 - Parasite Control</option>
+          <option value="TRM003">TRM003 - Flea Treatment</option>
+        </select>
 
-        <div class="form-group">
-            <label for="jenis-perawatan">Jenis Perawatan</label>
-            <select id="jenis-perawatan" name="jenis-perawatan">
-                <option>Jenis Perawatan</option>
-                <option value="TRM001">TRM001 - Dental Care</option>
-                <option value="TRM002">TRM002 - Parasite Control</option>
-                <option value="TRM003">TRM003 - Flea Treatment</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="catatan-medis">Catatan Medis</label>
-            <input type="text" id="catatan-medis" name="catatan-medis" value="Hewan nya dijaga terus ya!">
-        </div>
+        <label for="catatan-medis">Catatan Medis</label>
+        <input type="text" id="catatan-medis" name="catatan_medis" value="Hewan nya dijaga terus ya!" required>
 
         <div class="button-group">
-            <button type="button" class="btn-cancel" onclick="window.location.href='/treatment-list';">Cancel</button>
-            <button type="submit" class="btn-update">Update</button>
+          <a href="{% url 'hijau:list_treatment' %}" class="btn-cancel">Cancel</a>
+          <button type="submit" class="btn-update">Update</button>
         </div>
-    </form>
-</div>
-
+      </form>
+    </div>
+  </div>
 </body>
 </html>
