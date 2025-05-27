@@ -1,9 +1,10 @@
 from collections import namedtuple
+import os
 import psycopg2
 from psycopg2 import Error
 from psycopg2.extras import RealDictCursor
 
-DB_URI = "postgresql://neondb_owner:npg_37AbPhHWjLup@ep-tiny-base-a4t3tbvu-pooler.us-east-1.aws.neon.tech/pet-shop?sslmode=require"
+DB_URI = os.getenv("DATABASE_URL")
 
 try:
     connection = psycopg2.connect(DB_URI)
@@ -32,4 +33,13 @@ def query(query_str: str):
                 return cursor.rowcount
             
     except Exception as e:
-        return e
+        error_message = str(e)
+        context_delimiter = "\nCONTEXT:"
+
+        delimiter_index = error_message.find(context_delimiter)
+
+        if delimiter_index != -1:
+            cleaned_message = error_message[:delimiter_index]
+        else:
+            cleaned_message = error_message
+        return {"status": "error", "data": cleaned_message}
