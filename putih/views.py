@@ -2,6 +2,7 @@ from django.shortcuts import redirect, render
 import uuid
 from datetime import datetime 
 from django.contrib import messages
+from utils.query import query
 
 #Dummy Pengguna 
 pengguna = [
@@ -158,6 +159,13 @@ def logout(request):
     global logged_pengguna
     logged_pengguna = {}
     messages.success(request, 'Berhasil logout!')
+
+    query_str = f'''
+    select * from vaksin where kode = 'VX0001';
+    '''
+    
+    hasil = query(query_str)
+    print(hasil)
     return redirect('putih:login')
 
 def update_klien(request):
