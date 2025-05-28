@@ -8,6 +8,13 @@
 
   <h3>Informasi Umum</h3>
 
+  {% if error_message %}
+    <div class="error-message">
+      <p>{{ error_message }}</p>
+    </div>
+  {% endif %}
+
+
   <form method="post" action="#">
     {% csrf_token %}
     <div class="form-group">
