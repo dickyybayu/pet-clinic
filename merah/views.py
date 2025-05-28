@@ -379,8 +379,6 @@ def show_data_klien(request):
 
     return render(request, "show_data_klien.html", {"clients": clients})
 
-
-
 def show_klien_detail(request, no_identitas):
     client = next((c for c in clients if c["no_identitas"] == no_identitas), None)
     client_info = {k: v for k, v in client.items() if k != "password"}
