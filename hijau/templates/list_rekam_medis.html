@@ -1,0 +1,92 @@
+{% include "navbar.html" %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Rekam Medis</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      padding-top: 80px;
+      background-color: #f5f7fa;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 30px;
+    }
+
+    h2 {
+      color: #4a5568;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #eee;
+      padding: 14px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f9fafb;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .catatan {
+      text-align: left;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Rekam Medis</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID Kunjungan</th>
+          <th>Nama Hewan</th>
+          <th>ID Klien</th>
+          <th>No Front Desk</th>
+          <th>No Perawat Hewan</th>
+          <th>No Dokter Hewan</th>
+          <th>Kode Perawatan</th>
+          <th>Catatan</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in data %}
+        <tr>
+          <td>{{ r.0 }}</td>
+          <td>{{ r.1 }}</td>
+          <td>{{ r.2 }}</td>
+          <td>{{ r.3 }}</td>
+          <td>{{ r.4 }}</td>
+          <td>{{ r.5 }}</td>
+          <td>{{ r.6 }}</td>
+          <td class="catatan">{{ r.7|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8">Belum ada rekam medis.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

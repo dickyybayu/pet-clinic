@@ -6,6 +6,7 @@
   <meta charset="UTF-8">
   <title>List Kunjungan</title>
   <style>
+    /* --- semua style dari contoh kamu tetap --- */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -87,7 +88,6 @@
       font-weight: 600;
     }
 
-    /* Modal Shared Styles */
     .modal {
       display: none;
       position: fixed;
@@ -159,7 +159,9 @@
   <div class="container">
     <h2>List Kunjungan</h2>
 
-    <a href="{% url 'hijau:create_kunjungan' %}" class="btn-create">+ Create New Kunjungan</a>
+    {% if is_front_desk %}
+      <a href="#" class="btn-create">+ Create New Kunjungan</a>
+    {% endif %}
 
     <table>
       <thead>
@@ -175,25 +177,34 @@
         </tr>
       </thead>
       <tbody>
+        {% for k in kunjungan %}
         <tr>
-          <td>KJN001</td>
-          <td>FDO123</td>
-          <td>Snowy</td>
-          <td>Janji Temu</td>
-          <td>03-04-2025 14:30</td>
-          <td>03-04-2025 16:30</td>
+          <td>{{ k.0 }}</td>
+          <td>{{ k.2 }}</td>  {# no_identitas_klien #}
+          <td>{{ k.1 }}</td>
+          <td>{{ k.3 }}</td>  {# tipe_kunjungan #}
+          <td>{{ k.4 }}</td>  {# timestamp_awal #}
+          <td>{{ k.5|default:"-" }}</td>  {# timestamp_akhir #}
           <td><button class="btn btn-rekam" onclick="openModal()">Lihat</button></td>
           <td class="button-container">
-            <button class="btn btn-update" onclick="window.location.href='{% url 'hijau:update_kunjungan' %}'">Update</button>
-            <button class="btn btn-delete" onclick="openDeleteModal('KJN001')">Delete</button>
+          {% if is_front_desk %}
+            <button class="btn btn-update">Update</button>
+            <button class="btn btn-delete" onclick="openDeleteModal('{{ k.0 }}')">Delete</button>
+          {% else %}
+            <span style="color: #aaa; font-size: 0.9rem;">Tidak tersedia</span>
+          {% endif %}
           </td>
         </tr>
-        <!-- Tambahkan baris lain sesuai data -->
+        {% empty %}
+        <tr>
+          <td colspan="8">Belum ada data kunjungan.</td>
+        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
 
-  <!-- Rekam Medis Modal -->
+  <!-- Modal dan JS sama seperti contoh kamu -->
   <div id="rekamMedisModal" class="modal">
     <div class="modal-content">
       <h2>Rekam Medis tidak tersedia</h2>
@@ -205,7 +216,6 @@
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
   <div id="deleteModal" class="modal">
     <div class="modal-content">
       <h2>Hapus Kunjungan</h2>
@@ -227,7 +237,8 @@
     }
 
     function redirectToCreate() {
-      window.location.href = "{% url 'hijau:create_rekam_medis' %}";
+      alert("Redirect ke pembuatan rekam medis...");
+      // window.location.href = "...";
     }
 
     function openDeleteModal(id) {
@@ -243,10 +254,8 @@
       const id = document.getElementById('kunjunganId').textContent;
       alert('Kunjungan dengan ID ' + id + ' berhasil dihapus.');
       closeDeleteModal();
-      // Implement backend deletion logic here
     }
 
-    // Close modals if user clicks outside
     window.onclick = function(event) {
       if (event.target === document.getElementById('rekamMedisModal')) closeModal();
       if (event.target === document.getElementById('deleteModal')) closeDeleteModal();
