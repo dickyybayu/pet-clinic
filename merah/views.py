@@ -4,6 +4,8 @@ from datetime import datetime
 from django.contrib import messages
 import uuid
 
+from utils.query import query
+
 
 logged_doctor = {
     "email"  : "akudokter@gmail.com",
@@ -369,30 +371,121 @@ def delete_vaksin(request, kode_vaksin):
     return redirect('merah:show_vaksin')
 
 def show_data_klien(request):
-    for client in clients:
-        if "company_name" in client:
-            client["jenis"] = "Perusahaan"
-            client["nama"] = client["company_name"]
-        else:
-            client["jenis"] = "Individu"
-            client["nama"] = f"{client['first_name']} {client['middle_name']} {client['last_name']}"
+    search_query = request.GET.get('search_query', '').strip()
 
-    return render(request, "show_data_klien.html", {"clients": clients})
+    sql_to_execute = """
+        SELECT
+            K.no_identitas,
+            K.email,
+            U.alamat,        -- Assuming alamat is from the USER table
+            U.nomor_telepon, -- Assuming nomor_telepon is from the USER table
+            I.nama_depan,
+            I.nama_tengah,
+            I.nama_belakang,
+            P.nama_perusahaan,
+            CASE
+                WHEN P.no_identitas_klien IS NOT NULL THEN 'Perusahaan'
+                ELSE 'Individu'
+            END AS jenis,
+            COALESCE(
+                P.nama_perusahaan,
+                TRIM(CONCAT_WS(' ', I.nama_depan, I.nama_tengah, I.nama_belakang))
+            ) AS nama
+        FROM
+            KLIEN K
+        LEFT JOIN
+            "USER" U ON K.email = U.email  -- Join with USER table on email
+        LEFT JOIN
+            INDIVIDU I ON K.no_identitas = I.no_identitas_klien
+        LEFT JOIN
+            PERUSAHAAN P ON K.no_identitas = P.no_identitas_klien
+    """
+
+
+    if search_query:
+        search_term = f"%{search_query.replace('%', '%%').replace('_', '__')}%"
+        sql_to_execute += f"""
+            WHERE (
+                P.nama_perusahaan ILIKE '{search_term}' OR
+                TRIM(CONCAT_WS(' ', I.nama_depan, I.nama_tengah, I.nama_belakang)) ILIKE '{search_term}'
+            )
+        """
+    sql_to_execute += " ORDER BY nama;"
+    clients = query(sql_to_execute)
+
+    logged_user = request.session.get('logged_user', None)
+    
+    context = {
+        "logged_user": logged_user,
+        "clients": clients if clients else [],
+        "search_query": search_query
+    }
+    return render(request, "show_data_klien.html", context)
 
 def show_klien_detail(request, no_identitas):
-    client = next((c for c in clients if c["no_identitas"] == no_identitas), None)
-    client_info = {k: v for k, v in client.items() if k != "password"}
-    if "company_name" in client:
-        client["nama"] = client["company_name"]
-    else:
-        client["nama"] = f"{client['first_name']} {client['middle_name']} {client['last_name']}"
+    sql_client = """
+        SELECT
+            K.no_identitas,
+            K.email,
+            K.tanggal_registrasi,
+            U.alamat,        
+            U.nomor_telepon,
+            I.nama_depan,
+            I.nama_tengah,
+            I.nama_belakang,
+            P.nama_perusahaan,
+            COALESCE(
+                P.nama_perusahaan,
+                TRIM(CONCAT_WS(' ', I.nama_depan, I.nama_tengah, I.nama_belakang))
+            ) AS nama_lengkap,  -- Combined name for display
+            CASE
+                WHEN P.no_identitas_klien IS NOT NULL THEN 'Perusahaan'
+                ELSE 'Individu'
+            END AS jenis_klien
+        FROM
+            KLIEN K
+        LEFT JOIN
+            "USER" U ON K.email = U.email -- Join KLIEN with USER
+        LEFT JOIN
+            INDIVIDU I ON K.no_identitas = I.no_identitas_klien
+        LEFT JOIN
+            PERUSAHAAN P ON K.no_identitas = P.no_identitas_klien
+        WHERE
+            K.no_identitas = %s
+    """
 
-    client_pets = [pet for pet in pets if pet["no_identitas_klien"] == no_identitas]
-    for pet in client_pets:
-        jenis = next((j for j in jenis_hewan if j["id"] == pet["id_jenis"]), {"nama_jenis": "Tidak diketahui"})
-        pet["nama_jenis"] = jenis["nama_jenis"]
+    sql_client = sql_client.replace("%s", f"'{str(no_identitas)}'")
+    client_list = query(sql_client) 
 
-    return render(request, "show_klien_detail.html", {
+    if not client_list:
+        messages.error(request, "Data klien tidak ditemukan.")
+        return redirect('putih:show_data_klien')
+
+    client_info = client_list[0]
+    sql_pets = """
+        SELECT
+            H.nama AS nama_hewan, -- Pet's name
+            H.tanggal_lahir,
+            H.url_foto,
+            -- Add any other HEWAN fields you need, e.g., H.berat, H.usia from your previous view
+            JH.nama AS nama_jenis_hewan -- Species name from JENIS_HEWAN
+        FROM
+            HEWAN H
+        LEFT JOIN
+            JENIS_HEWAN JH ON H.id_jenis = JH.id -- JENIS_HEWAN PK is 'id', FK in HEWAN is 'id_jenis'
+        WHERE
+            H.no_identitas_klien = %s
+        ORDER BY
+            H.nama; -- Optional: order pets by name
+    """
+
+    logged_user = request.session.get('logged_user', None)
+    _unsafe_sql_pets = sql_pets.replace("%s", f"'{str(no_identitas)}'")
+    client_pets = query(_unsafe_sql_pets) 
+
+    context = {
+        "logged_user": logged_user,
         "client": client_info,
-        "pets": client_pets,
-    })
+        "pets": client_pets if client_pets else [],
+    }
+    return render(request, "show_klien_detail.html", context)
