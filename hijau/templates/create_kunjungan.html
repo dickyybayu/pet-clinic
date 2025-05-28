@@ -1,70 +1,159 @@
 {% include "navbar.html" %}
+
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <title>Buat Kunjungan</title>
   <style>
-    body { font-family: Arial; background-color: #f5f7fa; padding-top: 80px; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      padding-top: 80px;
+    }
+
     .container {
-      max-width: 700px; margin: auto; background: white; padding: 30px;
-      border-radius: 10px; box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
     }
-    h2 { color: #4a5568; margin-bottom: 20px; }
-    label { display: block; font-weight: 600; margin-top: 15px; }
+
+    h2 {
+      color: #2d3748;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #374151;
+    }
+
     input, select {
-      width: 100%; padding: 10px; margin-top: 5px;
-      border-radius: 6px; border: 1px solid #ccc;
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
     }
-    button {
-      margin-top: 20px; background-color: #5a85e2;
-      color: white; padding: 10px 20px; border: none;
-      border-radius: 6px; cursor: pointer;
+
+    .button-group {
+      margin-top: 30px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .btn-cancel, .btn-submit {
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-cancel {
+      background-color: #f0f2f5;
+      color: #374151;
+      border: 1px solid #ccc;
+    }
+
+    .btn-submit {
+      background-color: #5a85e2;
+      color: white;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Formulir Kunjungan Baru</h2>
+    <h2>Buat Kunjungan Baru</h2>
 
     <form method="POST">
       {% csrf_token %}
-      <label>Nama Hewan</label>
-      <input type="text" name="nama_hewan" required>
 
-      <label>ID Klien</label>
-      <input type="text" name="no_identitas_klien" required>
-
-      <label>ID Perawat Hewan</label>
-      <input type="text" name="no_perawat_hewan" required>
-
-      <label>ID Dokter Hewan</label>
-      <input type="text" name="no_dokter_hewan" required>
-
-      <label>Tipe Kunjungan</label>
-      <select name="tipe_kunjungan" required>
-        <option value="vaksin">Vaksin</option>
-        <option value="perawatan">Perawatan</option>
-        <option value="lainnya">Lainnya</option>
+      <label for="no_identitas_klien">ID Klien</label>
+      <select id="no_identitas_klien" name="no_identitas_klien" required onchange="fetchHewan(this.value)">
+        <option value="">-- Pilih Klien --</option>
+        {% for klien in daftar_klien %}
+          <option value="{{ klien.no_identitas }}">{{ klien.no_identitas }} - {{ klien.nama }}</option>
+        {% endfor %}
       </select>
 
-      <label>Kode Vaksin (opsional)</label>
-      <input type="text" name="kode_vaksin">
+      <label for="nama_hewan">Nama Hewan</label>
+      <select id="nama_hewan" name="nama_hewan" required>
+        <option value="">-- Pilih Klien terlebih dahulu --</option>
+      </select>
 
-      <label>Waktu Mulai</label>
+      <label for="no_dokter_hewan">Dokter Hewan</label>
+      <select id="no_dokter_hewan" name="no_dokter_hewan" required>
+        {% for dokter in daftar_dokter %}
+          <option value="{{ dokter.no_dokter_hewan }}">
+          {{ dokter.email }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <label for="no_perawat_hewan">Perawat Hewan</label>
+      <select id="no_perawat_hewan" name="no_perawat_hewan" required>
+        {% for perawat in daftar_perawat %}
+          <option value="{{ perawat.no_perawat_hewan }}">
+          {{ perawat.email }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <label for="tipe_kunjungan">Metode Kunjungan</label>
+      <select id="tipe_kunjungan" name="tipe_kunjungan" required>
+        <option value="Janji Temu">Janji Temu</option>
+        <option value="Walk-In">Walk-In</option>
+        <option value="Darurat">Darurat</option>
+      </select>
+
+      <label for="timestamp_awal">Waktu Mulai Penanganan</label>
       <input type="datetime-local" name="timestamp_awal" required>
 
-      <!-- <label>Suhu (opsional)</label>
-      <input type="number" name="suhu">
+      <label for="timestamp_akhir">Waktu Akhir Penanganan (opsional)</label>
+      <input type="datetime-local" name="timestamp_akhir">
 
-      <label>Berat Badan (opsional)</label>
-      <input type="number" step="0.01" name="berat_badan">
-
-      <label>Catatan (opsional)</label>
-      <textarea name="catatan" rows="4"></textarea> -->
-
-      <button type="submit">Simpan</button>
+      <div class="button-group">
+        <a href="{% url 'hijau:list_kunjungan' %}" class="btn-cancel">Batal</a>
+        <button type="submit" class="btn-submit">Simpan</button>
+      </div>
     </form>
   </div>
+
+  <script>
+    function fetchHewan(no_identitas) {
+      const dropdown = document.getElementById("nama_hewan");
+      dropdown.innerHTML = "<option value=''>Memuat...</option>";
+
+      fetch(`/hijau/api/hewan/${no_identitas}/`)
+        .then(response => response.json())
+        .then(data => {
+          dropdown.innerHTML = "";
+          if (data.length === 0) {
+            dropdown.innerHTML = "<option value=''>Tidak ada hewan terdaftar</option>";
+            return;
+          }
+          data.forEach(hewan => {
+            const option = document.createElement("option");
+            option.value = hewan.nama;
+            option.textContent = hewan.nama;
+            dropdown.appendChild(option);
+          });
+        })
+        .catch(() => {
+          dropdown.innerHTML = "<option value=''>Gagal memuat data</option>";
+        });
+    }
+  </script>
 </body>
 </html>

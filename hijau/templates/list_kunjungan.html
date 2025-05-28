@@ -199,12 +199,9 @@
           </td>
           <td class="button-container">
           {% if is_front_desk %}
-            <button class="btn btn-update" onclick="openUpdateModal('{{ k.id_kunjungan }}')">Update</button>
-
-            <form method="POST" action="{% url 'hijau:delete_kunjungan' id_kunjungan=k.id_kunjungan %}" onsubmit="return confirm('Yakin ingin menghapus kunjungan ini?')" style="display: inline;">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-delete">Delete</button>
-            </form>
+            <a href="{% url 'hijau:update_kunjungan' k.id_kunjungan %}" class="btn btn-update">Update</a>
+            <button class="btn btn-delete" onclick="openDeleteModal('{{ k.id_kunjungan }}')">Delete</button>
+            
           {% else %}
             <span style="color: #aaa; font-size: 0.9rem;">Tidak tersedia</span>
           {% endif %}
@@ -233,11 +230,14 @@
 
   <div id="deleteModal" class="modal">
     <div class="modal-content">
-      <h2>Hapus Kunjungan</h2>
-      <p>Apakah kamu yakin ingin menghapus kunjungan dengan ID <span id="kunjunganId"></span>?</p>
+      <h2 style="color: #e53e3e;">Delete Kunjungan</h2>
+      <p>Apakah kamu yakin untuk menghapus <strong>KUNJUNGAN</strong> dengan ID <span id="modalKunjunganId" style="color: #e53e3e;"></span>?</p>
       <div class="modal-buttons">
-        <button class="btn-cancel" onclick="closeDeleteModal()">Batal</button>
-        <button class="btn-confirm-delete" onclick="confirmDelete()">Hapus</button>
+        <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+        <form id="deleteForm" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="btn-confirm-delete">Confirm Deletion</button>
+        </form>
       </div>
     </div>
   </div>
@@ -290,15 +290,19 @@
       }
       window.location.href = `/hijau/rekam-medis/${currentRekamKunjunganId}/create/`;
     }
+    
 
     function openDeleteModal(id) {
-      document.getElementById('kunjunganId').textContent = id;
+      document.getElementById('modalKunjunganId').textContent = id;
+      const form = document.getElementById('deleteForm');
+      form.action = `/hijau/delete_kunjungan/${id}/`;  // Sesuaikan dengan URL Django
       document.getElementById('deleteModal').style.display = 'block';
     }
 
     function closeDeleteModal() {
       document.getElementById('deleteModal').style.display = 'none';
     }
+
 
     function confirmDelete() {
       const id = document.getElementById('kunjunganId').textContent;
