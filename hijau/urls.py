@@ -5,17 +5,13 @@ app_name = 'hijau'
 
 urlpatterns = [
     #include urls from hijau app
-    path('list_kunjungan', list_kunjungan, name='list_kunjungan'),
-    path('list_treatment', list_treatment, name='list_treatment'),
-    path('create_treatment', create_treatment, name='create_treatment'),
-    path('update_treatment', update_treatment, name='update_treatment'),
-    path('create_kunjungan', create_kunjungan, name='create_kunjungan'),
-    path('create_rekam_medis', create_rekam_medis, name='create_rekam_medis'),
-    path('show_rekam_medis', show_rekam_medis, name='show_rekam_medis'),
-    path('update_rekam_medis', update_rekam_medis, name='update_rekam_medis'),
-    path('update_kunjungan', update_kunjungan, name='update_kunjungan'),
-    path('read_kunjungan', read_kunjungan, name='read_kunjungan'),
-    path('read_treatment', read_treatment, name='read_treatment'),
-    path('read_rekam_medis', read_rekam_medis, name='read_rekam_medis'),
-    
+    path('list_kunjungan/', list_kunjungan, name='list_kunjungan'),
+    path('create_kunjungan/', create_kunjungan, name='create_kunjungan'),
+    path('update_kunjungan/<str:id_kunjungan>/', update_kunjungan, name='update_kunjungan'),
+    path('delete_kunjungan/<str:id_kunjungan>/', delete_kunjungan, name='delete_kunjungan'),
+    path('list_perawatan/', list_perawatan, name='list_perawatan'),
+    path('update/<uuid:id_kunjungan>', update_kunjungan, name='update_kunjungan'),
+    path('rekam-medis/<uuid:id_kunjungan>/', show_rekam_medis, name='show_rekam_medis'),
+    path('rekam-medis/<uuid:id_kunjungan>/create/', create_rekam_medis, name='create_rekam_medis'),  
+      
 ]
