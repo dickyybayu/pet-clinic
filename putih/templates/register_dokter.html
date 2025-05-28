@@ -8,7 +8,13 @@
 
   <h3>Informasi Umum</h3>
 
-  <form method="post" action="#">
+  {% if error_message %}
+    <div class="error-message">
+      <p>{{ error_message }}</p>
+    </div>
+  {% endif %}
+
+  <form method="post" action="{% url 'putih:register_dokter' %}">
     {% csrf_token %}
     <div class="form-group">
       <label>Nomor Izin Praktik <span class="required">*</span></label>

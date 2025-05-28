@@ -1,4 +1,5 @@
 import re
+from django.http import HttpResponseNotFound
 from django.shortcuts import redirect, render
 import uuid
 from datetime import datetime 
@@ -61,7 +62,16 @@ def register_selection(request):
     return render(request, 'register_selection.html')
 
 def register_role(request, role):
-    return render(request, f'register_{role}.html', {'role': role})
+    if role == 'dokter':
+        return redirect('putih:register_dokter')
+    elif role == 'front_desk':
+        return redirect('putih:register_front_desk')
+    elif role == 'perawat':
+        return redirect('putih:register_perawat')
+    elif role == 'klien_individu' or role == 'klien_perusahaan':
+        return redirect('putih:register_klien')
+    else:
+        return HttpResponseNotFound("Role tidak ditemukan.")
 
 def register_klien(request):
     if request.method == 'POST':
@@ -201,6 +211,136 @@ def register_front_desk(request):
 
     return render(request, 'register_front_desk.html', context)
 
+def register_dokter(request):
+    if request.method == 'POST':
+        print(request.POST)
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        phone = request.POST.get('phone')
+        start_date = request.POST.get('start_date')
+        address = request.POST.get('address')
+        no_izin_praktik = request.POST.get('nip')
+
+        sertifikat_nos = request.POST.getlist('sertifikat_no[]')
+        sertifikat_names = request.POST.getlist('sertifikat_name[]')
+        hari_list = request.POST.getlist('jadwal_day[]')
+        jam_list = request.POST.getlist('jadwal_time[]')
+
+        if not all([email, password, phone, start_date, address, no_izin_praktik]):
+            error_message = 'Semua field wajib diisi.'
+            print(error_message)  # debug error message
+            return render(request, 'register_dokter.html', {
+                'error_message': error_message
+            })
+
+        if not sertifikat_nos or not sertifikat_names:
+            return render(request, 'register_dokter.html', {
+                'error_message': 'Minimal satu sertifikat wajib diisi.'
+            })
+        for i, (no, name) in enumerate(zip(sertifikat_nos, sertifikat_names), 1):
+            if not no.strip() or not name.strip():
+                return render(request, 'register_dokter.html', {
+                    'error_message': f'Sertifikat ke-{i} tidak lengkap.'
+                })
+
+        if not hari_list or not jam_list:
+            return render(request, 'register_dokter.html', {
+                'error_message': 'Minimal satu jadwal praktik wajib diisi.'
+            })
+        for i, (hari, jam) in enumerate(zip(hari_list, jam_list), 1):
+            if not hari.strip() or not jam.strip():
+                return render(request, 'register_dokter.html', {
+                    'error_message': f'Jadwal praktik ke-{i} tidak lengkap.'
+                })
+
+        pegawai_id = str(uuid.uuid4())
+
+        result = query(f"""INSERT INTO "USER" (email, password, alamat, nomor_telepon)
+                           VALUES ('{email}', '{password}', '{address}', '{phone}')""")
+        if isinstance(result, dict) and result.get('status') == 'error':
+            return render(request, 'register_dokter.html', {'error_message': result['data']})
+
+        result = query(f"""INSERT INTO PEGAWAI (no_pegawai, tanggal_mulai_kerja, tanggal_akhir_kerja, email_user)
+                           VALUES ('{pegawai_id}', '{start_date}', NULL, '{email}')""")
+        if isinstance(result, dict) and result.get('status') == 'error':
+            return render(request, 'register_dokter.html', {'error_message': result['data']})
+
+        result = query(f"""INSERT INTO TENAGA_MEDIS (no_tenaga_medis, no_izin_praktik)
+                           VALUES ('{pegawai_id}', '{no_izin_praktik}')""")
+        if isinstance(result, dict) and result.get('status') == 'error':
+            return render(request, 'register_dokter.html', {'error_message': result['data']})
+
+        result = query(f"""INSERT INTO DOKTER_HEWAN (no_dokter_hewan)
+                           VALUES ('{pegawai_id}')""")
+        if isinstance(result, dict) and result.get('status') == 'error':
+            return render(request, 'register_dokter.html', {'error_message': result['data']})
+
+        for no, name in zip(sertifikat_nos, sertifikat_names):
+            result = query(f"""INSERT INTO SERTIFIKAT_KOMPETENSI (no_sertifikat_kompetensi, no_tenaga_medis, nama_sertifikat)
+                               VALUES ('{no}', '{pegawai_id}', '{name}')""")
+            if isinstance(result, dict) and result.get('status') == 'error':
+                return render(request, 'register_dokter.html', {'error_message': result['data']})
+
+        for hari, jam in zip(hari_list, jam_list):
+            result = query(f"""INSERT INTO JADWAL_PRAKTIK (no_dokter_hewan, hari, jam)
+                               VALUES ('{pegawai_id}', '{hari}', '{jam}')""")
+            if isinstance(result, dict) and result.get('status') == 'error':
+                return render(request, 'register_dokter.html', {'error_message': result['data']})
+
+        messages.success(request, 'Registrasi berhasil! Silakan login.')
+        return redirect('putih:login')
+
+    return render(request, 'register_dokter.html')
+
+
+def register_perawat(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        phone = request.POST.get('phone')
+        start_date = request.POST.get('start_date')
+        address = request.POST.get('address')
+        no_izin_praktik = request.POST.get('nip')
+
+        sertifikat_nos = request.POST.getlist('sertifikat_no[]')
+        sertifikat_names = request.POST.getlist('sertifikat_name[]')
+
+        if not all([email, password, phone, start_date, address, no_izin_praktik]):
+            return render(request, 'register_perawat.html', {
+                'error_message': 'Semua field wajib diisi.'
+            })
+
+        if not sertifikat_nos or not sertifikat_names:
+            return render(request, 'register_perawat.html', {
+                'error_message': 'Minimal satu sertifikat wajib diisi.'
+            })
+        for i, (no, name) in enumerate(zip(sertifikat_nos, sertifikat_names), 1):
+            if not no.strip() or not name.strip():
+                return render(request, 'register_perawat.html', {
+                    'error_message': f'Sertifikat ke-{i} tidak lengkap.'
+                })
+
+        pegawai_id = str(uuid.uuid4())
+        query(f"""INSERT INTO "USER" (email, password, alamat, nomor_telepon)
+                  VALUES ('{email}', '{password}', '{address}', '{phone}')""")
+        query(f"""INSERT INTO PEGAWAI (no_pegawai, tanggal_mulai_kerja, tanggal_akhir_kerja, email_user)
+                  VALUES ('{pegawai_id}', '{start_date}', NULL, '{email}')""")
+        query(f"""INSERT INTO TENAGA_MEDIS (no_tenaga_medis, no_izin_praktik)
+                  VALUES ('{pegawai_id}', '{no_izin_praktik}')""")
+        query(f"""INSERT INTO PERAWAT_HEWAN (no_perawat_hewan)
+                  VALUES ('{pegawai_id}')""")
+
+        for no, name in zip(sertifikat_nos, sertifikat_names):
+            query(f"""INSERT INTO SERTIFIKAT_KOMPETENSI (no_sertifikat_kompetensi, no_tenaga_medis, nama_sertifikat)
+                      VALUES ('{no}', '{pegawai_id}', '{name}')""")
+
+        messages.success(request, 'Registrasi berhasil! Silakan login.')
+        return redirect('putih:login')
+
+    return render(request, 'register_perawat.html')
+
+
+
 def login_view(request):
     context = {
         "message" : ""
@@ -272,7 +412,28 @@ def login_view(request):
                 
                 # TODO: urus login tenaga medis
                 if len(tenaga_medis_result) == 1:
-                    pass 
+                    logged_user['no_tenaga_medis'] = tenaga_medis_result[0]['no_tenaga_medis']
+                    logged_user['no_izin_praktik'] = tenaga_medis_result[0]['no_izin_praktik']
+
+                    # Cek apakah dokter
+                    query_str = f'''
+                        SELECT * FROM dokter_hewan WHERE no_dokter_hewan = '{logged_user['no_tenaga_medis']}'
+                    '''
+                    dokter_result = query(query_str)
+                    if isinstance(dokter_result, list) and len(dokter_result) == 1:
+                        logged_user['role'] = 'dokter'
+                    else:
+                        # Jika bukan dokter, cek apakah perawat
+                        query_str = f'''
+                            SELECT * FROM perawat_hewan WHERE no_perawat_hewan = '{logged_user['no_tenaga_medis']}'
+                        '''
+                        perawat_result = query(query_str)
+                        if isinstance(perawat_result, list) and len(perawat_result) == 1:
+                            logged_user['role'] = 'perawat'
+                        else:
+                            context['message'] = "Role tenaga medis tidak valid."
+                            return render(request, 'login.html', context)
+
                 else:
                     # validasi pegawai front desk
                     query_str = f'''
