@@ -416,6 +416,7 @@ def login_view(request):
                     '''
                     dokter_result = query(query_str)
                     if isinstance(dokter_result, list) and len(dokter_result) == 1:
+                        logged_user['no_dokter_hewan'] = dokter_result[0]['no_dokter_hewan']
                         logged_user['role'] = 'dokter'
                     else:
                         query_str = f'''

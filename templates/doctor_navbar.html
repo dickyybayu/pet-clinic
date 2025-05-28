@@ -64,22 +64,6 @@
     .nav-link:hover {
       background-color: rgba(255, 255, 255, 0.1);
     }
-    .nav-link.active {
-      background-color: rgba(255, 255, 255, 0.2);
-      font-weight: 600;
-    }
-    .nav-link.active::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 30px;
-      height: 3px;
-      background-color: #6bd4ff;
-      border-radius: 2px;
-    }
-
     .dropdown {
       position: relative;
       display: inline-block;
@@ -256,7 +240,7 @@
       <i class="fas fa-paw brand-icon"></i> Pet Clinic
     </div>
     <div class="navbar-center" id="navbarCenter">
-      <a href="#" class="nav-link active">Dashboard</a>
+      <a href="#" class="nav-link">Dashboard</a>
       <a href="#" class="nav-link">Daftar Jenis Hewan</a>
       <a href="#" class="nav-link">Perawatan Hewan</a>
       <a href="#" class="nav-link">Daftar Kunjungan</a>
