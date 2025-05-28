@@ -11,6 +11,8 @@ urlpatterns = [
     path('register/', views.register_selection, name='register_selection'),
     path('register/klien_register/', views.register_klien, name='register_klien'),
     path('register/front_desk_register/', views.register_front_desk, name='register_front_desk'),
+    path('register/dokter_hewan/', views.register_dokter, name='register_dokter'),
+    path('register/perawat_register/', views.register_perawat, name='register_perawat'),
     path('profil/update_fron_tdesk/', views.update_front_desk, name='update_front_desk'),
 
     path('profil/update_password/', views.update_password, name='update_password'),
