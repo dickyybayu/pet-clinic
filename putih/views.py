@@ -68,66 +68,73 @@ def register_role(request, role):
         return redirect('putih:register_front_desk')
     elif role == 'perawat':
         return redirect('putih:register_perawat')
-    elif role == 'klien_individu' or role == 'klien_perusahaan':
-        return redirect('putih:register_klien')
+    elif role == 'klien_individu':
+        return redirect('putih:register_klien_individu')
+    elif role == 'klien_perusahaan':
+        return redirect('putih:register_klien_perusahaan')
     else:
         return HttpResponseNotFound("Role tidak ditemukan.")
-
-def register_klien(request):
+    
+def register_klien_individu(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        address = request.POST.get('address')
         phone = request.POST.get('phone')
-        no_identitas = str(uuid.uuid4())
-        tanggal_reg = datetime.now().strftime("%d-%m-%Y")
-        
-        if request.POST.get('company_name'): 
-            company_name = request.POST.get('company_name')
-            error_message = validate_registration_data(email, no_identitas, password, phone, company_name=company_name)
-            
-            if error_message:
-                return render(request, 'register_klien_perusahaan.html', {'error_message': error_message})
-            
-            pengguna.append({
-                "email": email,
-                "password": password,
-                "address": address,
-                "phone": phone,
-                "no_identitas": no_identitas,
-                "tanggal_reg": tanggal_reg,
-                "company_name": company_name
-            }) 
+        address = request.POST.get('address')
+        nama_depan = request.POST.get('first_name')
+        nama_tengah = request.POST.get('middle_name')
+        nama_belakang = request.POST.get('last_name')
 
-        else:  # If company_name doesn't exist, process as individual client
-            first_name = request.POST.get('first_name')
-            middle_name = request.POST.get('middle_name', "")
-            last_name = request.POST.get('last_name')
-            error_message = validate_registration_data(email, no_identitas, password, phone, first_name, middle_name, last_name)
-            
-            if error_message:
-                return render(request, 'register_klien_individu.html', {'error_message': error_message})
+        if not all([email, password, phone, address, nama_depan, nama_belakang]):
+            return render(request, 'register_klien_individu.html', {'error_message': 'All fields marked with * are required.'})
 
-            pengguna.append({
-                "email": email,
-                "password": password,
-                "address": address,
-                "phone": phone,
-                "no_identitas": no_identitas,
-                "tanggal_reg": tanggal_reg,
-                "first_name": first_name,
-                "middle_name": middle_name,
-                "last_name": last_name,
-            })
+        if query(f"SELECT * FROM \"USER\" WHERE email = '{email}'"):
+            return render(request, 'register_klien_individu.html', {'error_message': 'Email is already registered.'})
 
-        messages.success(request, 'Registration successful!')
+        user_id = str(uuid.uuid4())
+        today = date.today()
+
+        query(f"""INSERT INTO "USER" (email, password, alamat, nomor_telepon)
+                  VALUES ('{email}', '{password}', '{address}', '{phone}')""")
+        query(f"""INSERT INTO KLIEN (no_identitas, tanggal_registrasi, email)
+                  VALUES ('{user_id}', '{today}', '{email}')""")
+        query(f"""INSERT INTO INDIVIDU (no_identitas_klien, nama_depan, nama_tengah, nama_belakang)
+                  VALUES ('{user_id}', '{nama_depan}', {'NULL' if not nama_tengah else f"'{nama_tengah}'"}, '{nama_belakang}')""")
+
+        messages.success(request, 'Registration successful! You may now login.')
         return redirect('putih:login')
 
-    # Dynamic render based on the role
-    if request.POST.get('company_name'):
-        return render(request, 'register_klien_perusahaan.html')
-    else:
-        return render(request, 'register_klien_individu.html') 
+    return render(request, 'register_klien_individu.html')
+
+def register_klien_perusahaan(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address')
+        nama_perusahaan = request.POST.get('company_name')
+
+        if not all([email, password, phone, address, nama_perusahaan]):
+            return render(request, 'register_klien_perusahaan.html', {'error_message': 'All fields are required.'})
+
+        if query(f"SELECT * FROM \"USER\" WHERE email = '{email}'"):
+            return render(request, 'register_klien_perusahaan.html', {'error_message': 'Email is already registered.'})
+
+        user_id = str(uuid.uuid4())
+        today = date.today()
+
+        query(f"""INSERT INTO "USER" (email, password, alamat, nomor_telepon)
+                  VALUES ('{email}', '{password}', '{address}', '{phone}')""")
+        query(f"""INSERT INTO KLIEN (no_identitas, tanggal_registrasi, email)
+                  VALUES ('{user_id}', '{today}', '{email}')""")
+        query(f"""INSERT INTO PERUSAHAAN (no_identitas_klien, nama_perusahaan)
+                  VALUES ('{user_id}', '{nama_perusahaan}')""")
+
+        messages.success(request, 'Registration successful! You may now login.')
+        return redirect('putih:login')
+
+    return render(request, 'register_klien_perusahaan.html')
+
 
 def register_front_desk(request):
     context = {
@@ -227,10 +234,8 @@ def register_dokter(request):
         jam_list = request.POST.getlist('jadwal_time[]')
 
         if not all([email, password, phone, start_date, address, no_izin_praktik]):
-            error_message = 'Semua field wajib diisi.'
-            print(error_message)  # debug error message
             return render(request, 'register_dokter.html', {
-                'error_message': error_message
+                'error_message': 'Semua field wajib diisi.'
             })
 
         if not sertifikat_nos or not sertifikat_names:
@@ -354,27 +359,22 @@ def login_view(request):
             SELECT * FROM "USER" WHERE email = '{email}' AND password = '{password}'
         '''
         result = query(query_str)
-
         if len(result) == 1:
-            # get user role
             logged_user = {
                 'email': result[0]['email'],
                 'address': result[0]['alamat'],
                 'phone': result[0]['nomor_telepon'],
             }
 
-            # cek apakah user adalah klien
             query_str = f'''
                 SELECT * FROM klien WHERE email = '{email}'
             '''
             klien_result = query(query_str)
 
             if len(klien_result) == 1:
-                # validasi klien
                 logged_user['no_identitas'] = klien_result[0]['no_identitas']
-                logged_user['tanggal_registrasi'] = klien_result[0]['tanggal_registrasi']
+                logged_user['tanggal_registrasi'] = klien_result[0]['tanggal_registrasi'].isoformat()
 
-                # cek apakah klien adalah individu
                 query_str   = f'''
                     SELECT * FROM individu WHERE no_identitas_klien = '{logged_user['no_identitas']}'
                 '''
@@ -385,7 +385,6 @@ def login_view(request):
                     logged_user['nama_belakang'] = individu_result[0]['nama_belakang']
                     logged_user['role'] = 'klien_individu'
                 else:
-                    # klien adalah perusahaan
                     query_str = f'''
                         SELECT * FROM perusahaan WHERE no_identitas_klien = '{logged_user['no_identitas']}'
                     '''
@@ -395,7 +394,6 @@ def login_view(request):
                         logged_user['role'] = 'klien_perusahaan'
                 
             else:
-                # user adalah pegawai 
                 query_str = f'''
                     SELECT * FROM pegawai WHERE email_user = '{email}'
                 '''
@@ -404,18 +402,15 @@ def login_view(request):
                 logged_user['tanggal_mulai_kerja'] = pegawai_result[0]['tanggal_mulai_kerja'].isoformat()
                 logged_user['tanggal_akhir_kerja'] = pegawai_result[0]['tanggal_akhir_kerja'].isoformat() if pegawai_result[0]['tanggal_akhir_kerja'] else None
 
-                # cek apakah pegawai adalah tenaga medis
                 query_str = f'''
                     SELECT * FROM tenaga_medis WHERE no_tenaga_medis = '{logged_user['no_pegawai']}'
                 '''
                 tenaga_medis_result = query(query_str)
                 
-                # TODO: urus login tenaga medis
                 if len(tenaga_medis_result) == 1:
                     logged_user['no_tenaga_medis'] = tenaga_medis_result[0]['no_tenaga_medis']
                     logged_user['no_izin_praktik'] = tenaga_medis_result[0]['no_izin_praktik']
 
-                    # Cek apakah dokter
                     query_str = f'''
                         SELECT * FROM dokter_hewan WHERE no_dokter_hewan = '{logged_user['no_tenaga_medis']}'
                     '''
@@ -423,7 +418,6 @@ def login_view(request):
                     if isinstance(dokter_result, list) and len(dokter_result) == 1:
                         logged_user['role'] = 'dokter'
                     else:
-                        # Jika bukan dokter, cek apakah perawat
                         query_str = f'''
                             SELECT * FROM perawat_hewan WHERE no_perawat_hewan = '{logged_user['no_tenaga_medis']}'
                         '''
@@ -435,7 +429,6 @@ def login_view(request):
                             return render(request, 'login.html', context)
 
                 else:
-                    # validasi pegawai front desk
                     query_str = f'''
                         SELECT * FROM front_desk WHERE no_front_desk = '{logged_user['no_pegawai']}'
                     '''
@@ -447,26 +440,27 @@ def login_view(request):
                     logged_user['no_front_desk'] = front_desk_result[0]['no_front_desk']
                     logged_user['role'] = 'front_desk'
 
-                # berhasil login
-                request.session['logged_user'] = logged_user     
-                return redirect('putih:show_profile', role=logged_user['role'])
+            request.session['logged_user'] = logged_user   
+            return redirect('putih:show_profile', role=logged_user['role'])
 
         context['message'] = "Invalid email or password"
     return render(request, 'login.html', context)
   
 def show_profile(request, role):
-    context ={}
-    context['logged_user'] = request.session.get('logged_user', {})
-    return render(request, f'profil_{role}.html', context)
+    logged_user = request.session.get('logged_user', {})
+    context = {'logged_user': logged_user}
 
-def show_profile_frontdesk(request):
-    return render(request, "profil_front_desk.html", logged_pengguna)
+    if role in ['klien_individu', 'klien_perusahaan']:
+        return render(request, 'profil_klien.html', context)
+    elif role == 'dokter':
+        return render(request, 'profil_dokter.html', context)
+    elif role == 'perawat':
+        return render(request, 'profil_perawat.html', context)
+    elif role == 'front_desk':
+        return render(request, 'profil_front_desk.html', context)
+    else:
+        return HttpResponseNotFound("Role tidak ditemukan.")
 
-def show_profile_dokter(request):
-    return render(request, "profil_dokter.html", logged_pengguna)
-
-def show_profile_perawat(request):
-    return render(request, "profil_perawat.html", logged_pengguna)
 
 def logout(request):
     request.session.flush()
