@@ -1,80 +1,363 @@
 {% extends 'front_desk_base.html' %}
 
 {% block content %}
-<div style="margin-top: 30px;">
-    <div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); background-color: #f5f7fa;">
-        <div class="profile-card" style="width: 100%; max-width: 1000px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px 20px; overflow: hidden;">
-            <div>
-            {% if messages %}
-                <div class="messages">
-                    {% for message in messages %}
-                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-            </div>
+<div class="container-fluid" style="margin-top: 30px; background-color: #f5f7fa; min-height: calc(100vh - 80px); padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
 
-            <!-- Card Header -->
-            <div style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2 style="font-size: 26px; margin: 0; font-weight: 600;">Daftar Klien</h2>
-                </div>
-            </div>
-            
-            <!-- Card Body -->
-            <div style="padding: 30px;">
-                <!-- Search Bar -->
-                <div style="position: relative; max-width: 500px; margin-bottom: 20px;">
-                    <svg style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <input type="text" style="width: 100%; padding: 10px 15px 10px 40px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; transition: all 0.3s;" placeholder="Search...">
-                </div>
-
-                <!-- Client Table -->
-                <div style="margin-top: 10px;">
-                    {% if clients %}
-                    <div style="overflow-x: auto;">
-                        <table style="width: 100%; min-width: 800px; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-                            <thead>
-                                <tr style="background-color: #f9fafb;">
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 5%;">No</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 30%;">Email</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 25%;">Nama</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">Jenis</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for client in clients %}
-                                <tr>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ forloop.counter }}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ client.email }}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ client.nama }}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ client.jenis }}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">
-                                        <a href="{% url 'merah:show_klien_detail' client.no_identitas %}" style="text-decoration: none; padding: 6px 12px; border-radius: 4px; background-color: #5a85e2; color: white; font-size: 14px; font-weight: 500;">View Details</a>
-                                    </td>
-                                </tr>
+    {% if logged_user %}
+        {% if logged_user.role == 'front_desk' %}
+            <div class="row justify-content-center" style="width: 100%;"> 
+                <div class="col-12 col-xl-10">
+                    <div class="profile-card" style="background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); overflow: hidden; width: 100%; margin-bottom: 20px;">
+                        
+                        {% if messages %}
+                            <div style="padding: 20px 30px 0 30px;">
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags|default:'info' }}"> 
+                                        {{ message }}
+                                    </div>
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                            </div>
+                        {% endif %}
+
+                        <div class="card-header" style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
+                            <div style="display: flex; align-items: center; justify-content: flex-start;">
+                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                    width="24"  
+                                    height="24" 
+                                    viewBox="0 0 24 24" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    stroke-width="2" 
+                                    stroke-linecap="round" 
+                                    stroke-linejoin="round" 
+                                    style="opacity: 0.9; margin-right: 12px; margin-top: 1px;">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                                <h2 style="font-size: 26px; margin: 0; font-weight: 600; line-height: 1;">Daftar Klien</h2>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body" style="padding: 30px;">
+                            <form method="GET" action="{% url 'merah:show_data_klien' %}" class="mb-4">
+                                <div class="search-container" style="display: flex; gap: 10px; max-width: 600px; margin-bottom: 25px;">
+                                    <div class="search-input-wrapper" style="position: relative; flex-grow: 1;">
+                                        <svg style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; z-index: 2;" 
+                                            xmlns="http://www.w3.org/2000/svg" 
+                                            width="16" 
+                                            height="16" 
+                                            viewBox="0 0 24 24" 
+                                            fill="none" 
+                                            stroke="currentColor" 
+                                            stroke-width="2" 
+                                            stroke-linecap="round" 
+                                            stroke-linejoin="round">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        </svg>
+                                        <input type="text" 
+                                            name="search_query" 
+                                            value="{{ search_query|default:'' }}" 
+                                            class="form-control search-input"
+                                            style="width: 100%; padding: 12px 15px 12px 40px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; box-sizing: border-box; transition: all 0.3s; outline: none;" 
+                                            placeholder="Cari berdasarkan nama klien..."
+                                            onfocus="this.style.borderColor='#5a85e2'; this.style.boxShadow='0 0 0 3px rgba(90, 133, 226, 0.1)'"
+                                            onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none'">
+                                    </div>
+                                    <button type="submit" 
+                                        class="btn btn-primary"
+                                        style="padding: 12px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; border: none; cursor: pointer; font-size: 14px; transition: background-color 0.3s;"
+                                        onmouseover="this.style.backgroundColor='#4a75d2'"
+                                        onmouseout="this.style.backgroundColor='#5a85e2'">
+                                        Cari
+                                    </button>
+                                    {% if search_query %}
+                                        <a href="{% url 'merah:show_data_klien' %}"
+                                            class="btn btn-secondary"
+                                            style="text-decoration: none; padding: 12px 20px; border-radius: 6px; background-color: #e5e7eb; color: #4b5563; font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; transition: background-color 0.3s;"
+                                            onmouseover="this.style.backgroundColor='#d1d5db'"
+                                            onmouseout="this.style.backgroundColor='#e5e7eb'">
+                                            Hapus Filter
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </form>
+
+                            <div class="table-section">
+                                {% if clients %}
+                                    <div class="table-responsive" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                                        <table class="table table-hover mb-0" style="border-collapse: collapse; width: 100%;">
+                                            <thead style="background-color: #f9fafb;">
+                                                <tr>
+                                                    <th scope="col" style="padding: 15px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 8%;">No</th>
+                                                    <th scope="col" style="padding: 15px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 32%;">Email</th>
+                                                    <th scope="col" style="padding: 15px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 25%;">Nama</th>
+                                                    <th scope="col" style="padding: 15px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">Jenis</th>
+                                                    <th scope="col" style="padding: 15px 16px; text-align: center; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 15%;">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for client in clients %}
+                                                <tr style="transition: background-color 0.2s;" 
+                                                    onmouseover="this.style.backgroundColor='#f8fafc'" 
+                                                    onmouseout="this.style.backgroundColor='white'">
+                                                    <td style="padding: 15px 16px; text-align: left; color: #374151; border-bottom: 1px solid #eaedf2; font-weight: 500;">
+                                                        {{ forloop.counter }}
+                                                    </td>
+                                                    <td style="padding: 15px 16px; text-align: left; color: #374151; border-bottom: 1px solid #eaedf2;">
+                                                        {% if client.email %}
+                                                            <span style="color: #1f2937;">{{ client.email }}</span>
+                                                        {% else %}
+                                                            <span style="color: #9ca3af; font-style: italic;">Tidak tersedia</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td style="padding: 15px 16px; text-align: left; color: #374151; border-bottom: 1px solid #eaedf2; font-weight: 500;">
+                                                        {% if client.nama %}
+                                                            {{ client.nama }}
+                                                        {% else %}
+                                                            <span style="color: #9ca3af; font-style: italic;">-</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td style="padding: 15px 16px; text-align: left; color: #374151; border-bottom: 1px solid #eaedf2;">
+                                                        {% if client.jenis %}
+                                                            <span class="badge" style="background-color: #e0e7ff; color: #3730a3; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;">
+                                                                {{ client.jenis }}
+                                                            </span>
+                                                        {% else %}
+                                                            <span style="color: #9ca3af; font-style: italic;">-</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td style="padding: 15px 16px; text-align: center; border-bottom: 1px solid #eaedf2;">
+                                                        {% if client.no_identitas %}
+                                                            <a href="{% url 'merah:show_klien_detail' client.no_identitas %}"
+                                                                class="btn btn-sm btn-primary"
+                                                                style="text-decoration: none; padding: 8px 12px; border-radius: 6px; background-color: #5a85e2; color: white; font-size: 13px; font-weight: 500; transition: all 0.3s; border: none; display: inline-flex; align-items: center; gap: 5px;"
+                                                                onmouseover="this.style.backgroundColor='#4a75d2'; this.style.transform='translateY(-1px)'"
+                                                                onmouseout="this.style.backgroundColor='#5a85e2'; this.style.transform='translateY(0)'">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                                                    width="14" 
+                                                                    height="14" 
+                                                                    viewBox="0 0 24 24" 
+                                                                    fill="none" 
+                                                                    stroke="currentColor" 
+                                                                    stroke-width="2" 
+                                                                    stroke-linecap="round" 
+                                                                    stroke-linejoin="round">
+                                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                                    <circle cx="12" cy="12" r="3"/>
+                                                                </svg>
+                                                                Detail
+                                                            </a>
+                                                        {% else %}
+                                                            <span style="color: #9ca3af; font-style: italic;">(ID Klien tidak valid)</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <div class="table-info" style="margin-top: 20px; padding: 15px; background-color: #f8fafc; border-radius: 8px; border-left: 4px solid #5a85e2;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span style="font-size: 14px; color: #5a6477; font-weight: 500;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                                    width="16" 
+                                                    height="16" 
+                                                    viewBox="0 0 24 24" 
+                                                    fill="none" 
+                                                    stroke="currentColor" 
+                                                    stroke-width="2" 
+                                                    stroke-linecap="round" 
+                                                    stroke-linejoin="round" 
+                                                    style="margin-right: 8px; vertical-align: text-bottom;">
+                                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                                    <circle cx="9" cy="7" r="4"/>
+                                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                                </svg>
+                                                Total Klien: <strong>{{ clients|length }}</strong>
+                                            </span>
+                                            {% if search_query %}
+                                                <span style="font-size: 13px; color: #6b7280;">Hasil pencarian untuk: "{{ search_query }}"</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                {% else %}
+                                    <div class="empty-state" style="padding: 60px 30px; text-align: center; background-color: #f9fafb; border-radius: 12px; margin-top: 20px;">
+                                        <div style="margin-bottom: 20px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                width="48" 
+                                                height="48" 
+                                                viewBox="0 0 24 24" 
+                                                fill="none" 
+                                                stroke="#9ca3af" 
+                                                stroke-width="2" 
+                                                stroke-linecap="round" 
+                                                stroke-linejoin="round" 
+                                                style="opacity: 0.6;">
+                                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                                <circle cx="9" cy="7" r="4"/>
+                                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                            </svg>
+                                        </div>
+                                        <h4 style="color: #5a6477; font-size: 20px; font-weight: 600; margin-bottom: 10px;">
+                                            {% if search_query %}
+                                                Tidak Ada Hasil Pencarian
+                                            {% else %}
+                                                Belum Ada Data Klien
+                                            {% endif %}
+                                        </h4>
+                                        <p style="color: #64748b; margin: 0; font-size: 15px; line-height: 1.5;">
+                                            {% if search_query %}
+                                                Tidak ditemukan klien yang cocok dengan pencarian "<strong>{{ search_query }}</strong>". <br>
+                                                Coba gunakan kata kunci lain atau hapus filter pencarian.
+                                            {% else %}
+                                                Belum ada data klien yang tersedia saat ini. <br>
+                                                Data klien akan muncul di sini setelah ditambahkan.
+                                            {% endif %}
+                                        </p>
+                                        {% if search_query %}
+                                            <div style="margin-top: 20px;">
+                                                <a href="{% url 'merah:show_data_klien' %}"
+                                                    class="btn btn-outline-primary"
+                                                    style="text-decoration: none; padding: 10px 20px; border-radius: 6px; border: 2px solid #5a85e2; color: #5a85e2; font-weight: 500; font-size: 14px; transition: all 0.3s;"
+                                                    onmouseover="this.style.backgroundColor='#5a85e2'; this.style.color='white'"
+                                                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='#5a85e2'">
+                                                    Tampilkan Semua Klien
+                                                </a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
-                    <div style="margin-top: 15px; font-size: 14px; color: #5a6477;">
-                        Total Klien: {{ clients|length }}
-                    </div>
-                    {% else %}
-                    <div style="padding: 30px; text-align: center; background-color: #f9fafb; border-radius: 8px; margin-top: 20px;">
-                        <div style="color: #5a6477; font-size: 18px; font-weight: 500; margin-bottom: 10px;">Tidak Ada Data Klien</div>
-                        <p style="color: #64748b; margin: 0;">Tidak ada klien yang tersedia saat ini.</p>
-                    </div>
-                    {% endif %}
                 </div>
+            </div>
+        {% else %}
+            <div class="col-12 col-md-8 col-lg-6"> 
+                <div class="alert text-center" role="alert" style="padding: 30px 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); background-color: #f8d7da; color: #721c24; border-left: 6px solid #d9534f; width: 100%;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#d9534f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block mx-auto mb-3">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <h4 class="alert-heading" style="font-weight: 700; font-size: 24px; color: #721c24; margin-bottom: 15px;">Akses Ditolak!</h4>
+                    <p style="color: #721c24; font-size: 17px; line-height: 1.6; margin-bottom: 0;">Anda tidak memiliki izin yang diperlukan (peran 'Front Desk') untuk mengakses halaman ini.</p>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="col-12 col-md-8 col-lg-6"> 
+            <div class="alert text-center" role="alert" style="padding: 30px 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); background-color: #fff3cd; color: #856404; border-left: 6px solid #ffc107; width: 100%;">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ffc107" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block mx-auto mb-3">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <h4 class="alert-heading" style="font-weight: 700; font-size: 24px; color: #856404; margin-bottom: 15px;">Akses Terbatas</h4>
+                <p style="color: #856404; font-size: 17px; line-height: 1.6; margin-bottom: 25px;">Anda harus masuk untuk melihat halaman ini.</p>
+                <a href="{% url 'putih:login' %}" class="btn btn-lg" style="background-color: #ffc107; border-color: #ffc107; color: #212529; font-weight: 600; padding: 12px 30px; font-size: 17px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: all 0.2s ease; text-decoration: none;" onmouseover="this.style.backgroundColor='#e0a800'; this.style.borderColor='#d39e00';" onmouseout="this.style.backgroundColor='#ffc107'; this.style.borderColor='#ffc107';">Masuk Sekarang</a>
             </div>
         </div>
-    </div>  
+    {% endif %}
+
 </div>
+
+<style>
+    .alert {
+        padding: 15px;
+        border-radius: 6px;
+        border-left-width: 4px; 
+        border-left-style: solid; 
+        margin-bottom: 10px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .alert-success {
+        background-color: #ecfdf5; 
+        border-left-color: #10b981; 
+        color: #047857;
+    }
+    .alert-error {
+        background-color: #fef2f2; 
+        border-left-color: #ef4444; 
+        color: #b91c1c;
+    }
+    .alert-heading { 
+        margin-top: 0;
+        margin-bottom: .5rem; 
+    }
+    @media (max-width: 768px) {
+        .search-container {
+            flex-direction: column !important;
+            gap: 15px !important;
+            max-width: none !important; 
+        }
+        .profile-card {
+            margin-left: 10px !important; 
+            margin-right: 10px !important;
+        }
+        .card-body {
+            padding: 20px !important;
+        }
+        .table-responsive {
+            font-size: 13px;
+        }
+        th, td {
+            padding: 10px 12px !important;
+        }
+        .card-header h2 {
+            font-size: 22px !important; 
+        }
+        .alert-heading { 
+            font-size: 20px !important;
+        }
+        .alert p { 
+            font-size: 16px !important;
+        }
+        .alert .btn-lg { 
+            font-size: 16px !important;
+            padding: 10px 25px !important;
+        }
+        .alert svg { 
+            width: 48px !important;
+            height: 48px !important;
+        }
+    }
+    @media (max-width: 576px) {
+        .search-input {
+            font-size: 16px !important; 
+        }
+        .alert-heading {
+            font-size: 18px !important;
+        }
+        .alert p {
+            font-size: 15px !important;
+        }
+        .alert .btn-lg { 
+            font-size: 15px !important;
+            padding: 9px 20px !important;
+        }
+        .alert svg {
+            width: 40px !important;
+            height: 40px !important;
+        }
+    }
+    .btn { 
+        transition: all 0.3s ease;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8fafc !important;
+    }
+    .search-input:focus,
+    .btn:focus { 
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(90, 133, 226, 0.1);
+    }
+</style>
 {% endblock content %}
