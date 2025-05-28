@@ -6,14 +6,10 @@
 <div class="auth-container">
     <h2>FORM LOGIN</h2>
 
-    {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
+    {% if message %}
+      <div class="alert alert-error">
+        {{ message }}
+      </div>
     {% endif %}
     
     <form method="post" action="{% url 'putih:login' %}">
