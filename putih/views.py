@@ -421,6 +421,7 @@ def login_view(request):
                     '''
                     dokter_result = query(query_str)
                     if isinstance(dokter_result, list) and len(dokter_result) == 1:
+                        logged_user['no_dokter_hewan'] = dokter_result[0]['no_dokter_hewan']
                         logged_user['role'] = 'dokter'
                     else:
                         # Jika bukan dokter, cek apakah perawat
@@ -448,6 +449,7 @@ def login_view(request):
                     logged_user['role'] = 'front_desk'
 
                 # berhasil login
+                print("User logged in:", logged_user)
                 request.session['logged_user'] = logged_user     
                 return redirect('putih:show_profile', role=logged_user['role'])
 
