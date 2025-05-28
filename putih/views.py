@@ -1,7 +1,10 @@
+import re
 from django.shortcuts import redirect, render
 import uuid
 from datetime import datetime 
 from django.contrib import messages
+from utils.query import query
+from utils.validators import *
 
 #Dummy Pengguna 
 pengguna = [
@@ -69,7 +72,7 @@ def register_klien(request):
         no_identitas = str(uuid.uuid4())
         tanggal_reg = datetime.now().strftime("%d-%m-%Y")
         
-        if request.POST.get('company_name'):  # If company_name exists, process as company client
+        if request.POST.get('company_name'): 
             company_name = request.POST.get('company_name')
             error_message = validate_registration_data(email, no_identitas, password, phone, company_name=company_name)
             
@@ -116,34 +119,184 @@ def register_klien(request):
     else:
         return render(request, 'register_klien_individu.html') 
 
+def register_front_desk(request):
+    context = {
+        'form_data': request.POST if request.method == 'POST' else {}
+    }
+
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '')
+        phone = request.POST.get('phone', '').strip()
+        start_date = request.POST.get('start_date', '').strip()
+        address = request.POST.get('address', '').strip()
+
+        field_errors = {}
+
+        email_val_errors = validate_email(email)
+        if email_val_errors:
+            field_errors['email'] = email_val_errors
+
+        password_val_errors = validate_password(password)
+        if password_val_errors:
+            field_errors['password'] = password_val_errors
+        
+        phone_val_errors = validate_phone(phone)
+        if phone_val_errors:
+            field_errors['phone'] = phone_val_errors
+
+        address_val_errors = validate_address(address)
+        if address_val_errors:
+            field_errors['address'] = address_val_errors
+
+        start_date_val_errors = validate_start_date(start_date)
+        if start_date_val_errors:
+            field_errors['start_date'] = start_date_val_errors
+
+        if field_errors:
+            context['errors'] = field_errors
+            return render(request, 'register_front_desk.html', context)
+
+        try:
+            query_str_user = f'''
+                INSERT INTO "USER" (email, password, alamat, nomor_telepon)
+                VALUES ('{email}', '{password}', '{address}', '{phone}')
+            ''' 
+            result_user = query(query_str_user)
+
+            if result_user != 1:
+                error_detail = ""
+                context['error_message'] = result_user["data"]
+                return render(request, 'register_front_desk.html', context)
+
+            employee_num = str(uuid.uuid4())
+            query_str_pegawai = f'''
+                INSERT INTO PEGAWAI (no_pegawai, tanggal_mulai_kerja, tanggal_akhir_kerja, email_user)
+                VALUES ('{employee_num}', '{start_date}', NULL, '{email}')
+            ''' 
+            result_pegawai = query(query_str_pegawai)
+
+            if result_pegawai != 1:
+                error_detail = "" 
+                context['error_message'] = f"Failed to create employee record.{error_detail}"
+                return render(request, 'register_front_desk.html', context)
+
+            query_str_front_desk = f'''
+                INSERT INTO FRONT_DESK (no_front_desk)
+                VALUES ('{employee_num}')
+            ''' 
+            result_front_desk = query(query_str_front_desk)
+
+            if result_front_desk != 1:
+                error_detail = "" 
+                context['error_message'] = f"Failed to create front desk record.{error_detail}"
+                return render(request, 'register_front_desk.html', context)
+
+            messages.success(request, 'Registration successful!')
+            return redirect('putih:login')
+
+        except Exception as e:
+            context['error_message'] = f"An unexpected error occurred: {str(e)}"
+            return render(request, 'register_front_desk.html', context)
+
+    return render(request, 'register_front_desk.html', context)
+
 def login_view(request):
+    context = {
+        "message" : ""
+    }
+
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        global logged_pengguna
-        logged_pengguna = {}
+        query_str = f'''
+            SELECT * FROM "USER" WHERE email = '{email}' AND password = '{password}'
+        '''
+        result = query(query_str)
 
-        for user in pengguna:
-            if user['email'] == email and user['password'] == password:
-                logged_pengguna = user
-                return redirect('putih:show_profile')
+        if len(result) == 1:
+            # get user role
+            logged_user = {
+                'email': result[0]['email'],
+                'address': result[0]['alamat'],
+                'phone': result[0]['nomor_telepon'],
+            }
 
-        messages.error(request, 'Invalid email or password')
-        return render(request, 'login.html')
+            # cek apakah user adalah klien
+            query_str = f'''
+                SELECT * FROM klien WHERE email = '{email}'
+            '''
+            klien_result = query(query_str)
 
-    return render(request, 'login.html')
+            if len(klien_result) == 1:
+                # validasi klien
+                logged_user['no_identitas'] = klien_result[0]['no_identitas']
+                logged_user['tanggal_registrasi'] = klien_result[0]['tanggal_registrasi']
+
+                # cek apakah klien adalah individu
+                query_str   = f'''
+                    SELECT * FROM individu WHERE no_identitas_klien = '{logged_user['no_identitas']}'
+                '''
+                individu_result = query(query_str) 
+                if len(individu_result) == 1:
+                    logged_user['nama_depan'] = individu_result[0]['nama_depan']
+                    logged_user['nama_tengah'] = individu_result[0]['nama_tengah']
+                    logged_user['nama_belakang'] = individu_result[0]['nama_belakang']
+                    logged_user['role'] = 'klien_individu'
+                else:
+                    # klien adalah perusahaan
+                    query_str = f'''
+                        SELECT * FROM perusahaan WHERE no_identitas_klien = '{logged_user['no_identitas']}'
+                    '''
+                    perusahaan_result = query(query_str)
+                    if len(perusahaan_result) == 1:
+                        logged_user['nama_perusahaan'] = perusahaan_result[0]['nama_perusahaan']
+                        logged_user['role'] = 'klien_perusahaan'
+                
+            else:
+                # user adalah pegawai 
+                query_str = f'''
+                    SELECT * FROM pegawai WHERE email_user = '{email}'
+                '''
+                pegawai_result = query(query_str)
+                logged_user['no_pegawai'] = pegawai_result[0]['no_pegawai']
+                logged_user['tanggal_mulai_kerja'] = pegawai_result[0]['tanggal_mulai_kerja'].isoformat()
+                logged_user['tanggal_akhir_kerja'] = pegawai_result[0]['tanggal_akhir_kerja'].isoformat() if pegawai_result[0]['tanggal_akhir_kerja'] else None
+
+                # cek apakah pegawai adalah tenaga medis
+                query_str = f'''
+                    SELECT * FROM tenaga_medis WHERE no_tenaga_medis = '{logged_user['no_pegawai']}'
+                '''
+                tenaga_medis_result = query(query_str)
+                
+                # TODO: urus login tenaga medis
+                if len(tenaga_medis_result) == 1:
+                    pass 
+                else:
+                    # validasi pegawai front desk
+                    query_str = f'''
+                        SELECT * FROM front_desk WHERE no_front_desk = '{logged_user['no_pegawai']}'
+                    '''
+                    front_desk_result = query(query_str)
+                    if len(front_desk_result) == 0:
+                        context['message'] = "Invalid email or password"
+                        return render(request, 'login.html', context)
+
+                    logged_user['no_front_desk'] = front_desk_result[0]['no_front_desk']
+                    logged_user['role'] = 'front_desk'
+
+                # berhasil login
+                request.session['logged_user'] = logged_user     
+                return redirect('putih:show_profile', role=logged_user['role'])
+
+        context['message'] = "Invalid email or password"
+    return render(request, 'login.html', context)
   
-def show_profile(request):
-    global logged_pengguna
-    print(logged_pengguna)
-    if logged_pengguna.get('doctor_id'):
-        return show_profile_dokter(request)
-    if logged_pengguna.get('no_pegawai'):
-        return show_profile_frontdesk(request)
-    if logged_pengguna.get('no_perawat'):
-        return show_profile_perawat(request)
-    return render(request, "profil_klien.html", logged_pengguna)
+def show_profile(request, role):
+    context ={}
+    context['logged_user'] = request.session.get('logged_user', {})
+    return render(request, f'profil_{role}.html', context)
 
 def show_profile_frontdesk(request):
     return render(request, "profil_front_desk.html", logged_pengguna)
@@ -155,8 +308,7 @@ def show_profile_perawat(request):
     return render(request, "profil_perawat.html", logged_pengguna)
 
 def logout(request):
-    global logged_pengguna
-    logged_pengguna = {}
+    request.session.flush()
     messages.success(request, 'Berhasil logout!')
     return redirect('putih:login')
 
@@ -210,35 +362,127 @@ def update_dokter(request):
 def update_perawat(request):
     return render(request, 'update_perawat.html')
 
-def update_frontdesk(request):
-    return render(request, 'update_front_desk.html')
+def update_front_desk(request):
+    logged_user = request.session.get('logged_user')
+    if not logged_user or logged_user.get('role') != 'front_desk':
+        messages.error(request, "Akses ditolak. Anda harus login sebagai Front Desk Officer.")
+        return redirect('putih:login')
+
+    user_email = logged_user.get('email')
+    no_pegawai = logged_user.get('no_pegawai')
+
+    context = {'logged_user': logged_user, 'form_values': {}}
+
+    if request.method == 'POST':
+        new_alamat = request.POST.get('alamat', '').strip()
+        new_nomor_telepon = request.POST.get('nomor_telepon', '').strip()
+        new_tanggal_akhir_kerja_str = request.POST.get('tanggal_akhir_kerja', '').strip()
+
+        context['form_values'] = {
+            'alamat': new_alamat,
+            'nomor_telepon': new_nomor_telepon,
+            'tanggal_akhir_kerja': new_tanggal_akhir_kerja_str,
+        }
+
+        errors = {}
+        addr_errors = validate_address(new_alamat)
+        if addr_errors: errors['alamat'] = addr_errors
+        
+        phone_errors = validate_phone(new_nomor_telepon)
+        if phone_errors: errors['nomor_telepon'] = phone_errors
+
+        tanggal_mulai_kerja_session_str = logged_user.get('tanggal_mulai_kerja')
+        tgl_akhir_errors = validate_end_date(new_tanggal_akhir_kerja_str, tanggal_mulai_kerja_session_str)
+        if tgl_akhir_errors: errors['tanggal_akhir_kerja'] = tgl_akhir_errors
+
+        if errors:
+            context['errors'] = errors
+            return render(request, 'update_front_desk.html', context)
+
+        try:
+            query_user_update_str = f"UPDATE \"USER\" SET alamat = '{new_alamat}', nomor_telepon = '{new_nomor_telepon}' WHERE email = '{user_email}'" # UNSAFE
+            query(query_user_update_str) 
+
+            db_tanggal_akhir_kerja = new_tanggal_akhir_kerja_str if new_tanggal_akhir_kerja_str else None
+            
+            if db_tanggal_akhir_kerja is None:
+                query_pegawai_update_str = f"UPDATE \"PEGAWAI\" SET tanggal_akhir_kerja = NULL WHERE no_pegawai = '{no_pegawai}'" # UNSAFE
+            else:
+                query_pegawai_update_str = f"UPDATE \"PEGAWAI\" SET tanggal_akhir_kerja = '{db_tanggal_akhir_kerja}' WHERE no_pegawai = '{no_pegawai}'" # UNSAFE
+            query(query_pegawai_update_str)
+
+            # Update session data
+            request.session['logged_user']['address'] = new_alamat
+            request.session['logged_user']['phone'] = new_nomor_telepon
+            request.session['logged_user']['tanggal_akhir_kerja'] = db_tanggal_akhir_kerja 
+            request.session.modified = True
+
+            messages.success(request, "Profil berhasil diperbarui.")
+            return redirect('putih:show_profile', role=logged_user['role'])
+
+        except Exception as e:
+            messages.error(request, f"Terjadi kesalahan saat memperbarui profil: {str(e)}")
+            return render(request, 'update_front_desk.html', context)
+
+    else: 
+        context['form_values'] = {
+            'alamat': logged_user.get('address', ''),
+            'nomor_telepon': logged_user.get('phone', ''),
+            'tanggal_akhir_kerja': logged_user.get('tanggal_akhir_kerja', '') or ''
+        }
+        return render(request, 'update_front_desk.html', context)
 
 def update_password_placeholder(request):
     return render(request, 'update_password_placeholder.html')
 
 def update_password(request):
+    logged_user = request.session.get('logged_user')
+    if not logged_user:
+        messages.error(request, "You must be logged in to update your password.")
+        return redirect('putih:login')
+    user_email = logged_user.get('email')
+    if not user_email:
+        messages.error(request, "User session data is incomplete. Please log in again.")
+        return redirect('putih:login')
+
+    context = {
+        'logged_user': logged_user,
+        'form_values': {}
+    }
+
     if request.method == 'POST':
         old_password = request.POST.get('old_password')
         new_password1 = request.POST.get('new_password1')
         new_password2 = request.POST.get('new_password2')
 
-        errors = validate_password_update(old_password, new_password1, new_password2)
+        context['form_values'] = {'old_password': old_password}
+
+        errors = validate_password_update(user_email, old_password, new_password1, new_password2, query)
 
         if errors:
-            context = {
-                'errors': errors,
-                'old_password': old_password,
-                'new_password1': new_password1,
-                'new_password2': new_password2,
-            }
+            context['errors'] = errors
             return render(request, 'update_password.html', context)
 
-        logged_pengguna['password'] = new_password1
+        password_to_store_in_db = new_password1
+        update_query_str = f"UPDATE \"USER\" SET password = '{password_to_store_in_db}' WHERE email = '{user_email}'" 
+        
+        try:
+            update_result = query(update_query_str) 
+            if update_result is not None and int(update_result) >= 0:
+                messages.success(request, "Your password has been updated successfully.")
+            
+                user_role = logged_user.get('role')
+                return redirect('putih:show_profile', role=user_role)
+            
+            else:
+                messages.error(request, "Failed to update password in the database. No changes were made or an error occurred.")
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}. Please try again.")
+        
+        context['form_values'] = {'old_password': old_password}
+        return render(request, 'update_password.html', context)
 
-        messages.success(request, "Your password has been updated successfully.")
-        return redirect('putih:show_profile') 
-
-    return render(request, 'update_password.html')
+    return render(request, 'update_password.html', context)
 
 def validate_registration_data(email, no_identitas, password, phone, first_name=None, middle_name=None, last_name=None, company_name=None):
 
@@ -331,28 +575,3 @@ def validate_update_data(address, phone, first_name=None, middle_name=None, last
         errors['company_name'] = "Company Name exceeds character limit."
 
     return errors
-
-def validate_password_update(old_password, new_password1, new_password2):
-
-    errors = {}
-
-    if not logged_pengguna or logged_pengguna.get('password') != old_password:
-        errors['old_password'] = 'Incorrect old password.'
-    
-    if old_password == new_password1:
-        errors['new_password1'] = 'New password cannot be the same as the old password.'
-
-    if len(new_password1) < 8:
-        errors['new_password1'] = 'New password must be at least 8 characters long.'
-    elif not any(char.isdigit() for char in new_password1) or not any(char.isalpha() for char in new_password1):
-        errors['new_password1'] = 'Password must contain both letters and numbers.'
-    
-    if new_password1 != new_password2:
-        errors['new_password2'] = 'New passwords do not match.'
-
-    return errors
-
-#<!-- DUMMY FATHUR -->
-def get_logged_user():
-    return logged_pengguna if logged_pengguna else None
-

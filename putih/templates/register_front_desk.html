@@ -1,0 +1,89 @@
+{% extends 'auth_base.html' %}
+
+{% block title %}Form Register - Front Desk Officer{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <h2>Form Register - Front Desk Officer</h2>
+
+  {% if error_message %}
+    <p style="color: red; text-align: center; margin-bottom: 15px;">{{ error_message }}</p>
+  {% endif %}
+
+  {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" action="{% url 'putih:register_front_desk' %}"> 
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label for="email">Email <span class="required">*</span></label>
+      <input type="email" name="email" id="email" value="{{ form_data.email|default:'' }}" required>
+      {% if errors.email %}
+        <div class="field-error-list" style="color: red; font-size: 0.9em; margin-top: 5px;">
+          {% for error in errors.email %}
+            <p class="error-item" style="margin: 2px 0;">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password <span class="required">*</span></label>
+      <input type="password" name="password" id="password" required>
+      {% if errors.password %}
+        <div class="field-error-list" style="color: red; font-size: 0.9em; margin-top: 5px;">
+          {% for error in errors.password %}
+            <p class="error-item" style="margin: 2px 0;">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label for="phone">Nomor Telepon <span class="required">*</span></label>
+      <input type="text" name="phone" id="phone" value="{{ form_data.phone|default:'' }}" required>
+      {% if errors.phone %}
+        <div class="field-error-list" style="color: red; font-size: 0.9em; margin-top: 5px;">
+          {% for error in errors.phone %}
+            <p class="error-item" style="margin: 2px 0;">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label for="start_date">Tanggal Diterima <span class="required">*</span></label>
+      <input type="date" name="start_date" id="start_date" value="{{ form_data.start_date|default:'' }}" required>
+      {% if errors.start_date %}
+        <div class="field-error-list" style="color: red; font-size: 0.9em; margin-top: 5px;">
+          {% for error in errors.start_date %}
+            <p class="error-item" style="margin: 2px 0;">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label for="address">Alamat <span class="required">*</span></label>
+      <textarea name="address" id="address" required>{{ form_data.address|default:'' }}</textarea>
+      {% if errors.address %}
+        <div class="field-error-list" style="color: red; font-size: 0.9em; margin-top: 5px;">
+          {% for error in errors.address %}
+            <p class="error-item" style="margin: 2px 0;">{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <button type="submit" class="auth-button">Register</button>
+  </form>
+</div>
+{% endblock %}
