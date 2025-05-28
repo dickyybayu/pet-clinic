@@ -293,3 +293,14 @@ h3 {
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: left;
+}
