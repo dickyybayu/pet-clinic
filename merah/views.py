@@ -530,66 +530,68 @@ def show_klien_detail(request, no_identitas):
     if not logged_user or logged_user.get('role') != 'front_desk':
         messages.error(request, "Anda harus login atau memiliki role front desk untuk akses data klien.")
         return redirect('putih:login')
-
-    sql_client = """
-        SELECT
-            K.no_identitas,
-            K.email,
-            K.tanggal_registrasi,
-            U.alamat,        
-            U.nomor_telepon,
-            I.nama_depan,
-            I.nama_tengah,
-            I.nama_belakang,
-            P.nama_perusahaan,
-            COALESCE(
+    else:
+        sql_client = """
+            SELECT
+                K.no_identitas,
+                K.email,
+                K.tanggal_registrasi,
+                U.alamat,        
+                U.nomor_telepon,
+                I.nama_depan,
+                I.nama_tengah,
+                I.nama_belakang,
                 P.nama_perusahaan,
-                TRIM(CONCAT_WS(' ', I.nama_depan, I.nama_tengah, I.nama_belakang))
-            ) AS nama_lengkap,  -- Combined name for display
-            CASE
-                WHEN P.no_identitas_klien IS NOT NULL THEN 'Perusahaan'
-                ELSE 'Individu'
-            END AS jenis_klien
-        FROM
-            KLIEN K
-        LEFT JOIN
-            "USER" U ON K.email = U.email -- Join KLIEN with USER
-        LEFT JOIN
-            INDIVIDU I ON K.no_identitas = I.no_identitas_klien
-        LEFT JOIN
-            PERUSAHAAN P ON K.no_identitas = P.no_identitas_klien
-        WHERE
-            K.no_identitas = %s
-    """
+                COALESCE(
+                    P.nama_perusahaan,
+                    TRIM(CONCAT_WS(' ', I.nama_depan, I.nama_tengah, I.nama_belakang))
+                ) AS nama_lengkap,  -- Combined name for display
+                CASE
+                    WHEN P.no_identitas_klien IS NOT NULL THEN 'Perusahaan'
+                    ELSE 'Individu'
+                END AS jenis_klien
+            FROM
+                KLIEN K
+            LEFT JOIN
+                "USER" U ON K.email = U.email -- Join KLIEN with USER
+            LEFT JOIN
+                INDIVIDU I ON K.no_identitas = I.no_identitas_klien
+            LEFT JOIN
+                PERUSAHAAN P ON K.no_identitas = P.no_identitas_klien
+            WHERE
+                K.no_identitas = %s
+        """
 
-    sql_client = sql_client.replace("%s", f"'{str(no_identitas)}'")
-    client_list = query(sql_client) 
+        sql_client = sql_client.replace("%s", f"'{str(no_identitas)}'")
+        client_list = query(sql_client) 
 
-    if not client_list:
-        messages.error(request, "Data klien tidak ditemukan.")
-        return redirect('putih:show_data_klien')
+        if not client_list:
+            messages.error(request, "Data klien tidak ditemukan.")
+            return redirect('putih:show_data_klien')
 
-    client_info = client_list[0]
-    sql_pets = """
-        SELECT
-            H.nama AS nama_hewan,
-            JH.nama AS nama_jenis_hewan
-        FROM
-            HEWAN H
-        LEFT JOIN
-            JENIS_HEWAN JH ON H.id_jenis = JH.id
-        WHERE
-            H.no_identitas_klien = %s
-        ORDER BY
-            H.nama;
-    """
+        client_info = client_list[0]
+        sql_pets = """
+            SELECT
+                H.nama AS nama_hewan,
+                JH.nama AS nama_jenis_hewan,
+                H.tanggal_lahir
+            FROM
+                HEWAN H
+            LEFT JOIN
+                JENIS_HEWAN JH ON H.id_jenis = JH.id
+            WHERE
+                H.no_identitas_klien = %s
+            ORDER BY
+                H.nama;
+        """
 
-    sql_pets = sql_pets.replace("%s", f"'{str(no_identitas)}'")
-    client_pets = query(sql_pets) 
+        sql_pets = sql_pets.replace("%s", f"'{str(no_identitas)}'")
+        client_pets = query(sql_pets) 
+        print(client_pets)
 
-    context = {
-        "logged_user": logged_user,
-        "client": client_info,
-        "pets": client_pets if client_pets else [],
-    }
-    return render(request, "show_klien_detail.html", context)
+        context = {
+            "logged_user": logged_user,
+            "client": client_info,
+            "pets": client_pets if client_pets else [],
+        }
+        return render(request, "show_klien_detail.html", context)
