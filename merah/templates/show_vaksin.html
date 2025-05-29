@@ -5,19 +5,18 @@
 <div class="container-fluid" style="margin-top: 30px; background-color: #f5f7fa; min-height: calc(100vh - 80px); padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
             <div class="row justify-content-center" style="width: 100%;"> 
                 <div class="col-12 col-xl-10">
-                    <div class="profile-card" style="background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); overflow: hidden; width: 100%; margin: 30px auto; max-width: 1000px;"> {/* Ditambahkan margin auto dan max-width untuk centering konsisten */}
+                    <div class="profile-card" style="background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); overflow: hidden; width: 100%; margin: 30px auto; max-width: 1000px;"> 
                         
                         <div class="card-header" style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
                             <div style="display: flex; align-items: center; justify-content: flex-start;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.9; margin-right: 12px; margin-top: 1px;">
-                                    <path d="M3 3h18v18H3zM9 9h6v6H9z"/> {/* Icon untuk daftar/list, bisa diganti */}
+                                    <path d="M3 3h18v18H3zM9 9h6v6H9z"/> 
                                 </svg>
                                 <h2 style="font-size: 26px; margin: 0; font-weight: 600; line-height: 1;">Daftar Vaksin</h2>
                             </div>
                         </div>
                         
                         <div class="card-body" style="padding: 30px;">
-                            {% comment %} --- Pesan Django (Error/Sukses) --- {% endcomment %}
                             {% if messages %}
                             <div class="messages" style="margin-bottom: 20px;">
                                 {% for message in messages %}
@@ -27,10 +26,9 @@
                                 {% endfor %}
                             </div>
                             {% endif %}
-                            {% comment %} --- Akhir Blok Pesan Django --- {% endcomment %}
 
                             <form method="GET" action="{% url 'merah:show_vaksin' %}" class="mb-4">
-                                {% csrf_token %} {# Meskipun GET, tidak ada salahnya ada jika form lain POST #}
+                                {% csrf_token %} 
                                 <div class="search-container" style="display: flex; gap: 10px; max-width: 600px; margin-bottom: 25px;">
                                     <div class="search-input-wrapper" style="position: relative; flex-grow: 1;">
                                         <svg style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; z-index: 2;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -44,7 +42,7 @@
                             </form>
 
                             <div class="table-section">
-                                {% if vaccines %} {# Mengganti vaksin_data menjadi vaccines agar lebih umum #}
+                                {% if vaccines %} 
                                     <div class="table-responsive" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
                                         <table class="table table-hover mb-0" style="border-collapse: collapse; width: 100%;">
                                             <thead style="background-color: #f9fafb;">
@@ -58,18 +56,18 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {% for vaccine_item in vaccines %} {# Mengganti vaccine menjadi vaccine_item #}
+                                                {% for vaccine_item in vaccines %}
                                                 <tr style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='white'">
                                                     <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">{{ forloop.counter }}</td>
                                                     <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">{{ vaccine_item.kode }}</td>
                                                     <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">{{ vaccine_item.nama }}</td>
-                                                    <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">Rp {{ vaccine_item.harga|floatformat:0 }}</td> {# Menambahkan format harga #}
+                                                    <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">Rp {{ vaccine_item.harga|floatformat:0 }}</td>
                                                     <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">{{ vaccine_item.stok }}</td>
                                                     <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">
                                                         <div style="display: flex; gap: 5px; justify-content: center;">
                                                             <a href="{% url 'merah:update_stok_vaksin' vaccine_item.kode %}" style="text-decoration: none; padding: 6px 12px; border-radius: 4px; background-color: #ffa500; color: white; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; min-width:110px;">Update Stok</a>
                                                             <a href="{% url 'merah:update_vaksin' vaccine_item.kode %}" style="text-decoration: none; padding: 6px 12px; border-radius: 4px; background-color: #5a85e2; color: white; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; min-width:80px;">Update Info</a>
-                                                            {% if not vaccine_item.is_used %} {# Asumsi ada field 'is_used' pada objek vaccine_item #}
+                                                            {% if not vaccine_item.is_used %} 
                                                             <button class="delete-btn" data-id="{{ vaccine_item.kode }}" data-name="{{ vaccine_item.nama }}" style="padding: 6px 12px; border-radius: 4px; background-color: #ef4444; color: white; font-size: 14px; font-weight: 500; border: none; cursor: pointer; min-width:80px;">Hapus</button>
                                                             {% endif %}
                                                         </div>
@@ -113,7 +111,7 @@
                                 </div>
                             </div>
                         
-                            <div style="margin-top: 30px; display: flex; justify-content: flex-end;"> {# Mengubah justify-content agar tombol Create ke kanan #}
+                            <div style="margin-top: 30px; display: flex; justify-content: flex-end;"> 
                                 <a href="{% url 'merah:create_vaksin' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; transition: all 0.2s ease;">Tambah Vaksin Baru</a>
                             </div>
                         </div>
@@ -130,28 +128,12 @@
     const popupId = document.getElementById('popup-id');
     const popupName = document.getElementById('popup-name');
     let selectedIdToDelete = null;
-
-    // Ambil CSRF token jika ada di halaman (misalnya dari form pencarian GET atau token yang di-render khusus)
-    // Jika tidak ada form lain di halaman yang merender {% csrf_token %}, Anda perlu menambahkannya
-    // agar script ini bisa mengambilnya. Cara mudah adalah render {% csrf_token %} sebelum script ini.
     let csrfTokenValue = null;
     const csrfInputGlobal = document.querySelector('input[name="csrfmiddlewaretoken"]');
     if (csrfInputGlobal) {
         csrfTokenValue = csrfInputGlobal.value;
     } else {
-        // Jika Anda menempatkan {% csrf_token %} tepat sebelum script ini, Django akan merendernya
-        // sebagai tag <input> yang bisa Anda query di sini, atau Anda bisa inject nilainya
-        // langsung ke JavaScript variabel jika script ini inline di template.
-        // Untuk contoh ini, kita akan mengasumsikan {{ csrf_token_value_for_js }} di-pass ke context
-        // atau Anda memastikan ada <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-        // di suatu tempat di body yang bisa diakses.
-        // Jika {{ csrf_token }} dirender sebagai input tag:
-        // const renderedCsrfInput = document.body.querySelector('input[name="csrfmiddlewaretoken"]'); // Hati-hati jika ada banyak
-        // if (renderedCsrfInput) csrfTokenValue = renderedCsrfInput.value;
         console.warn("CSRF token input not found directly. Ensure it's available to the script.");
-        // Sebagai fallback sementara jika script ini di dalam template Django dan token di-render:
-        // {% csrf_token %} akan dirender sebagai input, kita coba ambil dari sana jika belum ada
-        // Ini akan bekerja jika {% csrf_token %} ada di dalam form GET search di atas.
     }
 
 
@@ -175,10 +157,8 @@
 
     confirmBtn.addEventListener('click', function() {
         if (selectedIdToDelete) {
-            // Ambil CSRF token lagi tepat sebelum submit, untuk memastikan nilainya ada
-            // Jika Anda sudah yakin csrfTokenValue di atas valid, bisa langsung digunakan.
             let currentCsrfToken = csrfTokenValue;
-            if (!currentCsrfToken) { // Coba cari lagi jika null
+            if (!currentCsrfToken) {
                 const csrfInputForSubmit = document.querySelector('form[method="GET"] input[name="csrfmiddlewaretoken"]') || document.querySelector('input[name="csrfmiddlewaretoken"]');
                 if (csrfInputForSubmit) {
                     currentCsrfToken = csrfInputForSubmit.value;
@@ -193,7 +173,6 @@
 
             const form = document.createElement('form');
             form.method = 'POST';
-            // Pastikan URL ini benar dan ada di urls.py Anda
             form.action = `/merah/delete_vaksin/${selectedIdToDelete}/`; 
 
             const csrfInputHidden = document.createElement('input');

@@ -19,7 +19,6 @@
                         </div>
                         
                         <div style="padding: 30px;">
-                            {% comment %} --- Pesan Django (Error/Sukses Form) --- {% endcomment %}
                             {% if messages %}
                             <div class="messages" style="margin-bottom: 20px;">
                                 {% for message in messages %}
@@ -29,7 +28,6 @@
                                 {% endfor %}
                             </div>
                             {% endif %}
-                            {% comment %} --- Akhir Blok Pesan Django --- {% endcomment %}
             
                             <form method="POST" action="{% url 'merah:create_vaksinasi' %}">
                                 {% csrf_token %}

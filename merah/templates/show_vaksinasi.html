@@ -20,7 +20,6 @@
                         
                         <div style="padding: 30px;">
             
-                            {% comment %} --- Pesan Django (Error/Sukses) --- {% endcomment %}
                             {% if messages %}
                             <div class="messages" style="margin-bottom: 20px;">
                                 {% for message in messages %}
@@ -30,7 +29,6 @@
                                 {% endfor %}
                             </div>
                             {% endif %}
-                            {% comment %} --- Akhir Blok Pesan Django --- {% endcomment %}
             
                             <div style="margin-top: 10px;">
                                 {% if vaksin_data %}
@@ -97,8 +95,6 @@
 </div>
 
 <script>
-    // Script untuk delete popup Anda tetap di sini, di dalam blok konten jika diperlukan
-    // atau lebih baik di manage oleh file JS statis yang di-include oleh base template
     const deleteButtons = document.querySelectorAll('.delete-btn');
     const popup = document.getElementById('delete-confirm-popup');
     const cancelBtn = document.getElementById('cancel-delete');
@@ -106,16 +102,6 @@
     const popupVaksin = document.getElementById('popup-vaksin');
     const popupId = document.getElementById('popup-id');
     let selectedIdToDelete = null;
-
-    // Anda mungkin perlu memastikan CSRF token tersedia untuk script ini jika belum
-    // Misalnya, jika Anda tidak memiliki form lain di halaman ini yang merender {% csrf_token %}
-    // Anda bisa meletakkan {% csrf_token %} di suatu tempat yang tersembunyi atau
-    // mengambilnya dari meta tag jika diset di base template.
-    // Untuk contoh ini, kita asumsikan ada cara untuk mendapatkan csrfToken
-    // Cara mudah jika <script> ini ada di template:
-    // const csrfTokenValue = "{{ csrf_token }}"; <-- ini akan dirender Django
-    // atau ambil dari input field jika ada di suatu tempat di halaman (misal dari form lain)
-    // const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
     deleteButtons.forEach(button => {
         button.addEventListener('click', function (e) {
@@ -144,29 +130,12 @@
             const csrfInput = document.createElement('input');
             csrfInput.type = 'hidden';
             csrfInput.name = 'csrfmiddlewaretoken';
-            // Pastikan csrfTokenValue ini terdefinisi dengan benar. Jika script ini ada di akhir template,
-            // dan Anda merender {% csrf_token %} di suatu tempat (bisa juga di dalam tag script ini),
-            // maka bisa diakses. Jika tidak, Anda perlu cara lain untuk mendapatkan token ini.
-            // Misal, jika Anda punya form pencarian atau filter di halaman ini:
             const mainCsrfTokenInput = document.querySelector('form input[name="csrfmiddlewaretoken"]');
             if (mainCsrfTokenInput) {
                  csrfInput.value = mainCsrfTokenInput.value;
             } else {
-                // Fallback jika tidak ada form lain dengan token, ini mungkin perlu cara lain.
-                // Untuk pengembangan, Anda bisa sementara hardcode token yang valid, TAPI JANGAN LAKUKAN INI DI PRODUKSI.
-                // Atau pastikan {% csrf_token %} di-render di suatu tempat yang bisa diakses script.
-                // Contoh: render {% csrf_token %} di awal <body> atau sebelum script ini.
-                // Jika block script ada di template Django, {{ csrf_token }} akan di-expand menjadi tag input.
-                // Jadi, mengambilnya dari input yang di-render itu lebih aman.
-                // Untuk sementara, asumsikan Anda telah menambahkan {% csrf_token %} di awal body,
-                // sehingga querySelector('input[name="csrfmiddlewaretoken"]') akan menemukannya.
-                // Jika TIDAK ADA form lain di halaman ini, Anda HARUS menambahkan {% csrf_token %}
-                // secara manual (misalnya sebelum tag script ini)
-                // agar querySelector di atas bisa mengambilnya.
-                // Atau, letakkan const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-                // setelah Anda yakin tag {% csrf_token %} sudah dirender.
-                 console.error("CSRF token not found for delete operation!"); // Tambahkan error handling
-                 popup.style.display = 'none'; // Sembunyikan popup jika tidak bisa lanjut
+                 console.error("CSRF token not found for delete operation!");
+                 popup.style.display = 'none';
                  return;
             }
             form.appendChild(csrfInput);
