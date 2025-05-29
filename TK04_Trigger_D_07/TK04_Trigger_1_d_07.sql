@@ -44,3 +44,8 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_check_unique_email
+BEFORE INSERT ON "USER"
+FOR EACH ROW
+EXECUTE FUNCTION check_unique_email();
