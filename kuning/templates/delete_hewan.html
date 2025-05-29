@@ -58,12 +58,23 @@
 <body>
   <div class="delete-container">
     <h4>Konfirmasi Penghapusan</h4>
-    <p>Apakah kamu yakin ingin menghapus hewan peliharaan bernama <strong class="text-danger">{{ hewan.nama }}</strong> dengan ID <strong class="text-danger">{{ hewan.id }}</strong>?</p>
+    <p>Apakah kamu yakin ingin menghapus hewan peliharaan bernama 
+      <strong class="text-danger">{{ hewan.nama }}</strong> milik 
+      <strong class="text-danger">{{ hewan.pemilik }}</strong>?</p>
     <form method="post">
       {% csrf_token %}
+
+      {% if error %}
+        <div class="alert alert-danger mt-3">{{ error }}</div>
+      {% endif %}
+
       <div class="d-flex justify-content-center">
         <a href="{% url 'kuning:hewan_list' %}" class="btn btn-cancel">Batal</a>
-        <button type="submit" class="btn btn-danger-custom">Hapus</button>
+        
+        {% if role == "front_desk" %}
+          <button type="submit" class="btn btn-danger-custom">Hapus</button>
+        {% endif %}
+        
       </div>
     </form>
   </div>
