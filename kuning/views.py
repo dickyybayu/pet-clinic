@@ -3,45 +3,6 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound
 from utils.query import query
 
-
-DUMMY_JENIS_HEWAN = [
-    {'id': 'HWN001', 'nama': 'Kucing', 'bisa_dihapus': True},
-    {'id': 'HWN002', 'nama': 'Anjing', 'bisa_dihapus': True},
-    {'id': 'HWN003', 'nama': 'Hamster', 'bisa_dihapus': False},
-]
-
-DUMMY_KLIEN = [
-    {'id': 'klien1', 'nama': 'John Doe'},
-    {'id': 'klien2', 'nama': 'PT Pecinta Kucing'},
-]
-
-DUMMY_HEWAN = [
-    {
-        'id': 'H001',
-        'pemilik': 'John Doe',
-        'jenis': 'Kucing',
-        'nama': 'Snowy',
-        'tanggal_lahir': '2020-02-09',
-        'url_foto': 'https://example.com/kucing.jpg',
-    },
-    {
-        'id': 'H002',
-        'pemilik': 'PT Aku Sayang Hewan',
-        'jenis': 'Anjing',
-        'nama': 'Blacky',
-        'tanggal_lahir': '2019-11-15',
-        'url_foto': 'https://example.com/anjing.jpg',
-    },
-    {
-        'id': 'H003',
-        'pemilik': 'PT Pecinta Kucing',
-        'jenis': 'Hamster',
-        'nama': 'Hamseung',
-        'tanggal_lahir': '2024-10-15',
-        'url_foto': 'https://example.com/hamster.jpg',
-    },
-]
-
 def list_jenis_hewan(request):
     logged_user = request.session.get('logged_user')
     if not logged_user:
@@ -69,6 +30,7 @@ def list_jenis_hewan(request):
 
     context = {
         'role': logged_user['role'],
+        'logged_user': logged_user,
         'jenis_hewan_list': jenis_hewan_list
     }
     return render(request, 'list_jenis_hewan.html', context)
@@ -96,12 +58,14 @@ def create_jenis_hewan(request):
 
         if isinstance(result, dict) and result.get("status") == "error":
             return render(request, 'create_jenis_hewan.html', {
-                'error': result["data"]
+                'error': result["data"],
+                'logged_user': logged_user
             })
 
         return redirect('kuning:jenis_list')
 
-    return render(request, 'create_jenis_hewan.html')
+    return render(request, 'create_jenis_hewan.html', {        'logged_user': logged_user,
+        'logged_user': logged_user})
 
 def update_jenis_hewan(request, id_jenis):
     logged_user = request.session.get('logged_user')
@@ -122,7 +86,8 @@ def update_jenis_hewan(request, id_jenis):
         if not nama_baru or nama_baru.strip() == "":
             return render(request, 'update_jenis_hewan.html', {
                 'error': 'Nama tidak boleh kosong.',
-                'jenis': jenis
+                'jenis': jenis,
+                'logged_user': logged_user,
             })
 
         check_query = f"""
@@ -133,7 +98,8 @@ def update_jenis_hewan(request, id_jenis):
         if count > 0:
             return render(request, 'update_jenis_hewan.html', {
                 'error': 'Nama tersebut sudah digunakan oleh jenis lain.',
-                'jenis': jenis
+                'jenis': jenis,
+                'logged_user': logged_user,
             })
 
         update_query = f"""
@@ -142,12 +108,18 @@ def update_jenis_hewan(request, id_jenis):
         query(update_query)
         return redirect('kuning:jenis_list')
 
-    return render(request, 'update_jenis_hewan.html', {'jenis': jenis})
+    return render(request, 'update_jenis_hewan.html', {'jenis': jenis, 'logged_user': logged_user})
 
 def delete_jenis_hewan(request, id_jenis):
     logged_user = request.session.get('logged_user')
     if not logged_user or logged_user['role'] != 'front_desk':
         return HttpResponseForbidden("Akses hanya untuk Front-Desk Officer.")
+
+    jenis_result = query(f"SELECT nama FROM JENIS_HEWAN WHERE id = '{id_jenis}'")
+    if not jenis_result:
+        return HttpResponseNotFound("Jenis Hewan tidak ditemukan.")
+    
+    nama_jenis = jenis_result[0]['nama']
 
     check_query = f"""
         SELECT COUNT(*) FROM HEWAN WHERE id_jenis = '{id_jenis}'
@@ -155,7 +127,12 @@ def delete_jenis_hewan(request, id_jenis):
     count = query(check_query)[0]['count']
 
     if count > 0:
-        return redirect('kuning:jenis_list')
+        return render(request, 'delete_jenis_hewan.html', {
+            'id_jenis': id_jenis,
+            'nama': nama_jenis,
+            'error': f"Tidak dapat menghapus jenis hewan '{nama_jenis}' karena masih digunakan.",
+            'logged_user': logged_user,
+        })
 
     if request.method == 'POST':
         delete_query = f"""
@@ -165,8 +142,11 @@ def delete_jenis_hewan(request, id_jenis):
         return redirect('kuning:jenis_list')
 
     return render(request, 'delete_jenis_hewan.html', {
-        'id_jenis': id_jenis
+        'id_jenis': id_jenis,
+        'nama': nama_jenis,
+        'logged_user': logged_user,
     })
+
 
 def list_hewan(request):
     logged_user = request.session.get('logged_user')
@@ -211,6 +191,7 @@ def list_hewan(request):
     context = {
         'role': 'Front-Desk Officer' if role == 'front_desk' else 'Klien',
         'hewan_list': hewan_list,
+        'logged_user': logged_user,
     }
     return render(request, 'list_hewan.html', context)
 
@@ -278,6 +259,7 @@ def create_hewan(request):
         'role': role,
         'daftar_klien': klien_list,
         'daftar_jenis': jenis_list,
+        'logged_user': logged_user
     }
     return render(request, 'create_hewan.html', context)
 
@@ -370,6 +352,7 @@ def update_hewan(request, nama_hewan, no_identitas_klien):
         'daftar_jenis': jenis_list,
         'selected_klien_id': hewan['no_identitas_klien'],
         'selected_jenis_id': hewan['id_jenis'],
+        'logged_user': logged_user
     }
     return render(request, 'update_hewan.html', context)
 
@@ -410,7 +393,8 @@ def delete_hewan(request, nama_hewan, no_identitas_klien):
             return render(request, 'delete_hewan.html', {
                 'role': role,
                 'hewan': hewan,
-                'error': result["data"]  
+                'error': result["data"] , 
+                'logged_user': logged_user
             })
 
         return redirect('kuning:hewan_list')
@@ -418,5 +402,6 @@ def delete_hewan(request, nama_hewan, no_identitas_klien):
     context = {
         'role': role,
         'hewan': hewan,
+        'logged_user': logged_user
     }
     return render(request, 'delete_hewan.html', context)
