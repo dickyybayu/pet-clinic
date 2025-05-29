@@ -376,8 +376,8 @@
                 </div>
                 
                 <div class="form-actions">
-                    {% if logged_user and logged_user.role %}
-                        <a href="{% url 'putih:show_profile' role=logged_user.role %}" class="btn btn-secondary">
+                    {% if logged_user  %}
+                        <a href="{% url 'putih:show_profile'%}" class="btn btn-secondary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
