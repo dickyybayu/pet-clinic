@@ -63,6 +63,21 @@
   }
 </style>
 
+{% if messages %}
+  <div style="max-width:800px; margin: 80px auto 0;">
+    {% for message in messages %}
+      <div style="
+        background-color: {% if message.tags == 'error' %}#fed7d7{% else %}#c6f6d5{% endif %};
+        color: {% if message.tags == 'error' %}#742a2a{% else %}#22543d{% endif %};
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 14px;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
 <div class="container">
   <h2>Update Kunjungan</h2>
 

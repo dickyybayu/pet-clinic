@@ -64,28 +64,26 @@ def create_kunjungan(request):
         timestamp_awal = request.POST.get("timestamp_awal")
         timestamp_akhir = request.POST.get("timestamp_akhir") or None
 
-        try:
-            query(f"""
-                INSERT INTO KUNJUNGAN (
-                    id_kunjungan, nama_hewan, no_identitas_klien, no_front_desk,
-                    no_perawat_hewan, no_dokter_hewan, tipe_kunjungan,
-                    timestamp_awal, timestamp_akhir
-                ) VALUES (
-                    '{id_kunjungan}', '{nama_hewan}', '{no_identitas_klien}', '{logged_user.get("no_pegawai")}',
-                    '{no_perawat_hewan}', '{no_dokter_hewan}', '{tipe_kunjungan}',
-                    '{timestamp_awal}', {f"'{timestamp_akhir}'" if timestamp_akhir else "NULL"}
-                )
-            """)
-            messages.success(request, "Kunjungan berhasil ditambahkan.")
-            return redirect("hijau:list_kunjungan")
+        result = query(f"""
+            INSERT INTO KUNJUNGAN (
+                id_kunjungan, nama_hewan, no_identitas_klien, no_front_desk,
+                no_perawat_hewan, no_dokter_hewan, tipe_kunjungan,
+                timestamp_awal, timestamp_akhir
+            ) VALUES (
+                '{id_kunjungan}', '{nama_hewan}', '{no_identitas_klien}', '{logged_user.get("no_pegawai")}',
+                '{no_perawat_hewan}', '{no_dokter_hewan}', '{tipe_kunjungan}',
+                '{timestamp_awal}', {f"'{timestamp_akhir}'" if timestamp_akhir else "NULL"}
+            )
+        """)
+        
+        if isinstance(result, dict) and result.get("status") == "error":
+            error_message = result.get("data", "Terjadi kesalahan saat memperbarui.")
+            messages.error(request, f"Gagal memperbarui data: {error_message}")
+            return redirect("hijau:create_kunjungan")
 
-        except DatabaseError as e:
-            # Logging ke console Django
-            print("PostgreSQL Error:", str(e))
+        messages.success(request, "Kunjungan berhasil diperbarui.")
+        return redirect("hijau:list_kunjungan")
 
-            # Notifikasi ke frontend
-            messages.error(request, f"Gagal menyimpan data: {e}")
-            return redirect("hijau:create_kunjungan", {"logged_user": logged_user})
 
     # Ambil daftar klien dengan nama gabungan dari INDIVIDU / PERUSAHAAN
     daftar_klien = query("""
@@ -126,8 +124,8 @@ def update_kunjungan(request, id_kunjungan):
         tipe_kunjungan = request.POST.get("tipe_kunjungan")
         timestamp_awal = request.POST.get("timestamp_awal")
         timestamp_akhir = request.POST.get("timestamp_akhir") or None
-
-        query(f"""
+    
+        result = query(f"""
             UPDATE KUNJUNGAN
             SET nama_hewan = '{nama_hewan}',
                 no_identitas_klien = '{no_identitas_klien}',
@@ -139,7 +137,14 @@ def update_kunjungan(request, id_kunjungan):
             WHERE id_kunjungan = '{id_kunjungan}'
         """)
 
+        if isinstance(result, dict) and result.get("status") == "error":
+            error_message = result.get("data", "Terjadi kesalahan saat memperbarui.")
+            messages.error(request, f"Gagal memperbarui data: {error_message}")
+            return redirect("hijau:update_kunjungan", id_kunjungan=id_kunjungan)
+
+        messages.success(request, "Kunjungan berhasil diperbarui.")
         return redirect("hijau:list_kunjungan")
+
 
     # --- GET request: tampilkan form dengan data awal ---
     data = query(f"""
@@ -151,7 +156,7 @@ def update_kunjungan(request, id_kunjungan):
 
     # daftar hewan yang dimiliki klien saat ini (agar dropdown tidak kosong saat halaman pertama dibuka)
     daftar_hewan = query(f"""
-        SELECT nama FROM HEWAN WHERE no_identitas_pemilik = '{data['no_identitas_klien']}'
+        SELECT nama FROM HEWAN WHERE no_identitas_klien = '{data['no_identitas_klien']}'
     """)
 
     daftar_klien = query("""
