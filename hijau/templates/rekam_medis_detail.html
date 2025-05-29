@@ -1,131 +1,119 @@
-{% include "navbar.html" %}
+{% extends "base.html" %}
+{% load static %}
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>Rekam Medis</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding-top: 80px;
-      background-color: #f5f7fa;
-    }
+{% block content %}
+<style>
+  .container {
+    max-width: 800px;
+    background-color: white;
+    margin: 120px auto 40px auto;
+    padding: 30px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    position: relative;
+  }
 
-    .container {
-      max-width: 800px;
-      background-color: white;
-      margin: 40px auto;
-      padding: 30px;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-      position: relative;
-    }
+  h2 {
+    font-size: 22px;
+    color: #1a202c;
+    margin-bottom: 25px;
+  }
 
-    h2 {
-      font-size: 22px;
-      color: #1a202c;
-      margin-bottom: 25px;
-    }
+  .btn-update {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background-color: #1a202c;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+  }
 
-    .btn-update {
-      position: absolute;
-      top: 30px;
-      right: 30px;
-      background-color: #1a202c;
-      color: white;
-      padding: 8px 18px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-    }
+  .info-row {
+    display: flex;
+    margin-bottom: 15px;
+  }
 
-    .info-row {
-      display: flex;
-      margin-bottom: 15px;
-    }
+  .info-label {
+    width: 160px;
+    font-weight: bold;
+    color: #2d3748;
+  }
 
-    .info-label {
-      width: 160px;
-      font-weight: bold;
-      color: #2d3748;
-    }
+  .info-value {
+    flex: 1;
+    color: #4a5568;
+    line-height: 1.6;
+  }
 
-    .info-value {
-      flex: 1;
-      color: #4a5568;
-      line-height: 1.6;
-    }
+  .btn-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 30px;
+  }
 
-    .btn-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 30px;
-    }
+  .btn-create {
+    background-color: #5a85e2;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    text-decoration: none;
+  }
 
-    .btn-create {
-      background-color: #5a85e2;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-weight: 500;
-      font-size: 14px;
-      text-decoration: none;
-    }
+  .btn-ok {
+    background-color: #edf2f7;
+    color: #2d3748;
+    border: 1px solid #cbd5e0;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    text-decoration: none;
+  }
+</style>
 
-    .btn-ok {
-      background-color: #edf2f7;
-      color: #2d3748;
-      border: 1px solid #cbd5e0;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-weight: 500;
-      font-size: 14px;
-      text-decoration: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    {% if is_available %}
-      <h2>Rekam Medis</h2>
-      {% if request.session.logged_user.role == 'dokter' %}
-        <a href="{% url 'hijau:create_rekam_medis' id_kunjungan %}" class="btn-update">Update</a>
-      {% endif %}
-
-      <div class="info-row">
-        <div class="info-label">Suhu Tubuh</div>
-        <div class="info-value">{{ data.suhu }}°C</div>
-      </div>
-
-      <div class="info-row">
-        <div class="info-label">Berat Badan</div>
-        <div class="info-value">{{ data.berat_badan }} kg</div>
-      </div>
-
-      <div class="info-row">
-        <div class="info-label">Catatan Medis</div>
-        <div class="info-value">{{ data.catatan }}</div>
-      </div>
-
-      <div class="btn-actions">
-        <a href="{% url 'hijau:list_kunjungan' %}" class="btn-ok">Kembali ke Daftar</a>
-      </div>
-    {% else %}
-      <h2 style="color: #e53e3e;">Rekam Medis tidak tersedia</h2>
-      <p style="color: #4a5568;">Maaf, sepertinya belum ada rekam medis yang dibuat untuk kunjungan ini.</p>
-
-      <div class="btn-actions">
-        {% if request.session.logged_user.role == 'dokter' %}
-        <a href="{% url 'hijau:create_rekam_medis' id_kunjungan %}" class="btn-create">Create</a>
-        {% endif %}
-        <a href="{% url 'hijau:list_kunjungan' %}" class="btn-ok">OK</a>
-      </div>
+<div class="container">
+  {% if is_available %}
+    <h2>Rekam Medis</h2>
+    {% if request.session.logged_user.role == 'dokter' %}
+      <a href="{% url 'hijau:update_rekam_medis' id_kunjungan %}" class="btn-update">Update</a>
     {% endif %}
-  </div>
-</body>
-</html>
+
+    <div class="info-row">
+      <div class="info-label">Suhu Tubuh</div>
+      <div class="info-value">{{ data.suhu }}°C</div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-label">Berat Badan</div>
+      <div class="info-value">{{ data.berat_badan }} kg</div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-label">Catatan Medis</div>
+      <div class="info-value">{{ data.catatan }}</div>
+    </div>
+
+    <div class="btn-actions">
+      <a href="{% url 'hijau:list_kunjungan' %}" class="btn-ok">Kembali ke Daftar</a>
+    </div>
+  {% else %}
+    <h2 style="color: #e53e3e;">Rekam Medis tidak tersedia</h2>
+    <p style="color: #4a5568;">Maaf, sepertinya belum ada rekam medis yang dibuat untuk kunjungan ini.</p>
+
+    <div class="btn-actions">
+      {% if request.session.logged_user.role == 'dokter' %}
+        <a href="{% url 'hijau:create_rekam_medis' id_kunjungan %}" class="btn-create">Create</a>
+      {% endif %}
+      <a href="{% url 'hijau:list_kunjungan' %}" class="btn-ok">OK</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

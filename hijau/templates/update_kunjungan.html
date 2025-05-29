@@ -1,165 +1,154 @@
-{% include "navbar.html" %}
+{% extends "base.html" %}
+{% load static %}
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>Update Kunjungan</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f7fa;
-      padding-top: 80px;
-    }
+{% block content %}
+<style>
+  .container {
+    max-width: 800px;
+    margin: 120px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
+  }
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
-    }
+  h2 {
+    color: #2d3748;
+    margin-bottom: 25px;
+  }
 
-    h2 {
-      color: #2d3748;
-      margin-bottom: 25px;
-    }
+  label {
+    display: block;
+    margin-top: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+  }
 
-    label {
-      display: block;
-      margin-top: 20px;
-      font-weight: 600;
-      font-size: 14px;
-      color: #374151;
-    }
+  input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+  }
 
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
+  .button-group {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
 
-    .button-group {
-      margin-top: 30px;
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-    }
+  .btn-cancel, .btn-submit {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+  }
 
-    .btn-cancel, .btn-submit {
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-    }
+  .btn-cancel {
+    background-color: #f0f2f5;
+    color: #374151;
+    border: 1px solid #ccc;
+  }
 
-    .btn-cancel {
-      background-color: #f0f2f5;
-      color: #374151;
-      border: 1px solid #ccc;
-    }
+  .btn-submit {
+    background-color: #5a85e2;
+    color: white;
+  }
+</style>
 
-    .btn-submit {
-      background-color: #5a85e2;
-      color: white;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>Update Kunjungan</h2>
+<div class="container">
+  <h2>Update Kunjungan</h2>
 
-    <form method="POST">
-      {% csrf_token %}
+  <form method="POST">
+    {% csrf_token %}
 
-      <label for="no_identitas_klien">ID Klien</label>
-      <select id="no_identitas_klien" name="no_identitas_klien" required onchange="fetchHewan(this.value)">
-        <option value="">-- Pilih Klien --</option>
-        {% for klien in daftar_klien %}
-          <option value="{{ klien.no_identitas }}" {% if klien.no_identitas == data.no_identitas_klien %}selected{% endif %}>
-            {{ klien.no_identitas }} - {{ klien.nama }}
-          </option>
-        {% endfor %}
-      </select>
+    <label for="no_identitas_klien">ID Klien</label>
+    <select id="no_identitas_klien" name="no_identitas_klien" required onchange="fetchHewan(this.value)">
+      <option value="">-- Pilih Klien --</option>
+      {% for klien in daftar_klien %}
+        <option value="{{ klien.no_identitas }}" {% if klien.no_identitas == data.no_identitas_klien %}selected{% endif %}>
+          {{ klien.no_identitas }} - {{ klien.nama }}
+        </option>
+      {% endfor %}
+    </select>
 
-      <label for="nama_hewan">Nama Hewan</label>
-      <select id="nama_hewan" name="nama_hewan" required>
-        {% for hewan in daftar_hewan %}
-          <option value="{{ hewan.nama }}" {% if hewan.nama == data.nama_hewan %}selected{% endif %}>
-            {{ hewan.nama }}
-          </option>
-        {% endfor %}
-      </select>
+    <label for="nama_hewan">Nama Hewan</label>
+    <select id="nama_hewan" name="nama_hewan" required>
+      {% for hewan in daftar_hewan %}
+        <option value="{{ hewan.nama }}" {% if hewan.nama == data.nama_hewan %}selected{% endif %}>
+          {{ hewan.nama }}
+        </option>
+      {% endfor %}
+    </select>
 
-      <label for="no_dokter_hewan">Dokter Hewan</label>
-      <select id="no_dokter_hewan" name="no_dokter_hewan" required>
-        {% for dokter in daftar_dokter %}
-          <option value="{{ dokter.no_dokter_hewan }}" {% if dokter.no_dokter_hewan == data.no_dokter_hewan %}selected{% endif %}>
-            {{ dokter.no_dokter_hewan }} - {{ dokter.email }}
-          </option>
-        {% endfor %}
-      </select>
+    <label for="no_dokter_hewan">Dokter Hewan</label>
+    <select id="no_dokter_hewan" name="no_dokter_hewan" required>
+      {% for dokter in daftar_dokter %}
+        <option value="{{ dokter.no_dokter_hewan }}" {% if dokter.no_dokter_hewan == data.no_dokter_hewan %}selected{% endif %}>
+          {{ dokter.no_dokter_hewan }} - {{ dokter.email }}
+        </option>
+      {% endfor %}
+    </select>
 
-      <label for="no_perawat_hewan">Perawat Hewan</label>
-      <select id="no_perawat_hewan" name="no_perawat_hewan" required>
-        {% for perawat in daftar_perawat %}
-          <option value="{{ perawat.no_perawat_hewan }}" {% if perawat.no_perawat_hewan == data.no_perawat_hewan %}selected{% endif %}>
-            {{ perawat.no_perawat_hewan }} - {{ perawat.email }}
-          </option>
-        {% endfor %}
-      </select>
+    <label for="no_perawat_hewan">Perawat Hewan</label>
+    <select id="no_perawat_hewan" name="no_perawat_hewan" required>
+      {% for perawat in daftar_perawat %}
+        <option value="{{ perawat.no_perawat_hewan }}" {% if perawat.no_perawat_hewan == data.no_perawat_hewan %}selected{% endif %}>
+          {{ perawat.no_perawat_hewan }} - {{ perawat.email }}
+        </option>
+      {% endfor %}
+    </select>
 
-      <label for="tipe_kunjungan">Metode Kunjungan</label>
-      <select id="tipe_kunjungan" name="tipe_kunjungan" required>
-        <option value="Janji Temu" {% if data.tipe_kunjungan == "Janji Temu" %}selected{% endif %}>Janji Temu</option>
-        <option value="Walk-In" {% if data.tipe_kunjungan == "Walk-In" %}selected{% endif %}>Walk-In</option>
-        <option value="Darurat" {% if data.tipe_kunjungan == "Darurat" %}selected{% endif %}>Darurat</option>
-      </select>
+    <label for="tipe_kunjungan">Metode Kunjungan</label>
+    <select id="tipe_kunjungan" name="tipe_kunjungan" required>
+      <option value="Janji Temu" {% if data.tipe_kunjungan == "Janji Temu" %}selected{% endif %}>Janji Temu</option>
+      <option value="Walk-In" {% if data.tipe_kunjungan == "Walk-In" %}selected{% endif %}>Walk-In</option>
+      <option value="Darurat" {% if data.tipe_kunjungan == "Darurat" %}selected{% endif %}>Darurat</option>
+    </select>
 
-      <label for="timestamp_awal">Waktu Mulai Penanganan</label>
-      <input type="datetime-local" name="timestamp_awal" value="{{ data.timestamp_awal|date:'Y-m-d\\TH:i' }}" required>
+    <label for="timestamp_awal">Waktu Mulai Penanganan</label>
+    <input type="datetime-local" name="timestamp_awal" value="{{ data.timestamp_awal|date:'Y-m-d\\TH:i' }}" required>
 
-      <label for="timestamp_akhir">Waktu Akhir Penanganan (opsional)</label>
-      <input type="datetime-local" name="timestamp_akhir" value="{{ data.timestamp_akhir|date:'Y-m-d\\TH:i' }}">
+    <label for="timestamp_akhir">Waktu Akhir Penanganan (opsional)</label>
+    <input type="datetime-local" name="timestamp_akhir" value="{{ data.timestamp_akhir|date:'Y-m-d\\TH:i' }}">
 
-      <div class="button-group">
-        <a href="{% url 'hijau:list_kunjungan' %}" class="btn-cancel">Batal</a>
-        <button type="submit" class="btn-submit">Simpan Perubahan</button>
-      </div>
-    </form>
-  </div>
+    <div class="button-group">
+      <a href="{% url 'hijau:list_kunjungan' %}" class="btn-cancel">Batal</a>
+      <button type="submit" class="btn-submit">Simpan Perubahan</button>
+    </div>
+  </form>
+</div>
 
-  <script>
-    function fetchHewan(no_identitas) {
-      const dropdown = document.getElementById("nama_hewan");
-      dropdown.innerHTML = "<option value=''>Memuat...</option>";
+<script>
+  function fetchHewan(no_identitas) {
+    const dropdown = document.getElementById("nama_hewan");
+    dropdown.innerHTML = "<option value=''>Memuat...</option>";
 
-      fetch(`/hijau/api/hewan/${no_identitas}/`)
-        .then(response => response.json())
-        .then(data => {
-          dropdown.innerHTML = "";
-          if (data.length === 0) {
-            dropdown.innerHTML = "<option value=''>Tidak ada hewan terdaftar</option>";
-            return;
-          }
-          data.forEach(hewan => {
-            const option = document.createElement("option");
-            option.value = hewan.nama;
-            option.textContent = hewan.nama;
-            dropdown.appendChild(option);
-          });
-        })
-        .catch(() => {
-          dropdown.innerHTML = "<option value=''>Gagal memuat data</option>";
+    fetch(`/hijau/api/hewan/${no_identitas}/`)
+      .then(response => response.json())
+      .then(data => {
+        dropdown.innerHTML = "";
+        if (data.length === 0) {
+          dropdown.innerHTML = "<option value=''>Tidak ada hewan terdaftar</option>";
+          return;
+        }
+        data.forEach(hewan => {
+          const option = document.createElement("option");
+          option.value = hewan.nama;
+          option.textContent = hewan.nama;
+          dropdown.appendChild(option);
         });
-    }
-  </script>
-</body>
-</html>
+      })
+      .catch(() => {
+        dropdown.innerHTML = "<option value=''>Gagal memuat data</option>";
+      });
+  }
+</script>
+{% endblock %}

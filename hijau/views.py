@@ -386,3 +386,37 @@ def create_rekam_medis(request, id_kunjungan):
         'logged_user': logged_user,
         'id_kunjungan': id_kunjungan
         })
+
+def update_rekam_medis(request, id_kunjungan):
+    logged_user = request.session.get("logged_user")
+    if not logged_user or logged_user.get("role") != "dokter":
+        messages.error(request, "Akses ditolak.")
+        return redirect("hijau:list_kunjungan")
+
+    if request.method == "POST":
+        suhu = request.POST.get("suhu_tubuh")
+        berat = request.POST.get("berat_badan")
+        catatan = request.POST.get("catatan")
+
+        if not all([suhu, berat, catatan]):
+            messages.error(request, "Semua field wajib diisi.")
+            return redirect('hijau:update_rekam_medis', id_kunjungan=id_kunjungan)
+
+        query(f"""
+            UPDATE KUNJUNGAN
+            SET suhu = {int(suhu)},
+                berat_badan = {float(berat)},
+                catatan = '{catatan}'
+            WHERE id_kunjungan = '{id_kunjungan}'
+        """)
+        messages.success(request, "Rekam medis berhasil diperbarui.")
+        return redirect('hijau:show_rekam_medis', id_kunjungan=id_kunjungan)
+
+    # GET: pre-fill form
+    data = query(f"SELECT suhu, berat_badan, catatan FROM KUNJUNGAN WHERE id_kunjungan = '{id_kunjungan}'")[0]
+
+    return render(request, "update_rekam_medis.html", {
+        'logged_user': logged_user,
+        'id_kunjungan': id_kunjungan,
+        'data': data
+    })

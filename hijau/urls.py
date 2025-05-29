@@ -16,6 +16,8 @@ urlpatterns = [
     path("delete-treatment/<uuid:id_kunjungan>/<str:kode_perawatan>", delete_treatment, name="delete_treatment"),
     path("update-treatment/<uuid:id_kunjungan>/<str:kode_perawatan>", update_treatment, name="update_treatment"),
     path("create-treatment/", create_treatment, name="create_treatment"),
+    path("rekam-medis/<uuid:id_kunjungan>/update/", update_rekam_medis, name="update_rekam_medis"),
+
     
     
 ]
