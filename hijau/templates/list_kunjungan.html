@@ -7,6 +7,7 @@
   <title>List Kunjungan</title>
   <style>
     /* --- semua style dari contoh kamu tetap --- */
+    /* --- semua style dari contoh kamu tetap --- */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -178,6 +179,7 @@
       </thead>
       <tbody>
         {% for k in kunjungan %}
+        {% for k in kunjungan %}
         <tr>
           <td>{{ k.id_kunjungan }}</td>
           <td>{{ k.no_identitas_klien }}</td>
@@ -207,6 +209,11 @@
           {% endif %}
           </td>
         </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8">Belum ada data kunjungan.</td>
+        </tr>
+        {% endfor %}
         {% empty %}
         <tr>
           <td colspan="8">Belum ada data kunjungan.</td>

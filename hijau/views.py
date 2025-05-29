@@ -46,6 +46,7 @@ def api_hewan_by_klien(request, no_identitas_klien):
     """)
     return JsonResponse(results, safe=False)
 
+# CUD - Front-Desk Officer dapat membuat, mengupdate, dan delete kunjungan
 def create_kunjungan(request):
     logged_user = request.session.get("logged_user")
     if not logged_user or logged_user.get("role") != "front_desk":
