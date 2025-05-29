@@ -1,217 +1,89 @@
-{% include "navbar.html" %}
+{% extends "base.html" %}
+{% load static %}
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>List Treatments</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      padding-top: 80px;
-      background-color: #f5f7fa;
-    }
+{% block content %}
 
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 30px;
-    }
-
-    h2 {
-      margin-bottom: 20px;
-      color: #374151;
-    }
-
-    .btn-create {
-      background-color: #5a85e2;
-      color: white;
-      padding: 10px 18px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: 500;
-      float: right;
-      margin-bottom: 20px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-      margin-top: 60px;
-    }
-
-    th, td {
-      border: 1px solid #e5e7eb;
-      padding: 12px;
-      text-align: center;
-      font-size: 14px;
-    }
-
-    th {
-      background-color: #f9fafb;
-      font-weight: bold;
-      color: #4a5568;
-    }
-
-    .button-container {
-      display: flex;
-      gap: 6px;
-      justify-content: center;
-    }
-
-    .btn {
-      padding: 8px 14px;
-      border-radius: 6px;
-      border: none;
-      font-size: 13px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-
-    .btn-update {
-      background-color: #5a85e2;
-      color: white;
-    }
-
-    .btn-delete {
-      background-color: #e74c3c;
-      color: white;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-content {
-      background-color: #fff;
-      margin: 10% auto;
-      padding: 25px;
-      width: 420px;
-      border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-      text-align: center;
-    }
-
-    .modal-title {
-      color: #e74c3c;
-      font-size: 20px;
-      margin-bottom: 15px;
-    }
-
-    .modal-buttons {
-      margin-top: 25px;
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .btn-cancel {
-      background-color: #f0f2f5;
-      color: #4a5568;
-      border: 1px solid #d1d5db;
-    }
-
-    .btn-confirm {
-      background-color: #e74c3c;
-      color: white;
-      border: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>List Treatments</h2>
+<div class="container" style="max-width: 1200px; margin: 100px auto 40px; padding: 30px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 style="color: #374151; margin: 0;">List Treatments</h2>
     {% if is_dokter %}
-    <a href="{% url 'hijau:create_treatment' %}" class="btn-create">+ Create New Treatment</a>
+    <a href="{% url 'hijau:create_treatment' %}" class="btn-create" style="background-color: #5a85e2; color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 500;">+ Create New Treatment</a>
     {% endif %}
-
-    <table>
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Kunjungan</th>
-          <th>ID Klien</th>
-          <th>Nama Hewan</th>
-          <th>Perawat Hewan</th>
-          <th>Dokter Hewan</th>
-          <th>Front Desk Officer</th>
-          <th>Jenis Perawatan</th>
-          {% if is_dokter %}
-          <th>Aksi</th>
-          {% endif %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for t in treatment %}
-        <tr>
-          <td>{{ forloop.counter }}</td>
-          <td>{{ t.id_kunjungan }}</td>
-          <td>{{ t.no_identitas_klien }}</td>
-          <td>{{ t.nama_hewan }}</td>
-          <td>{{ t.email_perawat }}</td>
-          <td>{{ t.email_dokter }}</td>
-          <td>{{ t.email_frontdesk }}</td>
-          <td>{{ t.jenis_perawatan }}</td>
-          {% if is_dokter %}
-          <td class="button-container">
-            <a href="{% url 'hijau:update_treatment' t.id_kunjungan t.kode_perawatan %}" class="btn btn-update">Update</a>
-            <button class="btn btn-delete" onclick="openDeleteModal('{{ t.id_kunjungan }}', '{{ t.kode_perawatan }}')">Delete</button>
-          </td>
-          {% endif %}
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="10" style="text-align: center;">Belum ada data treatment.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
   </div>
 
-  <!-- Delete Modal -->
-  <div id="deleteModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-title">Delete Treatment</div>
-      <p id="deleteMessage"></p>
-      <div class="modal-buttons">
-        <button class="btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-        <a id="confirmDeleteButton" class="btn btn-confirm">Confirm Deletion</a>
-      </div>
+  <table style="width: 100%; border-collapse: collapse; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);">
+    <thead>
+      <tr style="background-color: #f9fafb; font-weight: bold; color: #4a5568;">
+        <th style="padding: 14px;">No</th>
+        <th style="padding: 14px;">Kunjungan</th>
+        <th style="padding: 14px;">ID Klien</th>
+        <th style="padding: 14px;">Nama Hewan</th>
+        <th style="padding: 14px;">Perawat Hewan</th>
+        <th style="padding: 14px;">Dokter Hewan</th>
+        <th style="padding: 14px;">Front Desk Officer</th>
+        <th style="padding: 14px;">Jenis Perawatan</th>
+        {% if is_dokter %}
+        <th style="padding: 14px;">Aksi</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in treatment %}
+      <tr>
+        <td style="padding: 16px;">{{ forloop.counter }}</td>
+        <td style="padding: 16px;">{{ t.id_kunjungan }}</td>
+        <td style="padding: 16px;">{{ t.no_identitas_klien }}</td>
+        <td style="padding: 16px;">{{ t.nama_hewan }}</td>
+        <td style="padding: 16px;">{{ t.email_perawat }}</td>
+        <td style="padding: 16px;">{{ t.email_dokter }}</td>
+        <td style="padding: 16px;">{{ t.email_frontdesk }}</td>
+        <td style="padding: 16px;">{{ t.jenis_perawatan }}</td>
+        {% if is_dokter %}
+        <td style="padding: 16px;">
+          <div style="display: flex; gap: 6px; justify-content: center;">
+            <a href="{% url 'hijau:update_treatment' t.id_kunjungan t.kode_perawatan %}" class="btn btn-update" style="background-color: #5a85e2; color: white; padding: 8px 14px; border-radius: 6px; font-size: 13px;">Update</a>
+            <button class="btn btn-delete" onclick="openDeleteModal('{{ t.id_kunjungan }}', '{{ t.kode_perawatan }}')" style="background-color: #e74c3c; color: white; padding: 8px 14px; border-radius: 6px; font-size: 13px;">Delete</button>
+          </div>
+        </td>
+        {% endif %}
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="10" style="text-align: center; padding: 20px;">Belum ada data treatment.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="modal" style="display:none; position:fixed; z-index:999; left:0; top:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5);">
+  <div class="modal-content" style="background-color: #fff; margin: 10% auto; padding: 25px; width: 420px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); text-align: center;">
+    <div class="modal-title" style="color: #e74c3c; font-size: 20px; margin-bottom: 15px;">Delete Treatment</div>
+    <p id="deleteMessage"></p>
+    <div class="modal-buttons" style="margin-top: 25px; display: flex; justify-content: center; gap: 12px;">
+      <button class="btn btn-cancel" onclick="closeDeleteModal()" style="background-color: #f0f2f5; color: #4a5568; border: 1px solid #d1d5db;">Cancel</button>
+      <a id="confirmDeleteButton" class="btn btn-confirm" style="background-color: #e74c3c; color: white; border: none;">Confirm Deletion</a>
     </div>
   </div>
+</div>
 
-  <script>
-    function openDeleteModal(kunjunganId, perawatanId) {
-      document.getElementById('deleteMessage').innerHTML =
-        `Apakah kamu yakin ingin menghapus <b>Perawatan</b> untuk Kunjungan <b style="color: #e74c3c;">${kunjunganId}</b> dengan kode <b style="color: #e74c3c;">${perawatanId}</b>?`;
+<script>
+  function openDeleteModal(kunjunganId, perawatanId) {
+    document.getElementById('deleteMessage').innerHTML =
+      `Apakah kamu yakin ingin menghapus <b>Perawatan</b> untuk Kunjungan <b style="color: #e74c3c;">${kunjunganId}</b> dengan kode <b style="color: #e74c3c;">${perawatanId}</b>?`;
+    document.getElementById('confirmDeleteButton').href = `/hijau/delete-treatment/${kunjunganId}/${perawatanId}`;
+    document.getElementById('deleteModal').style.display = 'block';
+  }
 
-      document.getElementById('confirmDeleteButton').href = `/hijau/delete-treatment/${kunjunganId}/${perawatanId}`;
-      document.getElementById('deleteModal').style.display = 'block';
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+  }
+
+  window.onclick = function (event) {
+    if (event.target === document.getElementById('deleteModal')) {
+      closeDeleteModal();
     }
-
-    function closeDeleteModal() {
-      document.getElementById('deleteModal').style.display = 'none';
-    }
-
-    window.onclick = function (event) {
-      if (event.target === document.getElementById('deleteModal')) {
-        closeDeleteModal();
-      }
-    };
-  </script>
-</body>
-</html>
+  };
+</script>
+{% endblock %}

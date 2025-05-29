@@ -1,107 +1,35 @@
-{% include "navbar.html" %}
+{% extends "base.html" %}
+{% load static %}
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>Create Rekam Medis</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f7fa;
-      padding-top: 80px;
-    }
+{% block content %}
+<style>
+  .page-wrapper {
+    max-width: 1200px;
+    margin: 120px auto 30px auto;
+    padding: 30px;
+  }
+</style>
+<div class="page-wrapper">
+<div class="container" style="max-width: 800px; margin: 40px auto 0; background-color: white; padding: 40px; border-radius: 12px; box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);">
+  <h2 style="color: #4a5568; margin-bottom: 25px; text-align: center;">Create Rekam Medis</h2>
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background-color: white;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
-      margin-top: 40px;
-    }
+  <form method="POST">
+    {% csrf_token %}
 
-    h2 {
-      color: #4a5568;
-      margin-bottom: 25px;
-      text-align: center;
-    }
+    <label for="suhu_tubuh" style="display:block; margin-top:20px; font-weight:600; font-size:14px; color:#374151;">Suhu Tubuh (°C)</label>
+    <input type="text" id="suhu_tubuh" name="suhu_tubuh" placeholder="Contoh: 38.5" required style="width:100%; padding:12px; margin-top:8px; border:1px solid #d1d5db; border-radius:6px; font-size:14px;">
 
-    label {
-      display: block;
-      margin-top: 20px;
-      font-weight: 600;
-      font-size: 14px;
-      color: #374151;
-    }
+    <label for="berat_badan" style="display:block; margin-top:20px; font-weight:600; font-size:14px; color:#374151;">Berat Badan (kg)</label>
+    <input type="text" id="berat_badan" name="berat_badan" placeholder="Contoh: 5.4" required style="width:100%; padding:12px; margin-top:8px; border:1px solid #d1d5db; border-radius:6px; font-size:14px;">
 
-    input[type="text"], textarea {
-      width: 100%;
-      padding: 12px;
-      margin-top: 8px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
+    <label for="catatan" style="display:block; margin-top:20px; font-weight:600; font-size:14px; color:#374151;">Catatan Medis</label>
+    <textarea id="catatan" name="catatan" placeholder="Masukkan catatan dokter..." required style="width:100%; padding:12px; margin-top:8px; border:1px solid #d1d5db; border-radius:6px; font-size:14px; resize:vertical; min-height:120px;"></textarea>
 
-    textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-
-    .button-group {
-      margin-top: 30px;
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-    }
-
-    .btn-cancel, .btn-create {
-      padding: 10px 20px;
-      font-size: 14px;
-      font-weight: 500;
-      border-radius: 6px;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-cancel {
-      background-color: #f0f2f5;
-      color: #4a5568;
-      border: 1px solid #ccc;
-    }
-
-    .btn-create {
-      background-color: #5a85e2;
-      color: white;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>Create Rekam Medis</h2>
-
-    <form method="POST">
-      {% csrf_token %}
-      <label for="suhu_tubuh">Suhu Tubuh (°C)</label>
-      <input type="text" id="suhu_tubuh" name="suhu_tubuh" placeholder="Contoh: 38.5" required>
-
-      <label for="berat_badan">Berat Badan (kg)</label>
-      <input type="text" id="berat_badan" name="berat_badan" placeholder="Contoh: 5.4" required>
-
-      <label for="catatan">Catatan Medis</label>
-      <textarea id="catatan" name="catatan" placeholder="Masukkan catatan dokter..." required></textarea>
-
-      <div class="button-group">
-        <a href="{% url 'hijau:list_kunjungan' %}" class="btn-cancel">Cancel</a>
-        <button type="submit" class="btn-create">Create</button>
-      </div>
-    </form>
-  </div>
-</body>
-</html>
+    <div class="button-group" style="margin-top:30px; display:flex; justify-content:flex-end; gap:12px;">
+      <a href="{% url 'hijau:list_kunjungan' %}" class="btn-cancel" style="background-color:#f0f2f5; color:#4a5568; padding:10px 20px; border-radius:6px; text-decoration:none; border:1px solid #ccc;">Cancel</a>
+      <button type="submit" class="btn-create" style="background-color:#5a85e2; color:white; padding:10px 20px; border-radius:6px; border:none;">Create</button>
+    </div>
+  </form>
+</div>
+</div>
+{% endblock %}
