@@ -519,7 +519,6 @@ def show_profile(request, role):
         context.update(profile)
         context["sertifikat"] = sertifikat
         context["jadwal"] = jadwal
-        print(profile)
         return render(request, 'profil_dokter.html', context)
 
     elif role == 'perawat':
@@ -541,8 +540,6 @@ def show_profile(request, role):
 
         context.update(profile)
         context["sertifikat"] = sertifikat
-
-        print(sertifikat)
         return render(request, 'profil_perawat.html', context)
 
     return HttpResponseNotFound("Role tidak ditemukan.")
