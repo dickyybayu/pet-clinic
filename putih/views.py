@@ -540,6 +540,7 @@ def show_profile(request, role):
 
         context.update(profile)
         context["sertifikat"] = sertifikat
+
         return render(request, 'profil_perawat.html', context)
 
     return HttpResponseNotFound("Role tidak ditemukan.")
