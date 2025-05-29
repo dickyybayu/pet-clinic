@@ -116,7 +116,7 @@
       <a href="{% url 'putih:show_profile'%}" class="nav-link">Dashboard</a>
 
       {% if logged_user.role == 'klien_individu' or logged_user.role == 'klien_perusahaan' %}
-        <a href="#" class="nav-link">Kelola Hewan Peliharaan</a>
+        <a href="{% url 'kuning:hewan_list' %}" class="nav-link">Kelola Hewan Peliharaan</a>
         <a href="{% url 'hijau:list_kunjungan' %}" class="nav-link">Daftar Kunjungan</a>
         <a href="{% url 'merah:show_vaksinasi_klien' %}" class="nav-link">Daftar Vaksinasi</a>
 

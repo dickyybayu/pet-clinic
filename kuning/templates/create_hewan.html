@@ -76,6 +76,12 @@
           {% endfor %}
         </select>
       </div>
+      {% else %}
+      <div class="mb-3">
+        <label class="form-label">Pemilik</label>
+        <input type="hidden" name="pemilik_id" value="{{ daftar_klien.0.no_identitas }}" />
+        <input type="text" class="form-control" value="{{ daftar_klien.0.nama_klien }}" readonly />
+      </div>
       {% endif %}
 
       <div class="mb-3">
