@@ -121,13 +121,13 @@
         <a href="#" class="nav-link">Daftar Vaksinasi</a>
 
       {% elif logged_user.role == 'front_desk' %}
-        <a href="#" class="nav-link">Kelola Jenis Hewan</a>
-        <a href="#" class="nav-link">Kelola Hewan Peliharaan</a>
+        <a href="{% url 'kuning:jenis_list' %}" class="nav-link">Kelola Jenis Hewan</a>
+        <a href="{% url 'kuning:hewan_list' %}" class="nav-link">Kelola Hewan Peliharaan</a>
         <a href="{% url 'hijau:list_kunjungan' %}" class="nav-link">Kelola Kunjungan</a>
         <a href="#" class="nav-link">Daftar Klien</a>
 
       {% elif logged_user.role == 'dokter' %}
-        <a href="#" class="nav-link">Daftar Jenis Hewan</a>
+        <a href="{% url 'kuning:jenis_list' %}" class="nav-link">Daftar Jenis Hewan</a>
         <a href="{% url 'hijau:list_perawatan' %}" class="nav-link">Perawatan Hewan</a>
         <a href="{% url 'hijau:list_kunjungan' %}" class="nav-link">Daftar Kunjungan</a>
         <a href="#" class="nav-link">Manajemen Obat</a>

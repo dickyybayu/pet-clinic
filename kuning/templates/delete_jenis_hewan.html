@@ -1,3 +1,4 @@
+{% include "navbar.html" %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -59,7 +60,7 @@
 <body>
   <div class="delete-container">
     <h4>Konfirmasi Penghapusan</h4>
-    <p>Apakah kamu yakin ingin menghapus <strong class="text-danger">Jenis Hewan</strong> dengan kode <strong class="text-danger">{{ id_jenis }}</strong>?</p>
+    <p>Apakah kamu yakin ingin menghapus Jenis Hewan <strong class="text-danger">{{ nama }}</strong> dengan kode <strong class="text-danger">{{ id_jenis }}</strong>?</p>
 
     {% if error %}
       <div class="alert alert-danger">{{ error }}</div>
