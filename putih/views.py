@@ -736,10 +736,79 @@ def update_dokter(request):
         }
         return render(request, 'update_dokter.html', context)
 
-
-
 def update_perawat(request):
-    return render(request, 'update_perawat.html')
+    logged_user = request.session.get('logged_user')
+    if not logged_user or logged_user.get('role') != 'perawat':
+        messages.error(request, "Akses ditolak. Anda harus login sebagai Perawat Hewan.")
+        return redirect('putih:login')
+
+    email = logged_user.get('email')
+    no_pegawai = logged_user.get('no_pegawai')
+    context = {'logged_user': logged_user, 'form_values': {}}
+
+    if request.method == 'POST':
+        alamat = request.POST.get('alamat', '').strip()
+        nomor_telepon = request.POST.get('nomor_telepon', '').strip()
+        tanggal_akhir_kerja = request.POST.get('tanggal_akhir_kerja', '').strip()
+        sertifikat_kode_list = request.POST.getlist('sertifikat_kode[]')
+        sertifikat_nama_list = request.POST.getlist('sertifikat_nama[]')
+        sertifikat_kompetensi = list(zip(sertifikat_kode_list, sertifikat_nama_list))
+
+        context['form_values'] = {
+            'alamat': alamat,
+            'nomor_telepon': nomor_telepon,
+            'tanggal_akhir_kerja': tanggal_akhir_kerja,
+            'sertifikat_kompetensi': sertifikat_kompetensi,
+        }
+
+        errors = {}
+        if err := validate_address(alamat): errors['alamat'] = err
+        if err := validate_phone(nomor_telepon): errors['nomor_telepon'] = err
+        if err := validate_end_date(tanggal_akhir_kerja, logged_user.get('tanggal_mulai_kerja')): errors['tanggal_akhir_kerja'] = err
+        if not sertifikat_kode_list or not sertifikat_nama_list or len(sertifikat_kode_list) != len(sertifikat_nama_list):
+            errors['sertifikat_kompetensi'] = ["Semua sertifikat harus memiliki nomor dan nama."]
+
+        if errors:
+            context['errors'] = errors
+            return render(request, 'update_perawat.html', context)
+
+        try:
+            query(f"""
+                UPDATE "USER" SET alamat = '{alamat}', nomor_telepon = '{nomor_telepon}'
+                WHERE email = '{email}'
+            """)
+            query(f"""
+                UPDATE PEGAWAI SET tanggal_akhir_kerja = {'NULL' if not tanggal_akhir_kerja else f"'{tanggal_akhir_kerja}'"}
+                WHERE no_pegawai = '{no_pegawai}'
+            """)
+            query(f"DELETE FROM SERTIFIKAT_KOMPETENSI WHERE no_tenaga_medis = '{no_pegawai}'")
+            for kode, nama in sertifikat_kompetensi:
+                query(f"""
+                    INSERT INTO SERTIFIKAT_KOMPETENSI (no_sertifikat_kompetensi, no_tenaga_medis, nama_sertifikat)
+                    VALUES ('{kode}', '{no_pegawai}', '{nama}')
+                """)
+
+            request.session['logged_user']['address'] = alamat
+            request.session['logged_user']['phone'] = nomor_telepon
+            request.session['logged_user']['tanggal_akhir_kerja'] = tanggal_akhir_kerja or None
+            request.session['logged_user']['sertifikat_kompetensi'] = sertifikat_kompetensi
+            request.session.modified = True
+
+            messages.success(request, "Profil perawat berhasil diperbarui.")
+            return redirect('putih:show_profile')
+
+        except Exception as e:
+            messages.error(request, f"Terjadi kesalahan saat menyimpan data: {str(e)}")
+            return render(request, 'update_perawat.html', context)
+
+    else:
+        context['form_values'] = {
+            'alamat': logged_user.get('address', ''),
+            'nomor_telepon': logged_user.get('phone', ''),
+            'tanggal_akhir_kerja': logged_user.get('tanggal_akhir_kerja') or '',
+            'sertifikat_kompetensi': logged_user.get('sertifikat_kompetensi', []),
+        }
+        return render(request, 'update_perawat.html', context)
 
 def update_front_desk(request):
     logged_user = request.session.get('logged_user')
@@ -861,54 +930,6 @@ def update_password(request):
 
     return render(request, 'update_password.html', context)
 
-def validate_registration_data(email, no_identitas, password, phone, first_name=None, middle_name=None, last_name=None, company_name=None):
-
-    FIELD_LENGTH_LIMITS = {
-        'email': 50,
-        'password': 50,
-        'phone': 15,
-        'first_name': 50,
-        'middle_name': 50,
-        'last_name': 50,
-        'company_name': 50,
-    }
-
-    # Unik
-    if any(user['email'] == email for user in pengguna):
-        return 'Email already exists'
-    if any(user.get('no_identitas') == no_identitas for user in pengguna):
-        return 'No Identitas already exists'
-    
-    # Panjang Var
-    if len(email) > FIELD_LENGTH_LIMITS['email']:
-        return 'Email exceeds character limit'
-    if len(password) > FIELD_LENGTH_LIMITS['password']:
-        return 'Password exceeds character limit'
-    if len(phone) > FIELD_LENGTH_LIMITS['phone']:
-        return 'No Telepon exceeds character limit'
-    
-    # Format Nomor Telepon
-    if not phone.isnumeric():
-        return 'No Telepon must be numeric'
-    
-    if not company_name:
-        name_fields = [
-            ('First Name', first_name, FIELD_LENGTH_LIMITS['first_name']),
-            ('Last Name', last_name, FIELD_LENGTH_LIMITS['last_name']),
-        ]
-        
-        for field_name, field_value, limit in name_fields:
-            if field_value and len(field_value) > limit:
-                return f"{field_name} exceeds character limit."
-            
-        if middle_name and len(middle_name) > FIELD_LENGTH_LIMITS['middle_name']:
-            return 'Middle Name exceeds character limit'
-
-                
-    if company_name and len(company_name) > FIELD_LENGTH_LIMITS['company_name']:
-        return "Company Name exceeds character limit."
-    
-    return None
 
 def validate_update_data(address, phone, first_name=None, middle_name=None, last_name=None, company_name=None):
     FIELD_LENGTH_LIMITS = {
