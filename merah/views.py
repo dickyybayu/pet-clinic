@@ -4,6 +4,8 @@ from datetime import datetime
 from django.contrib import messages
 import uuid
 
+from utils.query import query
+
 
 logged_doctor = {
     "email"  : "akudokter@gmail.com",
@@ -26,7 +28,7 @@ logged_doctor = {
         "jam_mulai" : "08:00",
         "jam_selesai" : "17:00"}]
         }
-#dummy data 
+
 kunjungan = [
   {
     "id_kunjungan": "KJN001",
@@ -135,113 +137,176 @@ jenis_hewan = [
 ]
 
 def show_vaksinasi(request):
-    logged_pengguna = logged_doctor
-    print(logged_pengguna)
-    context = []
-    for kunj in kunjungan:
-        if kunj['kode_vaksin']:
-            if kunj['no_dokter_hewan'] == logged_pengguna.get('doctor_id'):
-                for vak in vaksin:
-                    if vak['kode_vaksin'] == kunj['kode_vaksin']:
-                        context.append({
-                            "id_kunjungan": kunj['id_kunjungan'],
-                            "timetamp_awal": kunj['timetamp_awal'],
-                            "kode_vaksin": vak['kode_vaksin'],
-                            "nama_vaksin": vak['nama_vaksin'],
-                        })
-    print(context)
-    return render(request, 'show_vaksinasi.html', {'vaksin_data': context})
+    logged_user = request.session.get('logged_user', None)
+    print("Logged User:", logged_user)
+    result = []
 
-def create_vaksinasi(request):
-    logged_pengguna = logged_doctor
-
-    if request.method == 'POST':
-        selected_kunjungan = request.POST.get('selected_kunjungan')
-        selected_vaksin = request.POST.get('selected_vaksin')
-
-        vaksin_terpilih = next((v for v in vaksin if v['kode_vaksin'] == selected_vaksin), None)
-        if not vaksin_terpilih or vaksin_terpilih['stok'] <= 0:
-            messages.error(request, "Vaksin tidak tersedia")
-            return redirect('merah:create_vaksinasi')
-
-        for kunj in kunjungan:
-            if kunj['id_kunjungan'] == selected_kunjungan:
-                kunj['kode_vaksin'] = selected_vaksin
-                vaksin_terpilih['stok'] -= 1
-                messages.success(request, "Vaksinasi berhasil ditambahkan")
-                return redirect('merah:show_vaksinasi')
-
-    vaksin_list = [v for v in vaksin]
-
-    kunjungan_list = [
-        {
-            'id_kunjungan': k['id_kunjungan'],
-            'nama_hewan': k['nama_hewan']
-        }
-        for k in kunjungan
-        if k['no_dokter_hewan'] == logged_pengguna.get('doctor_id') and not k.get('kode_vaksin')
-    ]
+    if logged_user:
+        sql = f'''
+        SELECT
+            k.id_kunjungan,
+            k.timestamp_awal,
+            v.kode,
+            v.nama
+        FROM 
+            kunjungan k
+        LEFT JOIN
+            vaksin v ON k.kode_vaksin = v.kode
+        WHERE
+            no_dokter_hewan = '{logged_user.get('no_dokter_hewan')}'
+        AND
+            k.timestamp_akhir IS NULL
+        AND
+            k.kode_vaksin IS NOT NULL
+        '''
+        result = query(sql)
 
     context = {
-        'vaksin': vaksin_list,
-        'kunjungan': kunjungan_list,
+        'logged_user': logged_user,
+        'vaksin_data' : result,
     }
+    return render(request, 'show_vaksinasi.html', context)
+   
+def create_vaksinasi(request):  
+    logged_user = request.session.get('logged_user', None)
+    kunjungan = []
+    vaksin = []
+    if logged_user: 
+        if request.method == 'POST':
+            selected_kunjungan = request.POST.get('selected_kunjungan')
+            selected_vaksin = request.POST.get('selected_vaksin')
+
+            print(selected_vaksin)
+
+            sql = f'''
+            UPDATE
+                KUNJUNGAN
+            SET
+                kode_vaksin = '{selected_vaksin}'
+            WHERE
+                id_kunjungan = '{selected_kunjungan}';
+            '''
+            result = query(sql)
+            if isinstance(result, dict) and result.get("status") == "error":
+                messages.error(request, result.get('data'))
+                return redirect('merah:create_vaksinasi')
+                
+            messages.success(request, "Vaksinasi berhasil ditambahkan")
+            return redirect('merah:show_vaksinasi')
+
+        logged_user = request.session.get('logged_user', None)
+        
+        kunjungan = f'''
+        SELECT
+            id_kunjungan
+        FROM 
+            kunjungan
+        WHERE
+            no_dokter_hewan = '{logged_user.get('no_dokter_hewan')}'
+        AND
+            timestamp_akhir IS NULL
+        AND 
+            kode_vaksin IS NULL
+        '''
+
+        vaksin = f'''
+        SELECT
+            kode,
+            nama,
+            stok
+        FROM
+            vaksin
+        ORDER BY 
+            kode ASC;
+        '''
+
+        kunjungan = query(kunjungan)
+        vaksin  = query(vaksin)
+
+    context = {
+        'logged_user': logged_user,
+        'kunjungan': kunjungan,
+        'vaksin': vaksin,
+    }
+
     return render(request, 'create_vaksinasi.html', context)
 
 def update_vaksinasi(request, id_kunjungan):
-    logged_pengguna = logged_doctor
+    logged_user = request.session.get('logged_user', None)
 
-    kunj = next(
-        (k for k in kunjungan if k['id_kunjungan'] == id_kunjungan and k['no_dokter_hewan'] == logged_pengguna.get('doctor_id')),
-        None
-    )
+    sql_get_kunjungan = f"""
+        SELECT id_kunjungan, kode_vaksin, no_dokter_hewan 
+        FROM KUNJUNGAN 
+        WHERE id_kunjungan = '{id_kunjungan}';
+    """
 
-    if not kunj:
-        messages.error(request, "Kunjungan tidak ditemukan atau Anda tidak memiliki akses.")
+    kunjungan_result = query(sql_get_kunjungan)
+
+    if not kunjungan_result or not isinstance(kunjungan_result, list) or len(kunjungan_result) == 0:
+        messages.error(request, "Kunjungan tidak ditemukan.")
         return redirect('merah:show_vaksinasi')
+    kunjungan_current = kunjungan_result
 
     if request.method == 'POST':
-        selected_vaksin_id = request.POST.get('selected_vaksin')
+        selected_vaksin_baru = request.POST.get('selected_vaksin')
 
-        # Ambil objek vaksin yang dipilih
-        vaksin_baru = next((v for v in vaksin if v['kode_vaksin'] == selected_vaksin_id), None)
-        if not vaksin_baru:
-            messages.error(request, "Vaksin yang dipilih tidak ditemukan.")
-            return redirect(reverse('merah:update_vaksinasi', args=[id_kunjungan]))
+        if not selected_vaksin_baru:
+            messages.error(request, "Silakan pilih vaksin baru.")
+            all_vaksin = query("SELECT kode, nama, stok FROM VAKSIN ORDER BY nama;")
+            context = {
+                'vaksin_options': all_vaksin if isinstance(all_vaksin, list) else [],
+                'current_kunjungan': kunjungan_current,
+                'logged_user': logged_user
+            }
+            return render(request, 'update_vaksinasi.html', context)
 
-        if vaksin_baru['stok'] <= 0:
-            messages.error(request, "Vaksin yang dipilih sedang tidak tersedia (stok 0).")
-            return redirect(reverse('merah:update_vaksinasi', args=[id_kunjungan]))
+        if selected_vaksin_baru == kunjungan_current[0].get('kode_vaksin'):
+            messages.info(request, f"Kunjungan sudah menggunakan vaksin tersebut. Tidak ada perubahan dilakukan.")
+            return redirect('merah:show_vaksinasi')
 
-        vaksin_lama_kode = kunj.get('kode_vaksin')
-        # Tambah stok vaksin lama jika ada
-        if vaksin_lama_kode:
-            vaksin_lama = next((v for v in vaksin if v['kode_vaksin'] == vaksin_lama_kode), None)
-            if vaksin_lama:
-                vaksin_lama['stok'] += 1
+        sql_update = f"""
+            UPDATE KUNJUNGAN
+            SET kode_vaksin = '{selected_vaksin_baru}'
+            WHERE id_kunjungan = '{id_kunjungan}';
+        """
+        result = query(sql_update)
 
-        # Update vaksinasi
-        kunj['kode_vaksin'] = selected_vaksin_id
-        vaksin_baru['stok'] -= 1
-
-        messages.success(request, f"Vaksinasi kunjungan {id_kunjungan} berhasil diperbarui.")
+        if isinstance(result, dict) and result.get("status") == "error":
+            messages.error(request, result.get("data") )
+            all_vaksin_options_err = query("SELECT kode, nama, stok FROM VAKSIN WHERE stok > 0 ORDER BY nama;")
+            context = {
+                'vaksin_options': all_vaksin_options_err if isinstance(all_vaksin_options_err, list) else [],
+                'current_kunjungan': kunjungan_current[0],
+                'logged_user': logged_user,
+                'selected_vaksin_id_on_error': selected_vaksin_baru 
+            }
+            return render(request, 'update_vaksinasi.html', context)
+        
+        messages.success(request, f"Vaksinasi untuk kunjungan {id_kunjungan} berhasil diperbarui.")
         return redirect('merah:show_vaksinasi')
 
+
+    all_vaksin = query("SELECT kode, nama, stok FROM VAKSIN ORDER BY nama;")
+    
     context = {
-        'vaksin': vaksin,
-        'id_kunjungan': kunj.get('id_kunjungan'),
+        'vaksin_options': all_vaksin if isinstance(all_vaksin, list) else [],
+        'current_kunjungan': kunjungan_current[0],
+        'logged_user': logged_user
     }
     return render(request, 'update_vaksinasi.html', context)
 
 def delete_vaksinasi(request, id_kunjungan):
-    selected_kunjungan = next((k for k in kunjungan if k['id_kunjungan'] == id_kunjungan), None)
-    
-    if selected_kunjungan:
-        selected_kunjungan['kode_vaksin'] = None
-        messages.success(request, f"Vaksinasi dengan ID Kunjungan {id_kunjungan} berhasil dihapus.")
-    else:
-        messages.error(request, "Kunjungan tidak ditemukan.")
+    sql = f"""
+        UPDATE KUNJUNGAN 
+        SET kode_vaksin = NULL 
+        WHERE id_kunjungan = '{id_kunjungan}' AND kode_vaksin IS NOT NULL; 
+    """
+    result = query(sql) 
 
+    if isinstance(result, dict) and result.get("status") == "error":
+        messages.error(request, f"Gagal menghapus vaksinasi untuk kunjungan {id_kunjungan}: {result.get('data', 'Detail tidak tersedia')}")
+    else:
+        messages.success(request, f"Vaksinasi untuk kunjungan {id_kunjungan} berhasil dihapus.")
     return redirect('merah:show_vaksinasi')
 
 def is_vaksin_used(kode_vaksin):
@@ -369,30 +434,118 @@ def delete_vaksin(request, kode_vaksin):
     return redirect('merah:show_vaksin')
 
 def show_data_klien(request):
-    for client in clients:
-        if "company_name" in client:
-            client["jenis"] = "Perusahaan"
-            client["nama"] = client["company_name"]
-        else:
-            client["jenis"] = "Individu"
-            client["nama"] = f"{client['first_name']} {client['middle_name']} {client['last_name']}"
+    search_query = request.GET.get('search_query', '').strip()
 
-    return render(request, "show_data_klien.html", {"clients": clients})
+    sql_to_execute = """
+        SELECT
+            K.no_identitas,
+            K.email,
+            U.alamat, 
+            U.nomor_telepon,
+            I.nama_depan,
+            I.nama_tengah,
+            I.nama_belakang,
+            P.nama_perusahaan,
+            CASE
+                WHEN P.no_identitas_klien IS NOT NULL THEN 'Perusahaan'
+                ELSE 'Individu'
+            END AS jenis,
+            COALESCE(
+                P.nama_perusahaan,
+                TRIM(CONCAT_WS(' ', I.nama_depan, I.nama_tengah, I.nama_belakang))
+            ) AS nama
+        FROM
+            KLIEN K
+        LEFT JOIN
+            "USER" U ON K.email = U.email  -- Join with USER table on email
+        LEFT JOIN
+            INDIVIDU I ON K.no_identitas = I.no_identitas_klien
+        LEFT JOIN
+            PERUSAHAAN P ON K.no_identitas = P.no_identitas_klien
+    """
+
+
+    if search_query:
+        search_term = f"%{search_query.replace('%', '%%').replace('_', '__')}%"
+        sql_to_execute += f"""
+            WHERE (
+                P.nama_perusahaan ILIKE '{search_term}' OR
+                TRIM(CONCAT_WS(' ', I.nama_depan, I.nama_tengah, I.nama_belakang)) ILIKE '{search_term}'
+            )
+        """
+    sql_to_execute += " ORDER BY nama;"
+    clients = query(sql_to_execute)
+
+    logged_user = request.session.get('logged_user', None)
+    
+    context = {
+        "logged_user": logged_user,
+        "clients": clients if clients else [],
+        "search_query": search_query
+    }
+    return render(request, "show_data_klien.html", context)
 
 def show_klien_detail(request, no_identitas):
-    client = next((c for c in clients if c["no_identitas"] == no_identitas), None)
-    client_info = {k: v for k, v in client.items() if k != "password"}
-    if "company_name" in client:
-        client["nama"] = client["company_name"]
-    else:
-        client["nama"] = f"{client['first_name']} {client['middle_name']} {client['last_name']}"
+    sql_client = """
+        SELECT
+            K.no_identitas,
+            K.email,
+            K.tanggal_registrasi,
+            U.alamat,        
+            U.nomor_telepon,
+            I.nama_depan,
+            I.nama_tengah,
+            I.nama_belakang,
+            P.nama_perusahaan,
+            COALESCE(
+                P.nama_perusahaan,
+                TRIM(CONCAT_WS(' ', I.nama_depan, I.nama_tengah, I.nama_belakang))
+            ) AS nama_lengkap,  -- Combined name for display
+            CASE
+                WHEN P.no_identitas_klien IS NOT NULL THEN 'Perusahaan'
+                ELSE 'Individu'
+            END AS jenis_klien
+        FROM
+            KLIEN K
+        LEFT JOIN
+            "USER" U ON K.email = U.email -- Join KLIEN with USER
+        LEFT JOIN
+            INDIVIDU I ON K.no_identitas = I.no_identitas_klien
+        LEFT JOIN
+            PERUSAHAAN P ON K.no_identitas = P.no_identitas_klien
+        WHERE
+            K.no_identitas = %s
+    """
 
-    client_pets = [pet for pet in pets if pet["no_identitas_klien"] == no_identitas]
-    for pet in client_pets:
-        jenis = next((j for j in jenis_hewan if j["id"] == pet["id_jenis"]), {"nama_jenis": "Tidak diketahui"})
-        pet["nama_jenis"] = jenis["nama_jenis"]
+    sql_client = sql_client.replace("%s", f"'{str(no_identitas)}'")
+    client_list = query(sql_client) 
 
-    return render(request, "show_klien_detail.html", {
+    if not client_list:
+        messages.error(request, "Data klien tidak ditemukan.")
+        return redirect('putih:show_data_klien')
+
+    client_info = client_list[0]
+    sql_pets = """
+        SELECT
+            H.nama AS nama_hewan,
+            JH.nama AS nama_jenis_hewan
+        FROM
+            HEWAN H
+        LEFT JOIN
+            JENIS_HEWAN JH ON H.id_jenis = JH.id
+        WHERE
+            H.no_identitas_klien = %s
+        ORDER BY
+            H.nama;
+    """
+
+    logged_user = request.session.get('logged_user', None)
+    _unsafe_sql_pets = sql_pets.replace("%s", f"'{str(no_identitas)}'")
+    client_pets = query(_unsafe_sql_pets) 
+
+    context = {
+        "logged_user": logged_user,
         "client": client_info,
-        "pets": client_pets,
-    })
+        "pets": client_pets if client_pets else [],
+    }
+    return render(request, "show_klien_detail.html", context)

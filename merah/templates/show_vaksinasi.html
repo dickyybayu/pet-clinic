@@ -1,135 +1,212 @@
 {% extends 'doctor_base.html' %}
 
 {% block content %}
-<div style="margin-top: 30px;">
-    <div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); background-color: #f5f7fa;">
-        <div class="profile-card" style="width: 100%; max-width: 1000px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px 20px; overflow: hidden;">
-            <div>
-            {% if messages %}
-                <div class="messages">
-                    {% for message in messages %}
-                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-            </div>
+<div class="container-fluid" style="margin-top: 30px; background-color: #f5f7fa; min-height: calc(100vh - 80px); padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
 
-            <!-- Card Header -->
-            <div style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2 style="font-size: 26px; margin: 0; font-weight: 600;">Riwayat Vaksinasi</h2>
-                    <div style="background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19.82 2.76a1.82 1.82 0 0 0-2.57 0L8.18 11.84a3 3 0 0 0-.67 1l-1.45 4.37a1 1 0 0 0 1.25 1.25l4.37-1.45a3 3 0 0 0 1.03-.67l9.08-9.07a1.82 1.82 0 0 0 0-2.57zM7 12l5 5"></path>
-                            <path d="M3 21h18"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
+    {% if logged_user %}
+        {% if logged_user.role == 'dokter' %}
             
-            <!-- Card Body -->
-            <div style="padding: 30px;">
-                <!-- Vaksin Table -->
-                <div style="margin-top: 10px;">
-                    {% if vaksin_data %}
-                    <div style="overflow-x: auto;">
-                        <table style="width: 100%; min-width: 800px; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-                            <thead>
-                                <tr style="background-color: #f9fafb;">
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 5%;">No.</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 25%;">ID Kunjungan</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">Tanggal</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 25%;">Nama Vaksin</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 25%;">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in vaksin_data %}
-                                <tr>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ forloop.counter }}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ item.id_kunjungan }}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ item.timetamp_awal|date:"l, d M Y" }}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ item.kode_vaksin}} - {{item.nama_vaksin}}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">
-                                        <div style="display: flex; gap: 5px;">
-                                            <a href="{% url 'merah:update_vaksinasi' item.id_kunjungan %}" style="text-decoration: none; padding: 6px 12px; border-radius: 4px; background-color: #ffa500; color: white; font-size: 14px; font-weight: 500;">Update</a>
-                                            <button class="delete-btn" data-id="{{ item.id_kunjungan }}" data-vaksin="{{ item.kode_vaksin }} - {{ item.nama_vaksin }}" style="padding: 6px 12px; border-radius: 4px; background-color: #e53e3e; color: white; font-size: 14px; font-weight: 500; border: none; cursor: pointer;">Hapus</button>
-                                        </div>
-                                    </td>
-                                </tr>
+            <div class="row justify-content-center" style="width: 100%;">
+                <div class="col-12 col-xl-10">
+                    <div class="profile-card" style="width: 100%; max-width: 1000px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px auto; overflow: hidden;">
+            
+                        <div style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h2 style="font-size: 26px; margin: 0; font-weight: 600;">Riwayat Vaksinasi</h2>
+                                <div style="background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19.82 2.76a1.82 1.82 0 0 0-2.57 0L8.18 11.84a3 3 0 0 0-.67 1l-1.45 4.37a1 1 0 0 0 1.25 1.25l4.37-1.45a3 3 0 0 0 1.03-.67l9.08-9.07a1.82 1.82 0 0 0 0-2.57zM7 12l5 5"></path>
+                                        <path d="M3 21h18"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 30px;">
+            
+                            {% comment %} --- Pesan Django (Error/Sukses) --- {% endcomment %}
+                            {% if messages %}
+                            <div class="messages" style="margin-bottom: 20px;">
+                                {% for message in messages %}
+                                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+                                        {{ message }}
+                                    </div>
                                 {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div style="margin-top: 15px; font-size: 14px; color: #5a6477;">
-                        Total Data: {{ vaksin_data|length }}
-                    </div>
-                    {% else %}
-                    <div style="padding: 30px; text-align: center; background-color: #f9fafb; border-radius: 8px; margin-top: 20px;">
-                        <div style="color: #5a6477; font-size: 18px; font-weight: 500; margin-bottom: 10px;">Tidak Ada Data Vaksinasi</div>
-                        <p style="color: #64748b; margin: 0;">Belum ada data vaksinasi yang tersedia saat ini.</p>
-                    </div>
-                    {% endif %}
-                </div>
-                
-                <!-- Popup Konfirmasi Hapus -->
-                <div id="delete-confirm-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
-                    <div style="background: white; padding: 20px 30px; border-radius: 8px; width: 400px; text-align: center;">
-                        <h3>Apakah Anda yakin ingin menghapus vaksinasi?</h3>
-                        <p><strong>Vaksin:</strong> <span id="popup-vaksin"></span></p>
-                        <p><strong>ID Kunjungan:</strong> <span id="popup-id"></span></p>
-                        <div style="margin-top: 20px; display: flex; justify-content: space-around;">
-                            <button id="cancel-delete" style="padding: 6px 12px; background-color: #f0f2f5; border-radius: 4px; font-size: 14px; border: none; cursor: pointer;">Batal</button>
-                            <button id="confirm-delete" style="padding: 6px 12px; background-color: #e53e3e; color: white; border-radius: 4px; font-size: 14px; border: none; cursor: pointer;">Hapus</button>
+                            </div>
+                            {% endif %}
+                            {% comment %} --- Akhir Blok Pesan Django --- {% endcomment %}
+            
+                            <div style="margin-top: 10px;">
+                                {% if vaksin_data %}
+                                <div style="overflow-x: auto;">
+                                    <table style="width: 100%; min-width: 800px; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                                        <thead>
+                                            <tr style="background-color: #f9fafb;">
+                                                <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 5%;">No.</th>
+                                                <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 25%;">ID Kunjungan</th>
+                                                <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">Tanggal</th>
+                                                <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 25%;">Nama Vaksin</th>
+                                                <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 25%;">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in vaksin_data %}
+                                            <tr>
+                                                <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ forloop.counter }}</td>
+                                                <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ item.id_kunjungan }}</td>
+                                                <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ item.timestamp_awal|date:"l, d M Y" }}</td>
+                                                <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ item.kode}} - {{item.nama}}</td>
+                                                <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">
+                                                    <div style="display: flex; gap: 5px;">
+                                                        <a href="{% url 'merah:update_vaksinasi' item.id_kunjungan %}" style="text-decoration: none; padding: 6px 12px; border-radius: 4px; background-color: #ffa500; color: white; font-size: 14px; font-weight: 500;">Update</a>
+                                                        <button class="delete-btn" data-id="{{ item.id_kunjungan }}" data-vaksin="{{ item.kode }} - {{ item.nama }}" style="padding: 6px 12px; border-radius: 4px; background-color: #e53e3e; color: white; font-size: 14px; font-weight: 500; border: none; cursor: pointer;">Hapus</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div style="margin-top: 15px; font-size: 14px; color: #5a6477;">
+                                    Total Data: {{ vaksin_data|length }}
+                                </div>
+                                {% else %}
+                                <div style="padding: 30px; text-align: center; background-color: #f9fafb; border-radius: 8px; margin-top: 20px;">
+                                    <div style="color: #5a6477; font-size: 18px; font-weight: 500; margin-bottom: 10px;">Tidak Ada Data Vaksinasi</div>
+                                    <p style="color: #64748b; margin: 0;">Belum ada data vaksinasi yang tersedia saat ini.</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div id="delete-confirm-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
+                                <div style="background: white; padding: 20px 30px; border-radius: 8px; width: 400px; text-align: center;">
+                                    <h3>Apakah Anda yakin ingin menghapus vaksinasi?</h3>
+                                    <p><strong>Vaksin:</strong> <span id="popup-vaksin"></span></p>
+                                    <p><strong>ID Kunjungan:</strong> <span id="popup-id"></span></p>
+                                    <div style="margin-top: 20px; display: flex; justify-content: space-around;">
+                                        <button id="cancel-delete" style="padding: 6px 12px; background-color: #f0f2f5; border-radius: 4px; font-size: 14px; border: none; cursor: pointer;">Batal</button>
+                                        <button id="confirm-delete" style="padding: 6px 12px; background-color: #e53e3e; color: white; border-radius: 4px; font-size: 14px; border: none; cursor: pointer;">Hapus</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+                                <a href="#" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500; transition: all 0.2s ease;">Kembali</a>
+                                <a href="{% url 'merah:create_vaksinasi' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; transition: all 0.2s ease;">Create Vaksinasi</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Footer Action Buttons -->
-                <div style="margin-top: 30px; display: flex; justify-content: space-between;">
-                    <a href="#" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500; transition: all 0.2s ease;">Kembali</a>
-                    <a href="/merah/create_vaksinasi" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; transition: all 0.2s ease;">Create Vaksinasi</a>
+            </div>
+        {% else %}
+            <div class="col-12 col-md-8 col-lg-6"> 
+                <div class="alert text-center" role="alert" style="padding: 30px 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); background-color: #f8d7da; color: #721c24; border-left: 6px solid #d9534f; width: 100%;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#d9534f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block mx-auto mb-3">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <h4 class="alert-heading" style="font-weight: 700; font-size: 24px; color: #721c24; margin-bottom: 15px;">Akses Ditolak!</h4>
+                    <p style="color: #721c24; font-size: 17px; line-height: 1.6; margin-bottom: 0;">Anda tidak memiliki izin yang diperlukan (peran Dokter Hewan) untuk mengakses halaman ini.</p>
                 </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="col-12 col-md-8 col-lg-6"> 
+            <div class="alert text-center" role="alert" style="padding: 30px 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); background-color: #fff3cd; color: #856404; border-left: 6px solid #ffc107; width: 100%;">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ffc107" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block mx-auto mb-3">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <h4 class="alert-heading" style="font-weight: 700; font-size: 24px; color: #856404; margin-bottom: 15px;">Akses Terbatas</h4>
+                <p style="color: #856404; font-size: 17px; line-height: 1.6; margin-bottom: 25px;">Anda harus masuk untuk melihat halaman ini.</p>
+                <a href="{% url 'putih:login' %}" class="btn btn-lg" style="background-color: #ffc107; border-color: #ffc107; color: #212529; font-weight: 600; padding: 12px 30px; font-size: 17px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: all 0.2s ease; text-decoration: none;" onmouseover="this.style.backgroundColor='#e0a800'; this.style.borderColor='#d39e00';" onmouseout="this.style.backgroundColor='#ffc107'; this.style.borderColor='#ffc107';">Masuk Sekarang</a>
             </div>
         </div>
-    </div>  
+    {% endif %}
+
 </div>
 
 <script>
-    // Menangani klik tombol hapus
+    // Script untuk delete popup Anda tetap di sini, di dalam blok konten jika diperlukan
+    // atau lebih baik di manage oleh file JS statis yang di-include oleh base template
     const deleteButtons = document.querySelectorAll('.delete-btn');
     const popup = document.getElementById('delete-confirm-popup');
     const cancelBtn = document.getElementById('cancel-delete');
     const confirmBtn = document.getElementById('confirm-delete');
     const popupVaksin = document.getElementById('popup-vaksin');
     const popupId = document.getElementById('popup-id');
-    let selectedId = null;
+    let selectedIdToDelete = null;
+
+    // Anda mungkin perlu memastikan CSRF token tersedia untuk script ini jika belum
+    // Misalnya, jika Anda tidak memiliki form lain di halaman ini yang merender {% csrf_token %}
+    // Anda bisa meletakkan {% csrf_token %} di suatu tempat yang tersembunyi atau
+    // mengambilnya dari meta tag jika diset di base template.
+    // Untuk contoh ini, kita asumsikan ada cara untuk mendapatkan csrfToken
+    // Cara mudah jika <script> ini ada di template:
+    // const csrfTokenValue = "{{ csrf_token }}"; <-- ini akan dirender Django
+    // atau ambil dari input field jika ada di suatu tempat di halaman (misal dari form lain)
+    // const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
     deleteButtons.forEach(button => {
         button.addEventListener('click', function (e) {
             e.preventDefault();
             const idKunjungan = button.getAttribute('data-id');
-            const vaksin = button.getAttribute('data-vaksin');
+            const vaksinInfo = button.getAttribute('data-vaksin');
             
-            // Menampilkan popup dengan data yang sesuai
-            selectedId = idKunjungan;
-            popupVaksin.textContent = vaksin;
+            selectedIdToDelete = idKunjungan;
+            popupVaksin.textContent = vaksinInfo;
             popupId.textContent = idKunjungan;
             popup.style.display = 'flex';
         });
     });
 
-    // Menangani pembatalan penghapusan
     cancelBtn.addEventListener('click', function() {
         popup.style.display = 'none';
+        selectedIdToDelete = null; 
     });
 
-    // Menangani konfirmasi penghapusan
     confirmBtn.addEventListener('click', function() {
-        // Redirect ke URL penghapusan vaksinasi dengan ID yang dipilih
-        window.location.href = `/merah/delete_vaksinasi/${selectedId}/`;
+        if (selectedIdToDelete) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/merah/delete_vaksinasi/${selectedIdToDelete}/`; 
+
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            // Pastikan csrfTokenValue ini terdefinisi dengan benar. Jika script ini ada di akhir template,
+            // dan Anda merender {% csrf_token %} di suatu tempat (bisa juga di dalam tag script ini),
+            // maka bisa diakses. Jika tidak, Anda perlu cara lain untuk mendapatkan token ini.
+            // Misal, jika Anda punya form pencarian atau filter di halaman ini:
+            const mainCsrfTokenInput = document.querySelector('form input[name="csrfmiddlewaretoken"]');
+            if (mainCsrfTokenInput) {
+                 csrfInput.value = mainCsrfTokenInput.value;
+            } else {
+                // Fallback jika tidak ada form lain dengan token, ini mungkin perlu cara lain.
+                // Untuk pengembangan, Anda bisa sementara hardcode token yang valid, TAPI JANGAN LAKUKAN INI DI PRODUKSI.
+                // Atau pastikan {% csrf_token %} di-render di suatu tempat yang bisa diakses script.
+                // Contoh: render {% csrf_token %} di awal <body> atau sebelum script ini.
+                // Jika block script ada di template Django, {{ csrf_token }} akan di-expand menjadi tag input.
+                // Jadi, mengambilnya dari input yang di-render itu lebih aman.
+                // Untuk sementara, asumsikan Anda telah menambahkan {% csrf_token %} di awal body,
+                // sehingga querySelector('input[name="csrfmiddlewaretoken"]') akan menemukannya.
+                // Jika TIDAK ADA form lain di halaman ini, Anda HARUS menambahkan {% csrf_token %}
+                // secara manual (misalnya sebelum tag script ini)
+                // agar querySelector di atas bisa mengambilnya.
+                // Atau, letakkan const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+                // setelah Anda yakin tag {% csrf_token %} sudah dirender.
+                 console.error("CSRF token not found for delete operation!"); // Tambahkan error handling
+                 popup.style.display = 'none'; // Sembunyikan popup jika tidak bisa lanjut
+                 return;
+            }
+            form.appendChild(csrfInput);
+
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form); 
+        }
     });
 </script>
 {% endblock %}
