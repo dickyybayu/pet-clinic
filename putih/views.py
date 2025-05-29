@@ -296,10 +296,9 @@ def register_perawat(request):
 
     return render(request, 'register_perawat.html')
 
-
 def login_view(request):
     context = {
-        "message" : ""
+        "message": ""
     }
 
     if request.method == 'POST':
@@ -317,16 +316,17 @@ def login_view(request):
                 'phone': result[0]['nomor_telepon'],
             }
 
+            # Cek apakah user klien
             query_str = f'''
                 SELECT * FROM klien WHERE email = '{email}'
             '''
             klien_result = query(query_str)
 
             if len(klien_result) == 1:
-                logged_user['no_identitas'] = klien_result[0]['no_identitas']
+                logged_user['no_identitas'] = str(klien_result[0]['no_identitas'])
                 logged_user['tanggal_registrasi'] = klien_result[0]['tanggal_registrasi'].isoformat()
 
-                query_str   = f'''
+                query_str = f'''
                     SELECT * FROM individu WHERE no_identitas_klien = '{logged_user['no_identitas']}'
                 '''
                 individu_result = query(query_str) 
@@ -343,31 +343,33 @@ def login_view(request):
                     if len(perusahaan_result) == 1:
                         logged_user['nama_perusahaan'] = perusahaan_result[0]['nama_perusahaan']
                         logged_user['role'] = 'klien_perusahaan'
-                
             else:
+                # Jika bukan klien, cek pegawai
                 query_str = f'''
                     SELECT * FROM pegawai WHERE email_user = '{email}'
                 '''
                 pegawai_result = query(query_str)
-                logged_user['no_pegawai'] = pegawai_result[0]['no_pegawai']
+                logged_user['no_pegawai'] = str(pegawai_result[0]['no_pegawai'])
                 logged_user['tanggal_mulai_kerja'] = pegawai_result[0]['tanggal_mulai_kerja'].isoformat()
                 logged_user['tanggal_akhir_kerja'] = pegawai_result[0]['tanggal_akhir_kerja'].isoformat() if pegawai_result[0]['tanggal_akhir_kerja'] else None
 
+                # Cek apakah tenaga medis
                 query_str = f'''
                     SELECT * FROM tenaga_medis WHERE no_tenaga_medis = '{logged_user['no_pegawai']}'
                 '''
                 tenaga_medis_result = query(query_str)
                 
                 if len(tenaga_medis_result) == 1:
-                    logged_user['no_tenaga_medis'] = tenaga_medis_result[0]['no_tenaga_medis']
+                    logged_user['no_tenaga_medis'] = str(tenaga_medis_result[0]['no_tenaga_medis'])
                     logged_user['no_izin_praktik'] = tenaga_medis_result[0]['no_izin_praktik']
 
+                    # Cek apakah dokter hewan
                     query_str = f'''
                         SELECT * FROM dokter_hewan WHERE no_dokter_hewan = '{logged_user['no_tenaga_medis']}'
                     '''
                     dokter_result = query(query_str)
                     if isinstance(dokter_result, list) and len(dokter_result) == 1:
-                        logged_user['no_dokter_hewan'] = dokter_result[0]['no_dokter_hewan']
+                        logged_user['no_dokter_hewan'] = str(dokter_result[0]['no_dokter_hewan'])
                         logged_user['role'] = 'dokter'
                     else:
                         query_str = f'''
@@ -379,8 +381,8 @@ def login_view(request):
                         else:
                             context['message'] = "Role tenaga medis tidak valid."
                             return render(request, 'login.html', context)
-
                 else:
+                    # Cek apakah front desk
                     query_str = f'''
                         SELECT * FROM front_desk WHERE no_front_desk = '{logged_user['no_pegawai']}'
                     '''
@@ -389,10 +391,11 @@ def login_view(request):
                         context['message'] = "Invalid email or password"
                         return render(request, 'login.html', context)
 
-                    logged_user['no_front_desk'] = front_desk_result[0]['no_front_desk']
+                    logged_user['no_front_desk'] = str(front_desk_result[0]['no_front_desk'])
                     logged_user['role'] = 'front_desk'
 
-            request.session['logged_user'] = logged_user   
+            # Simpan ke session
+            request.session['logged_user'] = logged_user
             return redirect('putih:show_profile')
 
         context['message'] = "Invalid email or password"
@@ -498,50 +501,11 @@ def show_profile(request):
 
     return HttpResponseNotFound("Role tidak ditemukan.")
 
-
-
 def logout(request):
     request.session.flush()
     messages.success(request, 'Berhasil logout!')
     return redirect('putih:login')
 
-# def update_klien(request):
-#     if request.method == 'POST':
-#         address = request.POST.get('address')
-#         phone = request.POST.get('phone')
-#         first_name = request.POST.get('first_name')
-#         middle_name = request.POST.get('middle_name', "")
-#         last_name = request.POST.get('last_name')
-#         company_name = request.POST.get('company_name')
-
-#         if company_name:
-#             errors = validate_update_data(address, phone, company_name=company_name)
-#         else:
-#             errors = validate_update_data(address, phone, first_name=first_name, middle_name=middle_name, last_name=last_name)
-
-#         if errors:
-#             context = {
-#                 'errors': errors,
-#                 **logged_pengguna,
-#             }
-#             return render(request, 'update_klien.html', context)
-        
-#         logged_pengguna['address'] = address
-#         logged_pengguna['phone'] = phone
-
-#         if company_name:
-#             logged_pengguna['company_name'] = company_name
-#         else:
-#             logged_pengguna['first_name'] = first_name
-#             logged_pengguna['middle_name'] = middle_name
-#             logged_pengguna['last_name'] = last_name
-
-#         return redirect('putih:show_profile')
-
-#     context = {
-#         **logged_pengguna,
-#     }
-#     return render(request, 'update_klien.html', context)
 
 def update_klien_individu(request):
     logged_user = request.session.get("logged_user", {})
@@ -618,16 +582,6 @@ def update_klien_perusahaan(request):
     """)[0]
 
     return render(request, "update_klien.html", {"data": data, 'logged_user': logged_user})
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from utils.query import query
-from utils.validators import validate_address, validate_phone, validate_end_date
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from utils.query import query
-from utils.validators import validate_address, validate_phone, validate_end_date
 
 def update_dokter(request):
     logged_user = request.session.get('logged_user')
