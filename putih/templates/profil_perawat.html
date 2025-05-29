@@ -1,59 +1,109 @@
-{%include 'navbar_perawat.html'%}
+{% extends 'base.html' %}
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>Profile Perawat</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 40px; padding:80px;}
-    .profile-section { margin-bottom: 30px; }
-    .info-row { display: flex; margin-bottom: 10px; }
-    .label { width: 200px; font-weight: bold; }
-    .value { flex: 1; }
-    .btn-group { margin-bottom: 30px; }
-    .btn { padding: 8px 16px; border-radius: 6px; border: none; font-size: 14px; cursor: pointer; margin-right: 10px; }
-    .btn-password { background-color: #ef4444; color: white; }
-    .btn-update { background-color: #0d1117; color: white; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-    th { background-color: #f9fafb; font-weight: bold; }
-  </style>
-</head>
-<body>
+{% block content %}
+<div style="margin-top: 30px;">
+  <div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); background-color: #f5f7fa;">
+    <div class="profile-card" style="width: 100%; max-width: 900px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px 20px; overflow: hidden;">
 
-<h2>Profile Perawat</h2>
-<div class="btn-group">
-  <button class="btn btn-password" onclick="window.location.href='{% url 'putih:update_password' %}'">Update Password</button>
+      <!-- Card Header -->
+      <div style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2 style="font-size: 26px; margin: 0; font-weight: 600;">Profile Perawat</h2>
+          <div style="background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+        </div>
+      </div>
 
-  <button class="btn btn-update" onclick="window.location.href='{% url 'putih:update_perawat' %}'">Update Profile</button>
+      <!-- Card Body -->
+      <div style="padding: 30px;">
+        <div class="profile-info">
+          <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Nomor Identitas</div>
+            <div style="width: 65%; color: #333;">{{ no_perawat_hewan }}</div>
+          </div>
+
+          <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Nomor Izin Praktik</div>
+            <div style="width: 65%; color: #333;">{{ no_izin_praktik }}</div>
+          </div>
+
+          <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Email</div>
+            <div style="width: 65%; color: #333;">{{ email }}</div>
+          </div>
+
+          <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Tanggal Diterima</div>
+            <div style="width: 65%; color: #333;">
+              {% load iso_filters %}
+              {{ tanggal_mulai_kerja|parse_iso|date:"d F Y" }}
+            </div>
+          </div>
+
+          <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Tanggal Akhir Kerja</div>
+            <div style="width: 65%; color: #333;">
+              {% if logged_user.tanggal_akhir_kerja %}
+                {{ tanggal_akhir_kerja|parse_iso|date:"d F Y" }}
+              {% else %}
+                -
+              {% endif %}
+            </div>
+          </div>
+
+          <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Alamat</div>
+            <div style="width: 65%; color: #333;">{{ alamat }}</div>
+          </div>
+
+          <div style="display: flex;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Nomor Telepon</div>
+            <div style="width: 65%; color: #333;">{{ nomor_telepon }}</div>
+          </div>
+        </div>
+
+        <!-- Daftar Sertifikat -->
+        <div style="margin-top: 40px;">
+          <h3 style="margin-bottom: 15px; font-size: 18px; color: #2d3748;">Daftar Sertifikat</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background-color: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                <th style="padding: 10px 12px; text-align: left;">No</th>
+                <th style="padding: 10px 12px; text-align: left;">Nomor Sertifikat</th>
+                <th style="padding: 10px 12px; text-align: left;">Nama Sertifikat</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% if sertifikat %}
+              {% for s in sertifikat %}
+              <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 10px 12px;">{{ forloop.counter }}</td>
+                <td style="padding: 10px 12px;">{{ s.nomor_sertifikat_kompetensi }}</td>
+                <td style="padding: 10px 12px;">{{ s.nama_sertifikat }}</td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="3" style="padding: 12px; text-align: center; color: #777;">
+                  Tidak ada sertifikat
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+          </table>
+        </div>
+
+        <!-- Footer Action Buttons -->
+        <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 15px;">
+          <a href="{% url 'putih:update_password' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500;">Update Password</a>
+          <a href="{% url 'putih:update_perawat' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500;">Update Profile</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-
-<div class="profile-section">
-  <div class="info-row"><div class="label">Nomor Identitas</div><div class="value">1845ad38-ef76-49cd-b46e-350ba3f0ef59</div></div>
-  <div class="info-row"><div class="label">Nomor Izin Praktik</div><div class="value">SIP-PERAWAT-12345</div></div>
-  <div class="info-row"><div class="label">Email</div><div class="value">sandy.permata@petclinic.com</div></div>
-  <div class="info-row"><div class="label">Tanggal Diterima</div><div class="value">24 Januari 2025</div></div>
-  <div class="info-row"><div class="label">Tanggal Akhir Kerja</div><div class="value">-</div></div>
-  <div class="info-row"><div class="label">Alamat</div><div class="value">Jl. Melati Indah No. 24, Kel. Sukamaju, Kec. Cibinong, Kab. Bogor, Jawa Barat, 16914</div></div>
-  <div class="info-row"><div class="label">Nomor Telepon</div><div class="value">081234567894</div></div>
-</div>
-
-<h3>Daftar Sertifikat</h3>
-<table>
-  <thead>
-    <tr>
-      <th>No</th>
-      <th>Nomor Sertifikat</th>
-      <th>Nama Sertifikat</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>1</td><td>123/PH/456</td><td>Paraprofesional Kedokteran Hewan</td></tr>
-    <tr><td>2</td><td>456/PH/456</td><td>Keperawatan Hewan Profesional</td></tr>
-    <tr><td>3</td><td>789/PH/789</td><td>Sertifikat Organisasi Profesi</td></tr>
-  </tbody>
-</table>
-
-</body>
-</html>
+{% endblock %}

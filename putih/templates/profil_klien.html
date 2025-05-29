@@ -32,39 +32,35 @@
                     </div>
                     
                     <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
-                        {% if company_name %}
-                        <div style="width: 35%; font-weight: 600; color: #5a6477;">Nama Perusahaan</div>
-                        <div style="width: 65%; color: #333; font-weight: 500;">{{ company_name }}</div>
-                        {% else %}
+                        {% if nama %}
                         <div style="width: 35%; font-weight: 600; color: #5a6477;">Nama</div>
-                        <div style="width: 65%; color: #333; font-weight: 500;">
-                            {{ first_name }}
-                            {% if middle_name %} {{ middle_name }}{% endif %}
-                            {{ last_name }}
-                        </div>
+                        <div style="width: 65%; color: #333;">{{ nama }}</div>
+                        {% elif nama_perusahaan %}
+                        <div style="width: 35%; font-weight: 600; color: #5a6477;">Nama Perusahaan</div>
+                        <div style="width: 65%; color: #333;">{{ nama_perusahaan }}</div>
                         {% endif %}
                     </div>
                     
                     <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
                         <div style="width: 35%; font-weight: 600; color: #5a6477;">Tanggal Pendaftaran</div>
-                        <div style="width: 65%; color: #333;">{{ tanggal_reg|date:"d F Y" }}</div>
+                        <div style="width: 65%; color: #333;">{{ tanggal_registrasi|date:"d F Y" }}</div>
                     </div>
                     
                     <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
                         <div style="width: 35%; font-weight: 600; color: #5a6477;">Alamat</div>
-                        <div style="width: 65%; color: #333;">{{ address }}</div>
+                        <div style="width: 65%; color: #333;">{{ alamat }}</div>
                     </div>
                     
                     <div style="display: flex;">
                         <div style="width: 35%; font-weight: 600; color: #5a6477;">Nomor Telepon</div>
-                        <div style="width: 65%; color: #333;">{{ phone }}</div>
+                        <div style="width: 65%; color: #333;">{{ nomor_telepon }}</div>
                     </div>
                 </div>
                 
                 <!-- Footer Action Buttons -->
                 <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 15px;">
-                    <a href="{%url 'putih:update_password'%}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500; transition: all 0.2s ease;">Update Password</a>
-                    <a href="/profil/update_klien" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; transition: all 0.2s ease;">Update Profile</a>
+                    <a href="{% url 'putih:update_password' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500; transition: all 0.2s ease;">Update Password</a>
+                    <a href="{% url 'putih:update_klien' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; transition: all 0.2s ease;">Update Profile</a>
                 </div>
             </div>
         </div>
