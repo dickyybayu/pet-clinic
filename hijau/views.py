@@ -202,6 +202,7 @@ def list_perawatan(request):
             fd.email_user AS email_frontdesk,
             p.kode_perawatan,
             p.nama_perawatan
+
         FROM KUNJUNGAN_KEPERAWATAN kkp
         JOIN PERAWAT_HEWAN prh ON kkp.no_perawat_hewan = prh.no_perawat_hewan
         JOIN TENAGA_MEDIS tmpr ON prh.no_perawat_hewan = tmpr.no_tenaga_medis
@@ -222,7 +223,7 @@ def list_perawatan(request):
         query_str += f" WHERE kkp.no_identitas_klien = '{no_identitas_klien}'"
 
     result = query(query_str)
-    print(result)
+
     # Format kolom
     for r in result:
         r["email_dokter"] = f"Dr. {r['email_dokter'].split('@')[0].capitalize()}"
@@ -230,10 +231,108 @@ def list_perawatan(request):
         r["email_frontdesk"] = r["email_frontdesk"].split('@')[0].capitalize()
         r["jenis_perawatan"] = f"{r['kode_perawatan']} - {r['nama_perawatan']}"
 
+        print(r["email_perawat"])
+    
+    # print perawat hewan
+    
+
     return render(request, "list_treatment.html", {
         "treatment": result,
         "is_dokter": role == "dokter"
     })
+
+def create_treatment(request):
+    logged_user = request.session.get("logged_user")
+    if not logged_user or logged_user.get("role") != "dokter":
+        messages.error(request, "Hanya dokter hewan yang dapat menambahkan treatment.")
+        return redirect("hijau:list_perawatan")
+
+    if request.method == "POST":
+        id_kunjungan = request.POST.get("id_kunjungan")
+        kode_perawatan = request.POST.get("kode_perawatan")
+
+        # Dapatkan data kunjungan
+        kunjungan = query(f"""
+            SELECT * FROM KUNJUNGAN WHERE id_kunjungan = '{id_kunjungan}'
+        """)
+        if not kunjungan:
+            messages.error(request, "Kunjungan tidak ditemukan.")
+            return redirect("hijau:create_treatment")
+
+        k = kunjungan[0]
+        # Simpan ke tabel KUNJUNGAN_KEPERAWATAN
+        query(f"""
+            INSERT INTO KUNJUNGAN_KEPERAWATAN (
+                id_kunjungan, nama_hewan, no_identitas_klien,
+                no_front_desk, no_perawat_hewan, no_dokter_hewan,
+                kode_perawatan
+            ) VALUES (
+                '{k["id_kunjungan"]}', '{k["nama_hewan"]}', '{k["no_identitas_klien"]}',
+                '{k["no_front_desk"]}', '{k["no_perawat_hewan"]}', '{k["no_dokter_hewan"]}',
+                '{kode_perawatan}'
+            )
+        """)
+        messages.success(request, "Treatment berhasil ditambahkan.")
+        return redirect("hijau:list_perawatan")
+
+    # Ambil semua kunjungan (opsional: bisa dibatasi hanya yang belum punya perawatan)
+    daftar_kunjungan = query("""
+        SELECT id_kunjungan, nama_hewan, no_identitas_klien FROM KUNJUNGAN
+    """)
+
+    daftar_perawatan = query("""
+        SELECT kode_perawatan, nama_perawatan FROM PERAWATAN
+    """)
+
+    return render(request, "create_treatment.html", {
+        "daftar_kunjungan": daftar_kunjungan,
+        "daftar_perawatan": daftar_perawatan,
+    })
+
+
+def delete_treatment(request, id_kunjungan, kode_perawatan):
+    logged_user = request.session.get("logged_user")
+    if not logged_user or logged_user.get("role") != "dokter":
+        messages.error(request, "Hanya dokter yang dapat menghapus perawatan.")
+        return redirect("hijau:list_perawatan")
+
+    query(f"""
+        DELETE FROM KUNJUNGAN_KEPERAWATAN
+        WHERE id_kunjungan = '{id_kunjungan}' AND kode_perawatan = '{kode_perawatan}'
+    """)
+    messages.success(request, "Perawatan berhasil dihapus.")
+    return redirect("hijau:list_perawatan")
+
+def update_treatment(request, id_kunjungan, kode_perawatan):
+    logged_user = request.session.get("logged_user")
+    if not logged_user or logged_user.get("role") != "dokter":
+        messages.error(request, "Akses ditolak.")
+        return redirect("hijau:list_perawatan")
+
+    if request.method == "POST":
+        kode_perawatan_baru = request.POST.get("kode_perawatan")
+
+        # Update kode_perawatan
+        query(f"""
+            UPDATE KUNJUNGAN_KEPERAWATAN
+            SET kode_perawatan = '{kode_perawatan_baru}'
+            WHERE id_kunjungan = '{id_kunjungan}' AND kode_perawatan = '{kode_perawatan}'
+        """)
+        messages.success(request, "Perawatan berhasil diperbarui.")
+        return redirect("hijau:list_perawatan")
+
+    # Load data perawatan & list untuk dropdown
+    data = query(f"""
+        SELECT * FROM KUNJUNGAN_KEPERAWATAN
+        WHERE id_kunjungan = '{id_kunjungan}' AND kode_perawatan = '{kode_perawatan}'
+    """)[0]
+    daftar_perawatan = query("SELECT kode_perawatan, nama_perawatan FROM PERAWATAN")
+
+    return render(request, "update_treatment.html", {
+        "data": data,
+        "daftar_perawatan": daftar_perawatan,
+    })
+
 
 def show_rekam_medis(request, id_kunjungan):
     kunjungan = query(f"SELECT suhu, berat_badan, catatan FROM KUNJUNGAN WHERE id_kunjungan = '{id_kunjungan}'")

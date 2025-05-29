@@ -150,7 +150,6 @@
           <th>Dokter Hewan</th>
           <th>Front Desk Officer</th>
           <th>Jenis Perawatan</th>
-          <th>Catatan Medis</th>
           {% if is_dokter %}
           <th>Aksi</th>
           {% endif %}
@@ -163,11 +162,10 @@
           <td>{{ t.id_kunjungan }}</td>
           <td>{{ t.no_identitas_klien }}</td>
           <td>{{ t.nama_hewan }}</td>
-          <td>{{ t.nama_perawat }}</td>
+          <td>{{ t.email_perawat }}</td>
           <td>{{ t.email_dokter }}</td>
           <td>{{ t.email_frontdesk }}</td>
           <td>{{ t.jenis_perawatan }}</td>
-          <td>{{ t.catatan|default:"-" }}</td>
           {% if is_dokter %}
           <td class="button-container">
             <a href="{% url 'hijau:update_treatment' t.id_kunjungan t.kode_perawatan %}" class="btn btn-update">Update</a>

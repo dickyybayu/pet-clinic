@@ -4,36 +4,26 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Create New Treatment</title>
+  <title>Buat Treatment Baru</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      padding-top: 80px;
       background-color: #f5f7fa;
+      padding-top: 80px;
     }
 
     .container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 40px 20px;
-    }
-
-    .form-card {
-      width: 100%;
-      max-width: 600px;
-      background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      max-width: 800px;
+      margin: auto;
+      background: white;
       padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
     }
 
     h2 {
-      font-size: 24px;
+      color: #2d3748;
       margin-bottom: 25px;
-      color: #4a5568;
     }
 
     label {
@@ -44,19 +34,13 @@
       color: #374151;
     }
 
-    select, textarea, input[type="text"] {
+    select {
       width: 100%;
       padding: 10px;
       margin-top: 8px;
-      border-radius: 6px;
       border: 1px solid #ccc;
+      border-radius: 6px;
       font-size: 14px;
-      box-sizing: border-box;
-    }
-
-    textarea {
-      min-height: 90px;
-      resize: vertical;
     }
 
     .button-group {
@@ -66,22 +50,23 @@
       gap: 12px;
     }
 
-    .btn {
+    .btn-cancel, .btn-submit {
       padding: 10px 20px;
+      border-radius: 6px;
       font-size: 14px;
       font-weight: 500;
-      border-radius: 6px;
+      text-decoration: none;
       border: none;
       cursor: pointer;
     }
 
     .btn-cancel {
       background-color: #f0f2f5;
-      color: #4a5568;
-      border: 1px solid #d1d5db;
+      color: #374151;
+      border: 1px solid #ccc;
     }
 
-    .btn-create {
+    .btn-submit {
       background-color: #5a85e2;
       color: white;
     }
@@ -89,37 +74,34 @@
 </head>
 <body>
   <div class="container">
-    <div class="form-card">
-      <h2>Create New Treatment</h2>
+    <h2>Buat Treatment Baru</h2>
 
-      <form action="{% url 'hijau:create_treatment' %}" method="post">
-        {% csrf_token %}
+    <form method="POST">
+      {% csrf_token %}
 
-        <label for="kunjungan">Kunjungan</label>
-        <select id="kunjungan" name="kunjungan" required>
-          <option value="" disabled selected>Pilih Kunjungan</option>
-          <option value="KJN001">KJN001</option>
-          <option value="KJN002">KJN002</option>
-          <option value="KJN003">KJN003</option>
-        </select>
+      <label for="id_kunjungan">ID Kunjungan</label>
+      <select name="id_kunjungan" id="id_kunjungan" required>
+        <option value="">-- Pilih Kunjungan --</option>
+        {% for k in daftar_kunjungan %}
+          <option value="{{ k.id_kunjungan }}">ID: {{ k.id_kunjungan }} | Hewan: {{ k.nama_hewan }} | Klien: {{ k.no_identitas_klien }}</option>
+        {% endfor %}
+      </select>
 
-        <label for="jenis_perawatan">Jenis Perawatan</label>
-        <select id="jenis_perawatan" name="jenis_perawatan" required>
-          <option value="" disabled selected>Pilih Jenis Perawatan</option>
-          <option value="TRM001">TRM001 - Dental Care</option>
-          <option value="TRM002">TRM002 - Parasite Control</option>
-          <option value="TRM003">TRM003 - Flea Treatment</option>
-        </select>
+      <label for="kode_perawatan">Jenis Perawatan</label>
+      <select name="kode_perawatan" id="kode_perawatan" required>
+        <option value="">-- Pilih Perawatan --</option>
+        {% for p in daftar_perawatan %}
+          <option value="{{ p.kode_perawatan }}">
+            {{ p.kode_perawatan }} - {{ p.nama_perawatan }}
+          </option>
+        {% endfor %}
+      </select>
 
-        <label for="catatan_medis">Catatan Medis</label>
-        <textarea id="catatan_medis" name="catatan_medis" placeholder="Contoh: Hewan dalam kondisi baik, lanjut perawatan lanjutan..."></textarea>
-
-        <div class="button-group">
-          <a href="{% url 'hijau:list_treatment' %}" class="btn btn-cancel">Cancel</a>
-          <button type="submit" class="btn btn-create">Create</button>
-        </div>
-      </form>
-    </div>
+      <div class="button-group">
+        <a href="{% url 'hijau:list_perawatan' %}" class="btn-cancel">Batal</a>
+        <button type="submit" class="btn-submit">Simpan</button>
+      </div>
+    </form>
   </div>
 </body>
 </html>
