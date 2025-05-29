@@ -6,6 +6,8 @@
   <meta charset="UTF-8">
   <title>List Kunjungan</title>
   <style>
+    /* --- semua style dari contoh kamu tetap --- */
+    /* --- semua style dari contoh kamu tetap --- */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -87,7 +89,6 @@
       font-weight: 600;
     }
 
-    /* Modal Shared Styles */
     .modal {
       display: none;
       position: fixed;
@@ -159,7 +160,9 @@
   <div class="container">
     <h2>List Kunjungan</h2>
 
-    <a href="{% url 'hijau:create_kunjungan' %}" class="btn-create">+ Create New Kunjungan</a>
+    {% if is_front_desk %}
+      <a href="{% url 'hijau:create_kunjungan' %}" class="btn-create">+ Create New Kunjungan</a>
+    {% endif %}
 
     <table>
       <thead>
@@ -175,25 +178,52 @@
         </tr>
       </thead>
       <tbody>
+        {% for k in kunjungan %}
+        {% for k in kunjungan %}
         <tr>
-          <td>KJN001</td>
-          <td>FDO123</td>
-          <td>Snowy</td>
-          <td>Janji Temu</td>
-          <td>03-04-2025 14:30</td>
-          <td>03-04-2025 16:30</td>
-          <td><button class="btn btn-rekam" onclick="openModal()">Lihat</button></td>
+          <td>{{ k.id_kunjungan }}</td>
+          <td>{{ k.no_identitas_klien }}</td>
+          <td>{{ k.nama_hewan }}</td>
+          <td>{{ k.tipe_kunjungan }}</td>
+          <td>{{ k.timestamp_awal }}</td>
+          <td>{{ k.timestamp_akhir|default:"-" }}</td>
+          <td>
+            <button
+              class="btn btn-rekam"
+              onclick="handleRekamMedisClick(this)"
+              data-id="{{ k.id_kunjungan }}"
+              data-suhu="{{ k.suhu }}"
+              data-berat="{{ k.berat_badan }}"
+              data-catatan="{{ k.catatan|default_if_none:'' }}"
+            >
+              Lihat
+            </button>
+          </td>
           <td class="button-container">
-            <button class="btn btn-update" onclick="window.location.href='{% url 'hijau:update_kunjungan' %}'">Update</button>
-            <button class="btn btn-delete" onclick="openDeleteModal('KJN001')">Delete</button>
+          {% if is_front_desk %}
+            <a href="{% url 'hijau:update_kunjungan' k.id_kunjungan %}" class="btn btn-update">Update</a>
+            <button class="btn btn-delete" onclick="openDeleteModal('{{ k.id_kunjungan }}')">Delete</button>
+            
+          {% else %}
+            <span style="color: #aaa; font-size: 0.9rem;">Tidak tersedia</span>
+          {% endif %}
           </td>
         </tr>
-        <!-- Tambahkan baris lain sesuai data -->
+        {% empty %}
+        <tr>
+          <td colspan="8">Belum ada data kunjungan.</td>
+        </tr>
+        {% endfor %}
+        {% empty %}
+        <tr>
+          <td colspan="8">Belum ada data kunjungan.</td>
+        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
 
-  <!-- Rekam Medis Modal -->
+
   <div id="rekamMedisModal" class="modal">
     <div class="modal-content">
       <h2>Rekam Medis tidak tersedia</h2>
@@ -205,20 +235,38 @@
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
   <div id="deleteModal" class="modal">
     <div class="modal-content">
-      <h2>Hapus Kunjungan</h2>
-      <p>Apakah kamu yakin ingin menghapus kunjungan dengan ID <span id="kunjunganId"></span>?</p>
+      <h2 style="color: #e53e3e;">Delete Kunjungan</h2>
+      <p>Apakah kamu yakin untuk menghapus <strong>KUNJUNGAN</strong> dengan ID <span id="modalKunjunganId" style="color: #e53e3e;"></span>?</p>
       <div class="modal-buttons">
-        <button class="btn-cancel" onclick="closeDeleteModal()">Batal</button>
-        <button class="btn-confirm-delete" onclick="confirmDelete()">Hapus</button>
+        <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+        <form id="deleteForm" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="btn-confirm-delete">Confirm Deletion</button>
+        </form>
       </div>
     </div>
   </div>
 
+  <div id="updateModal" class="modal">
+    <div class="modal-content">
+      <h2>Update Waktu Selesai</h2>
+      <p>Masukkan <strong>waktu selesai</strong> untuk kunjungan ID: <span id="updateKunjunganId"></span></p>
+      <input type="datetime-local" id="timestampAkhirInput" style="margin-top: 15px; width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+      <div class="modal-buttons" style="margin-top: 20px;">
+        <button class="btn-modal-ok" onclick="closeUpdateModal()">Batal</button>
+        <button class="btn-modal-create" onclick="submitUpdate()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+
   <script>
-    function openModal() {
+    let currentRekamKunjunganId = "";
+
+    function openModal(id) {
+      currentRekamKunjunganId = id;
       document.getElementById('rekamMedisModal').style.display = 'block';
     }
 
@@ -226,12 +274,35 @@
       document.getElementById('rekamMedisModal').style.display = 'none';
     }
 
-    function redirectToCreate() {
-      window.location.href = "{% url 'hijau:create_rekam_medis' %}";
+    function handleRekamMedisClick(button) {
+      const id = button.dataset.id;
+      const suhu = button.dataset.suhu;
+      const berat = button.dataset.berat;
+      const catatan = button.dataset.catatan;
+
+      if (suhu || berat || catatan.trim() !== "") {
+        // ada data tersedia, redirect langsung ke halaman detail
+        window.location.href = `/hijau/rekam-medis/${id}/`;
+      } else {
+        // Tampilkan modal pembuatan
+        currentRekamKunjunganId = id;
+        document.getElementById('rekamMedisModal').style.display = 'block';
+      }
     }
 
+    function redirectToCreate() {
+      if (!currentRekamKunjunganId) {
+        alert("Kunjungan tidak ditemukan.");
+        return;
+      }
+      window.location.href = `/hijau/rekam-medis/${currentRekamKunjunganId}/create/`;
+    }
+    
+
     function openDeleteModal(id) {
-      document.getElementById('kunjunganId').textContent = id;
+      document.getElementById('modalKunjunganId').textContent = id;
+      const form = document.getElementById('deleteForm');
+      form.action = `/hijau/delete_kunjungan/${id}/`;  // Sesuaikan dengan URL Django
       document.getElementById('deleteModal').style.display = 'block';
     }
 
@@ -239,18 +310,58 @@
       document.getElementById('deleteModal').style.display = 'none';
     }
 
+
     function confirmDelete() {
       const id = document.getElementById('kunjunganId').textContent;
       alert('Kunjungan dengan ID ' + id + ' berhasil dihapus.');
       closeDeleteModal();
-      // Implement backend deletion logic here
     }
 
-    // Close modals if user clicks outside
     window.onclick = function(event) {
       if (event.target === document.getElementById('rekamMedisModal')) closeModal();
       if (event.target === document.getElementById('deleteModal')) closeDeleteModal();
     }
+    let updateKunjunganId = "";
+
+    function openUpdateModal(id) {
+      updateKunjunganId = id;
+      document.getElementById('updateKunjunganId').textContent = id;
+      document.getElementById('timestampAkhirInput').value = "";
+      document.getElementById('updateModal').style.display = 'block';
+    }
+
+    function closeUpdateModal() {
+      document.getElementById('updateModal').style.display = 'none';
+    }
+
+    function submitUpdate() {
+      const timestamp = document.getElementById('timestampAkhirInput').value;
+      if (!timestamp) {
+        alert("Silakan isi waktu selesai kunjungan.");
+        return;
+      }
+
+      fetch(`/hijau/update/${updateKunjunganId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ timestamp_akhir: timestamp })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          alert("Waktu selesai berhasil diperbarui.");
+          window.location.reload();
+        } else {
+          alert("Gagal update waktu selesai.");
+        }
+      });
+
+      closeUpdateModal();
+    }
+
   </script>
 </body>
 </html>

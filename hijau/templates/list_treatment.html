@@ -84,7 +84,6 @@
       color: white;
     }
 
-    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -136,7 +135,9 @@
 <body>
   <div class="container">
     <h2>List Treatments</h2>
+    {% if is_dokter %}
     <a href="{% url 'hijau:create_treatment' %}" class="btn-create">+ Create New Treatment</a>
+    {% endif %}
 
     <table>
       <thead>
@@ -149,56 +150,34 @@
           <th>Dokter Hewan</th>
           <th>Front Desk Officer</th>
           <th>Jenis Perawatan</th>
-          <th>Catatan Medis</th>
+          {% if is_dokter %}
           <th>Aksi</th>
+          {% endif %}
         </tr>
       </thead>
       <tbody>
+        {% for t in treatment %}
         <tr>
-          <td>1</td>
-          <td>KJN001</td>
-          <td>FD0123</td>
-          <td>Snowy</td>
-          <td>Joko</td>
-          <td>Dr. Rizki</td>
-          <td>Tina</td>
-          <td>TRM001 - Dental Care</td>
-          <td>Oke</td>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ t.id_kunjungan }}</td>
+          <td>{{ t.no_identitas_klien }}</td>
+          <td>{{ t.nama_hewan }}</td>
+          <td>{{ t.email_perawat }}</td>
+          <td>{{ t.email_dokter }}</td>
+          <td>{{ t.email_frontdesk }}</td>
+          <td>{{ t.jenis_perawatan }}</td>
+          {% if is_dokter %}
           <td class="button-container">
-            <a href="{% url 'hijau:update_treatment' %}" class="btn btn-update">Update</a>
-            <button class="btn btn-delete" onclick="openDeleteModal('KJN001', 'TRM001')">Delete</button>
+            <a href="{% url 'hijau:update_treatment' t.id_kunjungan t.kode_perawatan %}" class="btn btn-update">Update</a>
+            <button class="btn btn-delete" onclick="openDeleteModal('{{ t.id_kunjungan }}', '{{ t.kode_perawatan }}')">Delete</button>
           </td>
+          {% endif %}
         </tr>
+        {% empty %}
         <tr>
-          <td>2</td>
-          <td>KJN002</td>
-          <td>KII123</td>
-          <td>Blacky</td>
-          <td>Agus</td>
-          <td>Dr. Safira</td>
-          <td>Tini</td>
-          <td>TRM002 - Parasite Control</td>
-          <td>Sudah baik</td>
-          <td class="button-container">
-            <a href="{% url 'hijau:update_treatment' %}" class="btn btn-update">Update</a>
-            <button class="btn btn-delete" onclick="openDeleteModal('KJN002', 'TRM002')">Delete</button>
-          </td>
+          <td colspan="10" style="text-align: center;">Belum ada data treatment.</td>
         </tr>
-        <tr>
-          <td>3</td>
-          <td>KJN003</td>
-          <td>PKE123</td>
-          <td>Hamseung</td>
-          <td>Budi</td>
-          <td>Dr. Nanu</td>
-          <td>Tono</td>
-          <td>TRM003 - Flea Treatment</td>
-          <td>Sehat</td>
-          <td class="button-container">
-            <a href="{% url 'hijau:update_treatment' %}" class="btn btn-update">Update</a>
-            <button class="btn btn-delete" onclick="openDeleteModal('KJN003', 'TRM003')">Delete</button>
-          </td>
-        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
@@ -210,7 +189,7 @@
       <p id="deleteMessage"></p>
       <div class="modal-buttons">
         <button class="btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-        <button class="btn btn-confirm" id="confirmDeleteButton">Confirm</button>
+        <a id="confirmDeleteButton" class="btn btn-confirm">Confirm Deletion</a>
       </div>
     </div>
   </div>
@@ -218,11 +197,9 @@
   <script>
     function openDeleteModal(kunjunganId, perawatanId) {
       document.getElementById('deleteMessage').innerHTML =
-        `Apakah kamu yakin ingin menghapus perawatan <b style="color: #e74c3c;">${perawatanId}</b> untuk kunjungan <b style="color: #e74c3c;">${kunjunganId}</b>?`;
+        `Apakah kamu yakin ingin menghapus <b>Perawatan</b> untuk Kunjungan <b style="color: #e74c3c;">${kunjunganId}</b> dengan kode <b style="color: #e74c3c;">${perawatanId}</b>?`;
 
-      document.getElementById('confirmDeleteButton').onclick = function () {
-        window.location.href = `/delete-treatment/${kunjunganId}/${perawatanId}`; // Sesuaikan URL endpoint
-      };
+      document.getElementById('confirmDeleteButton').href = `/hijau/delete-treatment/${kunjunganId}/${perawatanId}`;
       document.getElementById('deleteModal').style.display = 'block';
     }
 
