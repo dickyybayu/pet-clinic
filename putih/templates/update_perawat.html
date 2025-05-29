@@ -1,85 +1,210 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Update Profile Perawat Hewan</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            display: flex;
-            justify-content: center;
-        }
-        .form-container {
-            width: 100%;
-            max-width: 800px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-            margin: 30px 20px;
-            padding: 30px;
-            overflow: hidden;
-        }
-        h2 {
-            font-size: 26px;
-            margin-bottom: 20px;
-            font-weight: 600;
-            color: #333;
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        .button-group {
-            margin-top: 20px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        .btn-cancel, .btn-update {
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: none;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .btn-cancel {
-            background-color: #f0f2f5;
-            color: #4a5568;
-            border: 1px solid #d1d5db;
-        }
-        .btn-update {
-            background-color: #5a85e2;
-            color: white;
-        }
-    </style>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<div class="form-container">
-    <h2>Update Profile Perawat Hewan</h2>
+{% block title %}Update Profil Perawat Hewan{% endblock %}
 
-    <label for="sertifikat_kompetensi_perawat">Sertifikat Kompetensi</label>
-    <input type="text" id="sertifikat_kompetensi_perawat" placeholder="Sertifikat Kompetensi Perawat Hewan" required>
+{% block content %}
+<style>
+  .profile-container {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+    background-color: #f5f7fa;
+    padding: 20px;
+  }
 
-    <label for="tanggal_akhir_kerja">Tanggal Akhir Kerja</label>
-    <input type="text" id="tanggal_akhir_kerja" placeholder="Tanggal Akhir Kerja Perawat Hewan" required>
+  .profile-card {
+    width: 100%;
+    max-width: 700px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+  }
 
-    <div class="button-group">
-        <button type="button" class="btn-cancel">Cancel</button>
-        <button type="submit" class="btn-update">Update</button>
+  .card-header {
+    background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%);
+    padding: 25px 30px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-header h2 {
+    font-size: 26px;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .card-body {
+    padding: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #5a6477;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dde2ea;
+    border-radius: 6px;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+
+  .form-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+  }
+
+  .btn {
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-secondary {
+    background-color: #f0f2f5;
+    color: #4a5568;
+  }
+
+  .btn-primary {
+    background-color: #5a85e2;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background-color: #e2e8f0;
+  }
+
+  .btn-primary:hover {
+    background-color: #4c7bd9;
+  }
+
+  .field-error {
+    color: #ef4444;
+    font-size: 14px;
+    margin-top: 5px;
+  }
+</style>
+
+<div class="profile-container">
+  <div class="profile-card">
+    <div class="card-header">
+      <h2>Update Profil Perawat Hewan</h2>
     </div>
+
+    <div class="card-body">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <!-- Alamat -->
+        <div class="form-group">
+          <label for="alamat" class="form-label">Alamat <span class="required">*</span></label>
+          <textarea id="alamat" name="alamat" rows="4" required class="form-input {% if errors.alamat %}error{% endif %}">{{ form_values.alamat|default:'' }}</textarea>
+          {% if errors.alamat %}
+            <div class="field-error">{{ errors.alamat.0 }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Nomor Telepon -->
+        <div class="form-group">
+          <label for="nomor_telepon" class="form-label">Nomor Telepon <span class="required">*</span></label>
+          <input type="tel" id="nomor_telepon" name="nomor_telepon" required class="form-input {% if errors.nomor_telepon %}error{% endif %}" value="{{ form_values.nomor_telepon|default:'' }}">
+          {% if errors.nomor_telepon %}
+            <div class="field-error">{{ errors.nomor_telepon.0 }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Tanggal Akhir Kerja -->
+        <div class="form-group">
+          <label for="tanggal_akhir_kerja" class="form-label">Tanggal Akhir Kerja</label>
+          <input type="date" id="tanggal_akhir_kerja" name="tanggal_akhir_kerja" class="form-input {% if errors.tanggal_akhir_kerja %}error{% endif %}" value="{{ form_values.tanggal_akhir_kerja|default:'' }}">
+          <div class="form-help">Kosongkan jika masih aktif bekerja.</div>
+          {% if errors.tanggal_akhir_kerja %}
+            <div class="field-error">{{ errors.tanggal_akhir_kerja.0 }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Sertifikat Kompetensi -->
+        <div class="form-group">
+          <label class="form-label">Sertifikat Kompetensi <span class="required">*</span></label>
+          <div id="sertifikat-wrapper">
+            {% for kode, nama in form_values.sertifikat_kompetensi %}
+              <div style="display:flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" name="sertifikat_kode[]" placeholder="Nomor Sertifikat" class="form-input" value="{{ kode }}">
+                <input type="text" name="sertifikat_nama[]" placeholder="Nama Sertifikat" class="form-input" value="{{ nama }}">
+              </div>
+            {% empty %}
+              <div style="display:flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" name="sertifikat_kode[]" placeholder="Nomor Sertifikat" class="form-input">
+                <input type="text" name="sertifikat_nama[]" placeholder="Nama Sertifikat" class="form-input">
+              </div>
+            {% endfor %}
+          </div>
+          <button type="button" onclick="addSertifikat()">Tambah Sertifikat</button>
+          {% if errors.sertifikat_kompetensi %}
+            <div class="field-error">{{ errors.sertifikat_kompetensi.0 }}</div>
+          {% endif %}
+        </div>
+
+        <!-- Aksi -->
+        <div class="form-actions">
+          <a href="{% url 'putih:show_profile' %}" class="btn btn-secondary">Kembali</a>
+          <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
-</body>
-</html>
+<script>
+function addSertifikat() {
+  const container = document.getElementById('sertifikat-wrapper');
+  const div = document.createElement('div');
+  div.style.display = 'flex';
+  div.style.gap = '10px';
+  div.style.marginBottom = '10px';
+
+  const inputKode = document.createElement('input');
+  inputKode.type = 'text';
+  inputKode.name = 'sertifikat_kode[]';
+  inputKode.placeholder = 'Nomor Sertifikat';
+  inputKode.className = 'form-input';
+
+  const inputNama = document.createElement('input');
+  inputNama.type = 'text';
+  inputNama.name = 'sertifikat_nama[]';
+  inputNama.placeholder = 'Nama Sertifikat';
+  inputNama.className = 'form-input';
+
+  div.appendChild(inputKode);
+  div.appendChild(inputNama);
+  container.appendChild(div);
+}
+</script>
+{% endblock %}
