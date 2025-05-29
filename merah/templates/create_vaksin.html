@@ -36,17 +36,38 @@
                     {% csrf_token %}
                     <div style="margin-bottom: 15px;">
                         <label for="nama_vaksin" style="font-size: 16px; color: #5a6477;">Nama Vaksin:</label>
-                        <input type="text" id="nama_vaksin" name="nama_vaksin" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 14px; color: #333;" required>
+                        <input type="text" id="nama" name="nama" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 14px; color: #333;" required>
+                        {% if errors.nama %}
+                            <div class="field-error-list" style="color: red; font-size: 0.9em; margin-top: 5px;">
+                            {% for error in errors.nama %}
+                                <p class="error-item" style="margin: 2px 0;">{{ error }}</p>
+                            {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <div style="margin-bottom: 15px;">
                         <label for="harga" style="font-size: 16px; color: #5a6477;">Harga:</label>
-                        <input type="text" id="harga" name="harga" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 14px; color: #333;" required min="1">
+                        <input type="number" id="harga" name="harga" min="1" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 14px; color: #333;" required min="1">
+                        {% if errors.harga %}
+                            <div class="field-error-list" style="color: red; font-size: 0.9em; margin-top: 5px;">
+                            {% for error in errors.harga %}
+                                <p class="error-item" style="margin: 2px 0;">{{ error }}</p>
+                            {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <div style="margin-bottom: 15px;">
                         <label for="stok" style="font-size: 16px; color: #5a6477;">Stok:</label>
-                        <input type="text" id="stok" name="stok" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 14px; color: #333;" required min="1">
+                        <input type="number" id="stok" name="stok" min="1" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 14px; color: #333;" required min="1">
+                        {% if errors.stok %}
+                            <div class="field-error-list" style="color: red; font-size: 0.9em; margin-top: 5px;">
+                            {% for error in errors.stok %}
+                                <p class="error-item" style="margin: 2px 0;">{{ error }}</p>
+                            {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <div style="display: flex; justify-content: space-between; gap: 15px;">

@@ -6,11 +6,26 @@
 <div class="auth-container">
     <h2>FORM LOGIN</h2>
 
+    {% if messages %}
+        <div class="messages-container" style="margin-bottom: 15px;"> 
+            {% for msg in messages %} 
+                <div class="alert {% if msg.tags %}alert-{{ msg.tags }}{% else %}alert-info{% endif %}" role="alert">
+                    {{ msg }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if error_message %}
+        <p style="color: red; margin-bottom: 15px;">{{ error_message }}</p>
+    {% endif %}
+
     {% if message %}
-      <div class="alert alert-error">
+      <div class="alert alert-custom-single-message alert-error" style="margin-bottom: 15px;">
         {{ message }}
       </div>
     {% endif %}
+    
     
     <form method="post" action="{% url 'putih:login' %}">
         {% csrf_token %}

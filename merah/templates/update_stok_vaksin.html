@@ -18,7 +18,7 @@
             <div style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white; text-align: center;">
                 <h2 style="font-size: 26px; font-weight: 600;">Update Stok Vaksin</h2>
                 <p style="margin-top: 8px; font-size: 18px; font-weight: 500;">
-                    {{ vaksin.kode_vaksin }} - {{ vaksin.nama_vaksin }}
+                    {{ vaksin.kode }} - {{ vaksin.nama }}
                 </p>
             </div>
 
@@ -32,6 +32,12 @@
                         <label for="stok" style="display: block; margin-bottom: 8px; font-weight: 500;">Stok Vaksin</label>
                         <input type="text" name="stok" id="stok" value="{{ vaksin.stok }}" required
                                style="width: 100%; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 16px;" />
+                        {% if errors.stok %}
+                            <div class="field-error-list" style="color: red; font-size: 0.9em; margin-top: 5px;">
+                            {% for error in errors.stok %}
+                                <p class="error-item" style="margin: 2px 0;">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
                     </div>
 
                     <!-- Action Buttons -->

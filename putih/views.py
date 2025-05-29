@@ -135,7 +135,6 @@ def register_klien_perusahaan(request):
 
     return render(request, 'register_klien_perusahaan.html')
 
-
 def register_front_desk(request):
     context = {
         'form_data': request.POST if request.method == 'POST' else {}
@@ -297,7 +296,6 @@ def register_dokter(request):
 
     return render(request, 'register_dokter.html')
 
-
 def register_perawat(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -343,7 +341,6 @@ def register_perawat(request):
         return redirect('putih:login')
 
     return render(request, 'register_perawat.html')
-
 
 
 def login_view(request):

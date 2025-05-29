@@ -124,7 +124,7 @@
         <a href="{% url 'kuning:jenis_list' %}" class="nav-link">Kelola Jenis Hewan</a>
         <a href="{% url 'kuning:hewan_list' %}" class="nav-link">Kelola Hewan Peliharaan</a>
         <a href="{% url 'hijau:list_kunjungan' %}" class="nav-link">Kelola Kunjungan</a>
-        <a href="#" class="nav-link">Daftar Klien</a>
+        <a href="{% url 'merah:show_data_klien' %}" class="nav-link">Daftar Klien</a>
 
       {% elif logged_user.role == 'dokter' %}
         <a href="{% url 'kuning:jenis_list' %}" class="nav-link">Daftar Jenis Hewan</a>
@@ -133,12 +133,12 @@
         <a href="#" class="nav-link">Manajemen Obat</a>
         <a href="#" class="nav-link">Manajemen Jenis Perawatan</a>
         <a href="#" class="nav-link">Manajemen Pemberian Obat</a>
-        <a href="#" class="nav-link">Manajemen Vaksinasi Hewan</a>
+        <a href="{% url 'merah:show_vaksinasi' %}" class="nav-link">Manajemen Vaksinasi Hewan</a>
 
       {% elif logged_user.role == 'perawat' %}
         <a href="#" class="nav-link">Manajemen Obat</a>
         <a href="{% url 'hijau:list_perawatan' %}" class="nav-link">Manajemen Jenis Perawatan</a>
-        <a href="#" class="nav-link">Manajemen Vaksin</a>
+        <a href="{% url 'merah:show_vaksin'%}" class="nav-link">Manajemen Vaksin</a>
       {% endif %}
     </div>
 

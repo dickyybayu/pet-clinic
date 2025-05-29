@@ -1,134 +1,222 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div style="margin-top: 30px;">
-    <div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); background-color: #f5f7fa;">
-        <div class="profile-card" style="width: 100%; max-width: 1000px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px 20px; overflow: hidden;">
-            <div>
-            {% if messages %}
-                <div class="messages">
-                    {% for message in messages %}
-                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-            </div>
-
-            <!-- Card Header -->
-            <div style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2 style="font-size: 26px; margin: 0; font-weight: 600;">Vaccine List</h2>
-                </div>
-            </div>
+<div class="container-fluid" style="margin-top: 30px; background-color: #f5f7fa; min-height: calc(100vh - 80px); padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
             
-            <!-- Card Body -->
-            <div style="padding: 30px;">
-                <!-- Vaccine Table -->
-                <div style="margin-top: 10px;">
-                    {% if vaccines %}
-                    <div style="overflow-x: auto;">
-                        <table style="width: 100%; min-width: 800px; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-                            <thead>
-                                <tr style="background-color: #f9fafb;">
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 5%;">No.</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">ID</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">Nama Vaksin</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">Price</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">Stock</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 25%;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for vaccine in vaccines %}
-                                <tr>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ forloop.counter }}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ vaccine.kode_vaksin }}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ vaccine.nama_vaksin }}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ vaccine.harga }}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ vaccine.stok }}</td>
-                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">
-                                        <div style="display: flex; gap: 5px;">
-                                            <a href="{% url 'merah:update_stok_vaksin' vaccine.kode_vaksin %}" style="text-decoration: none; padding: 6px 12px; border-radius: 4px; background-color: #ffa500; color: white; font-size: 14px; font-weight: 500;">Update Stock</a>
-                                            <a href="{% url 'merah:update_vaksin' vaccine.kode_vaksin %}" style="text-decoration: none; padding: 6px 12px; border-radius: 4px; background-color: #5a85e2; color: white; font-size: 14px; font-weight: 500;">Update</a>
-                                            {% if not vaccine.is_used %}
-                                            <button class="delete-btn" data-id="{{ vaccine.kode_vaksin }}" data-name="{{ vaccine.nama_vaksin }}" style="padding: 6px 12px; border-radius: 4px; background-color: #e53e3e; color: white; font-size: 14px; font-weight: 500; border: none; cursor: pointer;">Delete</button>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                </tr>
+            <div class="row justify-content-center" style="width: 100%;"> 
+                <div class="col-12 col-xl-10">
+                    <div class="profile-card" style="background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); overflow: hidden; width: 100%; margin: 30px auto; max-width: 1000px;"> 
+                        
+                        <div class="card-header" style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
+                            <div style="display: flex; align-items: center; justify-content: flex-start;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.9; margin-right: 12px; margin-top: 1px;"><path d="M3 3h18v18H3zM9 9h6v6H9z"/></svg>
+                                <h2 style="font-size: 26px; margin: 0; font-weight: 600; line-height: 1;">Daftar Vaksin</h2>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body" style="padding: 30px;">
+                            {% if messages %}
+                            <div class="messages" style="margin-bottom: 20px;">
+                                {% for message in messages %}
+                                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert"> 
+                                        {{ message }}
+                                    </div>
                                 {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div style="margin-top: 15px; font-size: 14px; color: #5a6477;">
-                        Total Vaccines: {{ vaccines|length }}
-                    </div>
-                    {% else %}
-                    <div style="padding: 30px; text-align: center; background-color: #f9fafb; border-radius: 8px; margin-top: 20px;">
-                        <div style="color: #5a6477; font-size: 18px; font-weight: 500; margin-bottom: 10px;">No Vaccine Data</div>
-                        <p style="color: #64748b; margin: 0;">There are no vaccines available at the moment.</p>
-                    </div>
-                    {% endif %}
-                </div>
-                
-                <!-- Delete Confirmation Popup -->
-                <div id="delete-confirm-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
-                    <div style="background: white; padding: 20px 30px; border-radius: 8px; width: 400px; text-align: center;">
-                        <h3>Are you sure you want to delete this vaccine?</h3>
-                        <p><strong>Vaccine ID:</strong> <span id="popup-id"></span></p>
-                        <p><strong>Vaccine Name:</strong> <span id="popup-name"></span></p>
-                        <div style="margin-top: 20px; display: flex; justify-content: space-around;">
-                            <button id="cancel-delete" style="padding: 6px 12px; background-color: #f0f2f5; border-radius: 4px; font-size: 14px; border: none; cursor: pointer;">Cancel</button>
-                            <button id="confirm-delete" style="padding: 6px 12px; background-color: #e53e3e; color: white; border-radius: 4px; font-size: 14px; border: none; cursor: pointer;">Delete</button>
+                            </div>
+                            {% endif %}
+
+                            <form method="GET" action="{% url 'merah:show_vaksin' %}" class="mb-4">
+                                {% csrf_token %} 
+                                <div class="search-container" style="display: flex; gap: 10px; max-width: 600px; margin-bottom: 25px;">
+                                    <div class="search-input-wrapper" style="position: relative; flex-grow: 1;">
+                                        <svg style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; z-index: 2;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                        <input type="text" name="search_query" value="{{ search_query|default:'' }}" class="form-control search-input" style="width: 100%; padding: 12px 15px 12px 40px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; box-sizing: border-box; transition: all 0.3s; outline: none;" placeholder="Cari berdasarkan nama vaksin..." onfocus="this.style.borderColor='#5a85e2'; this.style.boxShadow='0 0 0 3px rgba(90, 133, 226, 0.1)'" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none'">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" style="padding: 12px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; border: none; cursor: pointer; font-size: 14px; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#4a75d2'" onmouseout="this.style.backgroundColor='#5a85e2'">Cari</button>
+                                    {% if search_query %}
+                                        <a href="{% url 'merah:show_vaksin' %}" class="btn btn-secondary" style="text-decoration: none; padding: 12px 20px; border-radius: 6px; background-color: #e5e7eb; color: #4b5563; font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#d1d5db'" onmouseout="this.style.backgroundColor='#e5e7eb'">Hapus Filter</a>
+                                    {% endif %}
+                                </div>
+                            </form>
+
+                            <div class="table-section">
+                                {% if vaccines %} 
+                                    <div class="table-responsive" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                                        <table class="table table-hover mb-0" style="border-collapse: collapse; width: 100%;">
+                                            <thead style="background-color: #f9fafb;">
+                                                <tr>
+                                                    <th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 5%;">No.</th>
+                                                    <th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">ID</th>
+                                                    <th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">Nama Vaksin</th>
+                                                    <th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">Harga</th>
+                                                    <th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 10%;">Stok</th>
+                                                    <th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 25%;">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for vaccine_item in vaccines %}
+                                                <tr id="vaksin-row-{{ vaccine_item.kode }}">
+                                                    <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">{{ forloop.counter }}</td>
+                                                    <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">{{ vaccine_item.kode }}</td>
+                                                    <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">{{ vaccine_item.nama }}</td>
+                                                    <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">Rp {{ vaccine_item.harga|floatformat:0 }}</td>
+                                                    <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">{{ vaccine_item.stok }}</td>
+                                                    <td style="padding: 12px 16px; text-align: center; color: #333; border-bottom: 1px solid #eaedf2;">
+                                                        <div style="display: flex; gap: 5px; justify-content: center;">
+                                                            <a href="{% url 'merah:update_stok_vaksin' vaccine_item.kode %}" style="text-decoration: none; padding: 6px 12px; border-radius: 4px; background-color: #ffa500; color: white; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; min-width:110px;">Update Stok</a>
+                                                            <a href="{% url 'merah:update_vaksin' vaccine_item.kode %}" style="text-decoration: none; padding: 6px 12px; border-radius: 4px; background-color: #5a85e2; color: white; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; min-width:80px;">Update Info</a>
+                                                            <button class="delete-btn" 
+                                                                    data-id="{{ vaccine_item.kode }}" 
+                                                                    data-name="{{ vaccine_item.nama }}"
+                                                                    data-is-used="{{ vaccine_item.is_used|yesno:'true,false' }}"
+                                                                    style="padding: 6px 12px; border-radius: 4px; background-color: #ef4444; color: white; font-size: 14px; font-weight: 500; border: none; cursor: pointer; min-width:80px;">Hapus</button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                {% endif %}
+                            </div>
+                        
+                            <div id="delete-confirm-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
+                                <div style="background: white; padding: 20px 30px; border-radius: 8px; width: 400px; text-align: center; max-height: 80vh; overflow-y: auto;">
+                                    <h3 id="popup-title">Apakah Anda yakin ingin menghapus vaksin ini?</h3>
+                                    <p id="popup-error-message" style="color: red; font-weight: bold; display: none; margin-top:10px; margin-bottom:10px;"></p>
+                                    <div id="popup-details">
+                                        <p><strong>ID Vaksin:</strong> <span id="popup-id"></span></p>
+                                        <p><strong>Nama Vaksin:</strong> <span id="popup-name"></span></p>
+                                    </div>
+                                    <div style="margin-top: 20px; display: flex; justify-content: space-around;">
+                                        <button id="cancel-delete" style="padding: 6px 12px; background-color: #f0f2f5; border-radius: 4px; font-size: 14px; border: none; cursor: pointer;">Batal</button>
+                                        <button id="confirm-delete" style="padding: 6px 12px; background-color: #e53e3e; color: white; border-radius: 4px; font-size: 14px; border: none; cursor: pointer;">Hapus</button>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            {# ... Tombol Tambah Vaksin Baru ... #}
+                             <div style="margin-top: 30px; display: flex; justify-content: flex-end;"> 
+                                <a href="{% url 'merah:create_vaksin' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; transition: all 0.2s ease;">Tambah Vaksin Baru</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Footer Action Buttons -->
-                <div style="margin-top: 30px; display: flex; justify-content: space-between;">
-                    <a href="#" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500; transition: all 0.2s ease;">Back</a>
-                    <a href="{% url 'merah:create_vaksin' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; transition: all 0.2s ease;">Create Vaccine</a>
-                </div>
             </div>
-        </div>
-    </div>  
 </div>
 
 <script>
-    // Handle delete button clicks
     const deleteButtons = document.querySelectorAll('.delete-btn');
     const popup = document.getElementById('delete-confirm-popup');
     const cancelBtn = document.getElementById('cancel-delete');
     const confirmBtn = document.getElementById('confirm-delete');
     const popupId = document.getElementById('popup-id');
     const popupName = document.getElementById('popup-name');
-    let selectedId = null;
+    const popupTitle = document.getElementById('popup-title');
+    const popupErrorMessage = document.getElementById('popup-error-message');
+    const popupDetailsDiv = document.getElementById('popup-details');
+
+    let selectedIdToDelete = null;
+    
+    let csrfTokenValue = null;
+    const csrfInputFromSearchForm = document.querySelector('form[method="GET"] input[name="csrfmiddlewaretoken"]');
+    if (csrfInputFromSearchForm) {
+        csrfTokenValue = csrfInputFromSearchForm.value;
+    } else {
+        const anyCsrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        if(anyCsrfInput) {
+            csrfTokenValue = anyCsrfInput.value;
+        } else {
+            console.warn("CSRF token input tidak ditemukan.");
+        }
+    }
+
+    function performAjaxDeleteAndShowPopup(vaccineId, csrfToken, vaccineNameForPopup) {
+        confirmBtn.disabled = true; 
+
+        fetch(`/merah/delete_vaksin/${vaccineId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => Promise.reject(errData));
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                popup.style.display = 'none';
+                window.location.reload(); 
+            } else {
+                popupTitle.textContent = "Gagal Menghapus Vaksin";
+                popupDetailsDiv.style.display = 'none';
+                popupErrorMessage.textContent = data.message || "Terjadi kesalahan saat memproses permintaan.";
+                popupErrorMessage.style.display = 'block';
+                confirmBtn.style.display = 'none'; 
+                popup.style.display = 'flex';
+            }
+        })
+        .catch(errorData => { 
+            popupTitle.textContent = "Gagal Menghapus Vaksin";
+            popupDetailsDiv.style.display = 'none';
+            popupErrorMessage.textContent = errorData.message || 'Gagal menghubungi server atau terjadi kesalahan.';
+            popupErrorMessage.style.display = 'block';
+            confirmBtn.style.display = 'none'; 
+            popup.style.display = 'flex';
+        });
+    }
+
 
     deleteButtons.forEach(button => {
         button.addEventListener('click', function (e) {
             e.preventDefault();
             const vaccineId = button.getAttribute('data-id');
             const vaccineName = button.getAttribute('data-name');
+            const isUsedAttr = button.getAttribute('data-is-used');
+            const isUsed = (isUsedAttr === 'true');
             
-            // Show popup with relevant data
-            selectedId = vaccineId;
             popupId.textContent = vaccineId;
             popupName.textContent = vaccineName;
-            popup.style.display = 'flex';
+            selectedIdToDelete = vaccineId; 
+
+            if (isUsed) {
+                performAjaxDeleteAndShowPopup(vaccineId, csrfTokenValue, vaccineName);
+            } else {
+                popupTitle.textContent = "Apakah Anda yakin ingin menghapus vaksin ini?";
+                popupDetailsDiv.style.display = 'block'; 
+                popupErrorMessage.style.display = 'none';
+                popupErrorMessage.textContent = '';
+                confirmBtn.style.display = 'inline-block'; 
+                confirmBtn.disabled = false;
+                popup.style.display = 'flex';
+            }
         });
     });
 
-    // Handle cancel deletion
     cancelBtn.addEventListener('click', function() {
         popup.style.display = 'none';
+        selectedIdToDelete = null; 
     });
 
-    // Handle delete confirmation
     confirmBtn.addEventListener('click', function() {
-        // Redirect to vaccine deletion URL with the selected ID
-        window.location.href = `/merah/delete_vaksin/${selectedId}/`;
+        if (selectedIdToDelete) {
+            if (!csrfTokenValue) {
+                const checkAgainCsrf = document.querySelector('input[name="csrfmiddlewaretoken"]');
+                if(checkAgainCsrf) csrfTokenValue = checkAgainCsrf.value;
+                if (!csrfTokenValue) {
+                    alert("Error: CSRF token tidak ditemukan. Proses hapus tidak dapat dilanjutkan.");
+                    popup.style.display = 'none';
+                    return;
+                }
+            }
+            performAjaxDeleteAndShowPopup(selectedIdToDelete, csrfTokenValue, popupName.textContent);
+        }
     });
 </script>
 {% endblock %}

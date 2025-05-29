@@ -2,10 +2,6 @@
 
 {% block content %}
 <div class="container-fluid" style="margin-top: 30px; background-color: #f5f7fa; min-height: calc(100vh - 80px); padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-
-    {% if logged_user %}
-        {% if logged_user.role == 'dokter' %}
-            
             <div class="row justify-content-center" style="width: 100%;">
                 <div class="col-12 col-xl-10">
                     <div class="profile-card" style="width: 100%; max-width: 1000px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px auto; overflow: hidden;">
@@ -24,7 +20,6 @@
                         
                         <div style="padding: 30px;">
             
-                            {% comment %} --- Pesan Django (Error/Sukses) --- {% endcomment %}
                             {% if messages %}
                             <div class="messages" style="margin-bottom: 20px;">
                                 {% for message in messages %}
@@ -34,7 +29,6 @@
                                 {% endfor %}
                             </div>
                             {% endif %}
-                            {% comment %} --- Akhir Blok Pesan Django --- {% endcomment %}
             
                             <div style="margin-top: 10px;">
                                 {% if vaksin_data %}
@@ -91,46 +85,16 @@
                             </div>
                             
                             <div style="margin-top: 30px; display: flex; justify-content: space-between;">
-                                <a href="#" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500; transition: all 0.2s ease;">Kembali</a>
+                                <a href="{% url 'putih:show_profile' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500; transition: all 0.2s ease;">Kembali</a>
                                 <a href="{% url 'merah:create_vaksinasi' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; transition: all 0.2s ease;">Create Vaksinasi</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        {% else %}
-            <div class="col-12 col-md-8 col-lg-6"> 
-                <div class="alert text-center" role="alert" style="padding: 30px 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); background-color: #f8d7da; color: #721c24; border-left: 6px solid #d9534f; width: 100%;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#d9534f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block mx-auto mb-3">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                    <h4 class="alert-heading" style="font-weight: 700; font-size: 24px; color: #721c24; margin-bottom: 15px;">Akses Ditolak!</h4>
-                    <p style="color: #721c24; font-size: 17px; line-height: 1.6; margin-bottom: 0;">Anda tidak memiliki izin yang diperlukan (peran Dokter Hewan) untuk mengakses halaman ini.</p>
-                </div>
-            </div>
-        {% endif %}
-    {% else %}
-        <div class="col-12 col-md-8 col-lg-6"> 
-            <div class="alert text-center" role="alert" style="padding: 30px 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); background-color: #fff3cd; color: #856404; border-left: 6px solid #ffc107; width: 100%;">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ffc107" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block mx-auto mb-3">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                    <line x1="12" y1="9" x2="12" y2="13"></line>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-                <h4 class="alert-heading" style="font-weight: 700; font-size: 24px; color: #856404; margin-bottom: 15px;">Akses Terbatas</h4>
-                <p style="color: #856404; font-size: 17px; line-height: 1.6; margin-bottom: 25px;">Anda harus masuk untuk melihat halaman ini.</p>
-                <a href="{% url 'putih:login' %}" class="btn btn-lg" style="background-color: #ffc107; border-color: #ffc107; color: #212529; font-weight: 600; padding: 12px 30px; font-size: 17px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: all 0.2s ease; text-decoration: none;" onmouseover="this.style.backgroundColor='#e0a800'; this.style.borderColor='#d39e00';" onmouseout="this.style.backgroundColor='#ffc107'; this.style.borderColor='#ffc107';">Masuk Sekarang</a>
-            </div>
-        </div>
-    {% endif %}
-
 </div>
 
 <script>
-    // Script untuk delete popup Anda tetap di sini, di dalam blok konten jika diperlukan
-    // atau lebih baik di manage oleh file JS statis yang di-include oleh base template
     const deleteButtons = document.querySelectorAll('.delete-btn');
     const popup = document.getElementById('delete-confirm-popup');
     const cancelBtn = document.getElementById('cancel-delete');
@@ -138,16 +102,6 @@
     const popupVaksin = document.getElementById('popup-vaksin');
     const popupId = document.getElementById('popup-id');
     let selectedIdToDelete = null;
-
-    // Anda mungkin perlu memastikan CSRF token tersedia untuk script ini jika belum
-    // Misalnya, jika Anda tidak memiliki form lain di halaman ini yang merender {% csrf_token %}
-    // Anda bisa meletakkan {% csrf_token %} di suatu tempat yang tersembunyi atau
-    // mengambilnya dari meta tag jika diset di base template.
-    // Untuk contoh ini, kita asumsikan ada cara untuk mendapatkan csrfToken
-    // Cara mudah jika <script> ini ada di template:
-    // const csrfTokenValue = "{{ csrf_token }}"; <-- ini akan dirender Django
-    // atau ambil dari input field jika ada di suatu tempat di halaman (misal dari form lain)
-    // const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
     deleteButtons.forEach(button => {
         button.addEventListener('click', function (e) {
@@ -176,29 +130,12 @@
             const csrfInput = document.createElement('input');
             csrfInput.type = 'hidden';
             csrfInput.name = 'csrfmiddlewaretoken';
-            // Pastikan csrfTokenValue ini terdefinisi dengan benar. Jika script ini ada di akhir template,
-            // dan Anda merender {% csrf_token %} di suatu tempat (bisa juga di dalam tag script ini),
-            // maka bisa diakses. Jika tidak, Anda perlu cara lain untuk mendapatkan token ini.
-            // Misal, jika Anda punya form pencarian atau filter di halaman ini:
             const mainCsrfTokenInput = document.querySelector('form input[name="csrfmiddlewaretoken"]');
             if (mainCsrfTokenInput) {
                  csrfInput.value = mainCsrfTokenInput.value;
             } else {
-                // Fallback jika tidak ada form lain dengan token, ini mungkin perlu cara lain.
-                // Untuk pengembangan, Anda bisa sementara hardcode token yang valid, TAPI JANGAN LAKUKAN INI DI PRODUKSI.
-                // Atau pastikan {% csrf_token %} di-render di suatu tempat yang bisa diakses script.
-                // Contoh: render {% csrf_token %} di awal <body> atau sebelum script ini.
-                // Jika block script ada di template Django, {{ csrf_token }} akan di-expand menjadi tag input.
-                // Jadi, mengambilnya dari input yang di-render itu lebih aman.
-                // Untuk sementara, asumsikan Anda telah menambahkan {% csrf_token %} di awal body,
-                // sehingga querySelector('input[name="csrfmiddlewaretoken"]') akan menemukannya.
-                // Jika TIDAK ADA form lain di halaman ini, Anda HARUS menambahkan {% csrf_token %}
-                // secara manual (misalnya sebelum tag script ini)
-                // agar querySelector di atas bisa mengambilnya.
-                // Atau, letakkan const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-                // setelah Anda yakin tag {% csrf_token %} sudah dirender.
-                 console.error("CSRF token not found for delete operation!"); // Tambahkan error handling
-                 popup.style.display = 'none'; // Sembunyikan popup jika tidak bisa lanjut
+                 console.error("CSRF token not found for delete operation!");
+                 popup.style.display = 'none';
                  return;
             }
             form.appendChild(csrfInput);
