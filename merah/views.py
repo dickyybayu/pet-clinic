@@ -136,12 +136,15 @@ jenis_hewan = [
     }
 ]
 
+# CRUD VAKSINASI DOKTER 
 def show_vaksinasi(request):
     logged_user = request.session.get('logged_user', None)
-    print("Logged User:", logged_user)
     result = []
 
-    if logged_user:
+    if not logged_user or logged_user.get('role') != 'dokter':
+        messages.error(request, "Anda harus login atau memiliki role dokter untuk akses vaksinasi.")
+        return redirect('putih:login')
+    else:
         sql = f'''
         SELECT
             k.id_kunjungan,
@@ -171,7 +174,11 @@ def create_vaksinasi(request):
     logged_user = request.session.get('logged_user', None)
     kunjungan = []
     vaksin = []
-    if logged_user: 
+
+    if not logged_user or logged_user.get('role') != 'dokter': 
+        messages.error(request, "Anda harus login atau memiliki role dokter untuk akses vaksinasi.")
+        return redirect('putih:login')
+    else:
         if request.method == 'POST':
             selected_kunjungan = request.POST.get('selected_kunjungan')
             selected_vaksin = request.POST.get('selected_vaksin')
@@ -222,7 +229,7 @@ def create_vaksinasi(request):
 
         kunjungan = query(kunjungan)
         vaksin  = query(vaksin)
-
+    
     context = {
         'logged_user': logged_user,
         'kunjungan': kunjungan,
@@ -234,56 +241,60 @@ def create_vaksinasi(request):
 def update_vaksinasi(request, id_kunjungan):
     logged_user = request.session.get('logged_user', None)
 
-    sql_get_kunjungan = f"""
-        SELECT id_kunjungan, kode_vaksin, no_dokter_hewan 
-        FROM KUNJUNGAN 
-        WHERE id_kunjungan = '{id_kunjungan}';
-    """
-
-    kunjungan_result = query(sql_get_kunjungan)
-
-    if not kunjungan_result or not isinstance(kunjungan_result, list) or len(kunjungan_result) == 0:
-        messages.error(request, "Kunjungan tidak ditemukan.")
-        return redirect('merah:show_vaksinasi')
-    kunjungan_current = kunjungan_result
-
-    if request.method == 'POST':
-        selected_vaksin_baru = request.POST.get('selected_vaksin')
-
-        if not selected_vaksin_baru:
-            messages.error(request, "Silakan pilih vaksin baru.")
-            all_vaksin = query("SELECT kode, nama, stok FROM VAKSIN ORDER BY nama;")
-            context = {
-                'vaksin_options': all_vaksin if isinstance(all_vaksin, list) else [],
-                'current_kunjungan': kunjungan_current,
-                'logged_user': logged_user
-            }
-            return render(request, 'update_vaksinasi.html', context)
-
-        if selected_vaksin_baru == kunjungan_current[0].get('kode_vaksin'):
-            messages.info(request, f"Kunjungan sudah menggunakan vaksin tersebut. Tidak ada perubahan dilakukan.")
-            return redirect('merah:show_vaksinasi')
-
-        sql_update = f"""
-            UPDATE KUNJUNGAN
-            SET kode_vaksin = '{selected_vaksin_baru}'
+    if not logged_user or logged_user.get('role') != 'dokter':
+        messages.error(request, "Anda harus login atau memiliki role dokter untuk akses vaksinasi.")
+        return redirect('putih:login')
+    else:
+        sql_get_kunjungan = f"""
+            SELECT id_kunjungan, kode_vaksin, no_dokter_hewan 
+            FROM KUNJUNGAN 
             WHERE id_kunjungan = '{id_kunjungan}';
         """
-        result = query(sql_update)
 
-        if isinstance(result, dict) and result.get("status") == "error":
-            messages.error(request, result.get("data") )
-            all_vaksin_options_err = query("SELECT kode, nama, stok FROM VAKSIN WHERE stok > 0 ORDER BY nama;")
-            context = {
-                'vaksin_options': all_vaksin_options_err if isinstance(all_vaksin_options_err, list) else [],
-                'current_kunjungan': kunjungan_current[0],
-                'logged_user': logged_user,
-                'selected_vaksin_id_on_error': selected_vaksin_baru 
-            }
-            return render(request, 'update_vaksinasi.html', context)
-        
-        messages.success(request, f"Vaksinasi untuk kunjungan {id_kunjungan} berhasil diperbarui.")
-        return redirect('merah:show_vaksinasi')
+        kunjungan_result = query(sql_get_kunjungan)
+
+        if not kunjungan_result or not isinstance(kunjungan_result, list) or len(kunjungan_result) == 0:
+            messages.error(request, "Kunjungan tidak ditemukan.")
+            return redirect('merah:show_vaksinasi')
+        kunjungan_current = kunjungan_result
+
+        if request.method == 'POST':
+            selected_vaksin_baru = request.POST.get('selected_vaksin')
+
+            if not selected_vaksin_baru:
+                messages.error(request, "Silakan pilih vaksin baru.")
+                all_vaksin = query("SELECT kode, nama, stok FROM VAKSIN ORDER BY nama;")
+                context = {
+                    'vaksin_options': all_vaksin if isinstance(all_vaksin, list) else [],
+                    'current_kunjungan': kunjungan_current,
+                    'logged_user': logged_user
+                }
+                return render(request, 'update_vaksinasi.html', context)
+
+            if selected_vaksin_baru == kunjungan_current[0].get('kode_vaksin'):
+                messages.info(request, f"Kunjungan sudah menggunakan vaksin tersebut. Tidak ada perubahan dilakukan.")
+                return redirect('merah:show_vaksinasi')
+
+            sql_update = f"""
+                UPDATE KUNJUNGAN
+                SET kode_vaksin = '{selected_vaksin_baru}'
+                WHERE id_kunjungan = '{id_kunjungan}';
+            """
+            result = query(sql_update)
+
+            if isinstance(result, dict) and result.get("status") == "error":
+                messages.error(request, result.get("data") )
+                all_vaksin_options_err = query("SELECT kode, nama, stok FROM VAKSIN WHERE stok > 0 ORDER BY nama;")
+                context = {
+                    'vaksin_options': all_vaksin_options_err if isinstance(all_vaksin_options_err, list) else [],
+                    'current_kunjungan': kunjungan_current[0],
+                    'logged_user': logged_user,
+                    'selected_vaksin_id_on_error': selected_vaksin_baru 
+                }
+                return render(request, 'update_vaksinasi.html', context)
+            
+            messages.success(request, f"Vaksinasi untuk kunjungan {id_kunjungan} berhasil diperbarui.")
+            return redirect('merah:show_vaksinasi')
 
 
     all_vaksin = query("SELECT kode, nama, stok FROM VAKSIN ORDER BY nama;")
@@ -296,6 +307,11 @@ def update_vaksinasi(request, id_kunjungan):
     return render(request, 'update_vaksinasi.html', context)
 
 def delete_vaksinasi(request, id_kunjungan):
+    logged_user = request.session.get('logged_user', None)
+    if not logged_user or logged_user.get('role') != 'dokter':
+        messages.error(request, "Anda harus login atau memiliki role dokter untuk akses vaksinasi.")
+        return redirect('putih:login')
+    
     sql = f"""
         UPDATE KUNJUNGAN 
         SET kode_vaksin = NULL 
@@ -309,6 +325,7 @@ def delete_vaksinasi(request, id_kunjungan):
         messages.success(request, f"Vaksinasi untuk kunjungan {id_kunjungan} berhasil dihapus.")
     return redirect('merah:show_vaksinasi')
 
+# CRUD VAKSIN PERAWAT 
 def is_vaksin_used(kode_vaksin):
     used_vaksin = {kunjungan_entry["kode_vaksin"] for kunjungan_entry in kunjungan if kunjungan_entry["kode_vaksin"]}
     return kode_vaksin in used_vaksin
@@ -357,13 +374,32 @@ def create_vaksin(request):
     
     return render(request, 'create_vaksin.html')
 
-def show_vaksin(request): 
+def show_vaksin(request):
+    logged_user = request.session.get('logged_user', None)
     all_vaccines = []
-    for vaccine in vaksin:
-        vaccine['is_used'] = is_vaksin_used(vaccine['kode_vaksin'])
-        all_vaccines.append(vaccine)
 
-    return render(request, 'show_vaksin.html', {'vaccines': all_vaccines})
+    if logged_user:
+        search_query = request.GET.get('search_query', '').strip()
+
+        sql = f'''
+        SELECT * from vaksin 
+        WHERE  stok > 0 AND harga > 0
+        '''
+
+        if search_query:
+            sql += f" AND nama ILIKE '%{search_query.replace('%', '%%').replace('_', '__')}%'"
+        
+        sql += " ORDER BY kode desc;"
+        all_vaccines = query(sql)
+    else:
+        messages.error(request, "Anda harus login atau memiliki role perawat untuk melihat data vaksin.")
+        return redirect('putih:login')
+
+    context = {
+        "vaccines": all_vaccines if isinstance(all_vaccines, list) else [],
+        'logged_user': logged_user
+    }
+    return render(request, 'show_vaksin.html', context)
     
 def update_vaksin(request, kode_vaksin):
     vaksin_to_update = next((v for v in vaksin if str(v["kode_vaksin"]) == str(kode_vaksin)), None)
@@ -433,7 +469,13 @@ def delete_vaksin(request, kode_vaksin):
 
     return redirect('merah:show_vaksin')
 
+# R VAKSIN FRONT DESK
 def show_data_klien(request):
+    logged_user = request.session.get('logged_user', None)
+    if not logged_user or logged_user.get('role') != 'front_desk':
+        messages.error(request, "Anda harus login atau memiliki role front desk untuk akses data klien.")
+        return redirect('putih:login')
+    
     search_query = request.GET.get('search_query', '').strip()
 
     sql_to_execute = """
@@ -475,8 +517,6 @@ def show_data_klien(request):
         """
     sql_to_execute += " ORDER BY nama;"
     clients = query(sql_to_execute)
-
-    logged_user = request.session.get('logged_user', None)
     
     context = {
         "logged_user": logged_user,
@@ -486,6 +526,11 @@ def show_data_klien(request):
     return render(request, "show_data_klien.html", context)
 
 def show_klien_detail(request, no_identitas):
+    logged_user = request.session.get('logged_user', None)
+    if not logged_user or logged_user.get('role') != 'front_desk':
+        messages.error(request, "Anda harus login atau memiliki role front desk untuk akses data klien.")
+        return redirect('putih:login')
+
     sql_client = """
         SELECT
             K.no_identitas,
@@ -539,9 +584,8 @@ def show_klien_detail(request, no_identitas):
             H.nama;
     """
 
-    logged_user = request.session.get('logged_user', None)
-    _unsafe_sql_pets = sql_pets.replace("%s", f"'{str(no_identitas)}'")
-    client_pets = query(_unsafe_sql_pets) 
+    sql_pets = sql_pets.replace("%s", f"'{str(no_identitas)}'")
+    client_pets = query(sql_pets) 
 
     context = {
         "logged_user": logged_user,
