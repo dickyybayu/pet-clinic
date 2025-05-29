@@ -19,7 +19,7 @@ urlpatterns = [
 
     path('profil/update_password/', views.update_password, name='update_password'),
     
-    path('profil/<str:role>/', views.show_profile, name='show_profile'),
+    path('profil/', views.show_profile, name='show_profile'),
     path('profil/update/', views.update_klien, name='update_klien'),
     path('logout/', views.logout, name='logout'),
 

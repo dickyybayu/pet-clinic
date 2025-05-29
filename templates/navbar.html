@@ -113,7 +113,7 @@
     </div>
 
     <div class="navbar-center">
-      <a href="{% url 'putih:show_profile' role=logged_user.role %}" class="nav-link">Dashboard</a>
+      <a href="{% url 'putih:show_profile'%}" class="nav-link">Dashboard</a>
 
       {% if logged_user.role == 'klien_individu' or logged_user.role == 'klien_perusahaan' %}
         <a href="#" class="nav-link">Kelola Hewan Peliharaan</a>

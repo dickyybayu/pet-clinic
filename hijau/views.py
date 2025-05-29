@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import messages
 from utils.query import query
+from django.db import DatabaseError
 import uuid
 import json
 
@@ -31,6 +32,7 @@ def list_kunjungan(request):
     kunjungan = query(query_str)
 
     context = {
+        "logged_user": logged_user,
         "kunjungan": kunjungan,
         "is_front_desk": role == "front_desk",
         "is_klien": role.startswith("klien") if role else False,
@@ -62,18 +64,28 @@ def create_kunjungan(request):
         timestamp_awal = request.POST.get("timestamp_awal")
         timestamp_akhir = request.POST.get("timestamp_akhir") or None
 
-        query(f"""
-            INSERT INTO KUNJUNGAN (
-                id_kunjungan, nama_hewan, no_identitas_klien, no_front_desk,
-                no_perawat_hewan, no_dokter_hewan, tipe_kunjungan,
-                timestamp_awal, timestamp_akhir
-            ) VALUES (
-                '{id_kunjungan}', '{nama_hewan}', '{no_identitas_klien}', '{logged_user.get("no_pegawai")}',
-                '{no_perawat_hewan}', '{no_dokter_hewan}', '{tipe_kunjungan}',
-                '{timestamp_awal}', {f"'{timestamp_akhir}'" if timestamp_akhir else "NULL"}
-            )
-        """)
-        return redirect("hijau:list_kunjungan")
+        try:
+            query(f"""
+                INSERT INTO KUNJUNGAN (
+                    id_kunjungan, nama_hewan, no_identitas_klien, no_front_desk,
+                    no_perawat_hewan, no_dokter_hewan, tipe_kunjungan,
+                    timestamp_awal, timestamp_akhir
+                ) VALUES (
+                    '{id_kunjungan}', '{nama_hewan}', '{no_identitas_klien}', '{logged_user.get("no_pegawai")}',
+                    '{no_perawat_hewan}', '{no_dokter_hewan}', '{tipe_kunjungan}',
+                    '{timestamp_awal}', {f"'{timestamp_akhir}'" if timestamp_akhir else "NULL"}
+                )
+            """)
+            messages.success(request, "Kunjungan berhasil ditambahkan.")
+            return redirect("hijau:list_kunjungan")
+
+        except DatabaseError as e:
+            # Logging ke console Django
+            print("PostgreSQL Error:", str(e))
+
+            # Notifikasi ke frontend
+            messages.error(request, f"Gagal menyimpan data: {e}")
+            return redirect("hijau:create_kunjungan", {"logged_user": logged_user})
 
     # Ambil daftar klien dengan nama gabungan dari INDIVIDU / PERUSAHAAN
     daftar_klien = query("""
@@ -94,10 +106,8 @@ def create_kunjungan(request):
 
     daftar_dokter = query("SELECT d.no_dokter_hewan, p.email_user as email FROM DOKTER_HEWAN d JOIN PEGAWAI p ON d.no_dokter_hewan = p.no_pegawai")
     daftar_perawat = query("SELECT p.no_perawat_hewan, pe.email_user as email FROM PERAWAT_HEWAN p JOIN PEGAWAI pe ON p.no_perawat_hewan = pe.no_pegawai")
-
-    print(daftar_dokter)
-    print(daftar_perawat)
     return render(request, "create_kunjungan.html", {
+        "logged_user": logged_user,
         "daftar_klien": daftar_klien,
         "daftar_dokter": daftar_dokter,
         "daftar_perawat": daftar_perawat,
@@ -165,13 +175,13 @@ def update_kunjungan(request, id_kunjungan):
     daftar_perawat = query("""SELECT p.no_perawat_hewan, pe.email_user as email FROM PERAWAT_HEWAN p JOIN PEGAWAI pe ON p.no_perawat_hewan = pe.no_pegawai""")
 
     context = {
+        "logged_user": logged_user,
         "data": data,
         "daftar_klien": daftar_klien,
         "daftar_dokter": daftar_dokter,
         "daftar_perawat": daftar_perawat,
         "daftar_hewan": daftar_hewan,
     }
-    print(daftar_klien)
 
     return render(request, "update_kunjungan.html", context)
 
@@ -232,12 +242,8 @@ def list_perawatan(request):
         r["email_frontdesk"] = r["email_frontdesk"].split('@')[0].capitalize()
         r["jenis_perawatan"] = f"{r['kode_perawatan']} - {r['nama_perawatan']}"
 
-        print(r["email_perawat"])
-    
-    # print perawat hewan
-    
-
     return render(request, "list_treatment.html", {
+        "logged_user": logged_user,
         "treatment": result,
         "is_dokter": role == "dokter"
     })
@@ -286,6 +292,7 @@ def create_treatment(request):
     """)
 
     return render(request, "create_treatment.html", {
+        "logged_user": logged_user,
         "daftar_kunjungan": daftar_kunjungan,
         "daftar_perawatan": daftar_perawatan,
     })
@@ -330,6 +337,7 @@ def update_treatment(request, id_kunjungan, kode_perawatan):
     daftar_perawatan = query("SELECT kode_perawatan, nama_perawatan FROM PERAWATAN")
 
     return render(request, "update_treatment.html", {
+        "logged_user": logged_user,
         "data": data,
         "daftar_perawatan": daftar_perawatan,
     })
@@ -344,6 +352,7 @@ def show_rekam_medis(request, id_kunjungan):
     is_available = data['suhu'] is not None and data['berat_badan'] is not None and data['catatan']
 
     return render(request, "rekam_medis_detail.html", {
+        'logged_user': request.session.get("logged_user"),
         'id_kunjungan': id_kunjungan,
         'data': data,
         'is_available': is_available
@@ -373,4 +382,7 @@ def create_rekam_medis(request, id_kunjungan):
         """)
         return redirect('hijau:show_rekam_medis', id_kunjungan=id_kunjungan)
 
-    return render(request, 'create_rekam_medis.html', {'id_kunjungan': id_kunjungan})
+    return render(request, 'create_rekam_medis.html', {
+        'logged_user': logged_user,
+        'id_kunjungan': id_kunjungan
+        })
