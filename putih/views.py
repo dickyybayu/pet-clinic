@@ -498,50 +498,11 @@ def show_profile(request):
 
     return HttpResponseNotFound("Role tidak ditemukan.")
 
-
-
 def logout(request):
     request.session.flush()
     messages.success(request, 'Berhasil logout!')
     return redirect('putih:login')
 
-# def update_klien(request):
-#     if request.method == 'POST':
-#         address = request.POST.get('address')
-#         phone = request.POST.get('phone')
-#         first_name = request.POST.get('first_name')
-#         middle_name = request.POST.get('middle_name', "")
-#         last_name = request.POST.get('last_name')
-#         company_name = request.POST.get('company_name')
-
-#         if company_name:
-#             errors = validate_update_data(address, phone, company_name=company_name)
-#         else:
-#             errors = validate_update_data(address, phone, first_name=first_name, middle_name=middle_name, last_name=last_name)
-
-#         if errors:
-#             context = {
-#                 'errors': errors,
-#                 **logged_pengguna,
-#             }
-#             return render(request, 'update_klien.html', context)
-        
-#         logged_pengguna['address'] = address
-#         logged_pengguna['phone'] = phone
-
-#         if company_name:
-#             logged_pengguna['company_name'] = company_name
-#         else:
-#             logged_pengguna['first_name'] = first_name
-#             logged_pengguna['middle_name'] = middle_name
-#             logged_pengguna['last_name'] = last_name
-
-#         return redirect('putih:show_profile')
-
-#     context = {
-#         **logged_pengguna,
-#     }
-#     return render(request, 'update_klien.html', context)
 
 def update_klien_individu(request):
     logged_user = request.session.get("logged_user", {})
@@ -618,16 +579,6 @@ def update_klien_perusahaan(request):
     """)[0]
 
     return render(request, "update_klien.html", {"data": data, 'logged_user': logged_user})
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from utils.query import query
-from utils.validators import validate_address, validate_phone, validate_end_date
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from utils.query import query
-from utils.validators import validate_address, validate_phone, validate_end_date
 
 def update_dokter(request):
     logged_user = request.session.get('logged_user')
