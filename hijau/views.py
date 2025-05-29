@@ -374,24 +374,3 @@ def create_rekam_medis(request, id_kunjungan):
         return redirect('hijau:show_rekam_medis', id_kunjungan=id_kunjungan)
 
     return render(request, 'create_rekam_medis.html', {'id_kunjungan': id_kunjungan})
-
-# def create_or_update_rekam_medis(request):
-#     if request.method == "POST":
-#         data = json.loads(request.body)
-#         q = f"""
-#             INSERT INTO KUNJUNGAN_KEPERAWATAN (
-#                 id_kunjungan, nama_hewan, no_identitas_klien,
-#                 no_front_desk, no_perawat_hewan, no_dokter_hewan,
-#                 kode_perawatan, catatan
-#             ) VALUES (
-#                 '{data["id_kunjungan"]}', '{data["nama_hewan"]}', '{data["no_identitas_klien"]}',
-#                 '{data["no_front_desk"]}', '{data["no_perawat_hewan"]}', '{data["no_dokter_hewan"]}',
-#                 '{data["kode_perawatan"]}', '{data["catatan"]}'
-#             )
-#             ON CONFLICT (id_kunjungan, nama_hewan, no_identitas_klien,
-#                          no_front_desk, no_perawat_hewan, no_dokter_hewan, kode_perawatan)
-#             DO UPDATE SET catatan = EXCLUDED.catatan
-#         """
-#         query(q)
-#         return JsonResponse({'status': 'success'})
-#     return JsonResponse({'status': 'invalid method'})
