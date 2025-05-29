@@ -548,8 +548,124 @@ def update_klien_individu(request):
 def update_klien_perusahaan(request):
     return render(request, 'update_klien_perusahaan.html')
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from utils.query import query
+from utils.validators import validate_address, validate_phone, validate_end_date
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from utils.query import query
+from utils.validators import validate_address, validate_phone, validate_end_date
+
 def update_dokter(request):
-    return render(request, 'update_dokter.html')
+    logged_user = request.session.get('logged_user')
+    if not logged_user or logged_user.get('role') != 'dokter':
+        messages.error(request, "Akses ditolak. Anda harus login sebagai Dokter Hewan.")
+        return redirect('putih:login')
+
+    email = logged_user.get('email')
+    no_pegawai = logged_user.get('no_pegawai')
+    context = {'logged_user': logged_user, 'form_values': {}}
+
+    if request.method == 'POST':
+        alamat = request.POST.get('alamat', '').strip()
+        nomor_telepon = request.POST.get('nomor_telepon', '').strip()
+        tanggal_akhir_kerja = request.POST.get('tanggal_akhir_kerja', '').strip()
+
+        sertifikat_kode_list = request.POST.getlist('sertifikat_kode[]')
+        sertifikat_nama_list = request.POST.getlist('sertifikat_nama[]')
+        hari_list = request.POST.getlist('jadwal_hari[]')
+        jam_list = request.POST.getlist('jadwal_jam[]')
+
+        sertifikat_kompetensi = list(zip(sertifikat_kode_list, sertifikat_nama_list))
+        jadwal_praktik = list(zip(hari_list, jam_list))
+
+        context['form_values'] = {
+            'alamat': alamat,
+            'nomor_telepon': nomor_telepon,
+            'tanggal_akhir_kerja': tanggal_akhir_kerja,
+            'sertifikat_kompetensi': sertifikat_kompetensi,
+            'jadwal_praktik': jadwal_praktik,
+        }
+
+        errors = {}
+        if err := validate_address(alamat): errors['alamat'] = err
+        if err := validate_phone(nomor_telepon): errors['nomor_telepon'] = err
+        if err := validate_end_date(tanggal_akhir_kerja, logged_user.get('tanggal_mulai_kerja')): errors['tanggal_akhir_kerja'] = err
+        if not sertifikat_kode_list or not sertifikat_nama_list or len(sertifikat_kode_list) != len(sertifikat_nama_list):
+            errors['sertifikat_kompetensi'] = ["Semua sertifikat harus memiliki nomor dan nama."]
+        if not hari_list or not jam_list or len(hari_list) != len(jam_list):
+            errors['jadwal_praktik'] = ["Jadwal praktik tidak valid."]
+
+        if errors:
+            context['errors'] = errors
+            return render(request, 'update_dokter.html', context)
+
+        try:
+            query(f"""
+                UPDATE "USER"
+                SET alamat = '{alamat}', nomor_telepon = '{nomor_telepon}'
+                WHERE email = '{email}'
+            """)
+
+            if tanggal_akhir_kerja:
+                query(f"""
+                    UPDATE PEGAWAI
+                    SET tanggal_akhir_kerja = '{tanggal_akhir_kerja}'
+                    WHERE no_pegawai = '{no_pegawai}'
+                """)
+            else:
+                query(f"""
+                    UPDATE PEGAWAI
+                    SET tanggal_akhir_kerja = NULL
+                    WHERE no_pegawai = '{no_pegawai}'
+                """)
+
+            # Reset & insert new sertifikat
+            query(f"DELETE FROM SERTIFIKAT_KOMPETENSI WHERE no_tenaga_medis = '{no_pegawai}'")
+            for kode, nama in sertifikat_kompetensi:
+                query(f"""
+                    INSERT INTO SERTIFIKAT_KOMPETENSI (no_sertifikat_kompetensi, no_tenaga_medis, nama_sertifikat)
+                    VALUES ('{kode}', '{no_pegawai}', '{nama}')
+                """)
+
+            # Reset & insert new jadwal
+            query(f"DELETE FROM JADWAL_PRAKTIK WHERE no_dokter_hewan = '{no_pegawai}'")
+            for hari, jam in jadwal_praktik:
+                query(f"""
+                    INSERT INTO JADWAL_PRAKTIK (no_dokter_hewan, hari, jam)
+                    VALUES ('{no_pegawai}', '{hari}', '{jam}')
+                """)
+
+            # Update session
+            request.session['logged_user']['address'] = alamat
+            request.session['logged_user']['phone'] = nomor_telepon
+            request.session['logged_user']['tanggal_akhir_kerja'] = tanggal_akhir_kerja or None
+            request.session['logged_user']['sertifikat_kompetensi'] = sertifikat_kompetensi
+            request.session['logged_user']['jadwal_praktik'] = jadwal_praktik
+            request.session.modified = True
+
+            messages.success(request, "Profil dokter berhasil diperbarui.")
+            return redirect('putih:show_profile')
+
+        except Exception as e:
+            messages.error(request, f"Terjadi kesalahan saat menyimpan data: {str(e)}")
+            return render(request, 'update_dokter.html', context)
+
+    else:
+        sertifikat_list = logged_user.get('sertifikat_kompetensi', [])
+        jadwal_praktik = logged_user.get('jadwal_praktik', [])
+        context['form_values'] = {
+            'alamat': logged_user.get('address', ''),
+            'nomor_telepon': logged_user.get('phone', ''),
+            'tanggal_akhir_kerja': logged_user.get('tanggal_akhir_kerja') or '',
+            'sertifikat_kompetensi': sertifikat_list,
+            'jadwal_praktik': jadwal_praktik,
+        }
+        return render(request, 'update_dokter.html', context)
+
+
 
 def update_perawat(request):
     return render(request, 'update_perawat.html')
