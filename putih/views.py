@@ -635,11 +635,18 @@ def update_dokter(request):
             """)
 
             if tanggal_akhir_kerja:
-                query(f"""
+                result = query(f"""
                     UPDATE PEGAWAI
                     SET tanggal_akhir_kerja = '{tanggal_akhir_kerja}'
                     WHERE no_pegawai = '{no_pegawai}'
                 """)
+                if isinstance(result, int):
+                    messages.success(request, "Profil dokter berhasil diperbarui.")
+
+                    if tanggal_akhir_kerja:  # kamu tahu dokter jadi nonaktif
+                        messages.info(request, "Semua jadwal praktik dokter telah dihapus karena dokter tidak aktif.")
+                    
+                    return redirect("putih:show_profile")
             else:
                 query(f"""
                     UPDATE PEGAWAI

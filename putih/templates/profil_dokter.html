@@ -2,7 +2,26 @@
 {% load iso_filters %}
 
 {% block content %}
-<div style="margin-top: 50px;">
+
+<div style="margin-top: 120px;">
+    {% if messages %}
+    <div style="margin-bottom: 20px;">
+        {% for message in messages %}
+        <div style="padding: 12px 18px; border-radius: 6px; margin-bottom: 10px;
+                    {% if message.tags == 'success' %}
+                        background-color: #e6fffa; color: #2c7a7b; border: 1px solid #b2f5ea;
+                    {% elif message.tags == 'info' %}
+                        background-color: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8;
+                    {% elif message.tags == 'error' %}
+                        background-color: #fff5f5; color: #c53030; border: 1px solid #fed7d7;
+                    {% else %}
+                        background-color: #f7fafc; color: #4a5568; border: 1px solid #e2e8f0;
+                    {% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
   <div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); background-color: #f5f7fa;">
     <div class="profile-card" style="width: 100%; max-width: 900px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px 20px; overflow: hidden;">
 
