@@ -1,0 +1,99 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block content %}
+<div class="container-fluid" style="margin-top: 30px; background-color: #f5f7fa; min-height: calc(100vh - 80px); padding: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+
+            
+            <div class="row justify-content-center" style="width: 100%;"> 
+                <div class="col-12 col-xl-10">
+                    <div class="profile-card" style="background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); overflow: hidden; width: 100%; margin: 30px auto; max-width: 1000px;"> 
+                        
+                        <div class="card-header" style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
+                            <div style="display: flex; align-items: center; justify-content: flex-start;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.9; margin-right: 12px; margin-top: 1px;">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                <h2 style="font-size: 26px; margin: 0; font-weight: 600; line-height: 1;">Riwayat Vaksinasi Hewan Peliharaan Saya</h2>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body" style="padding: 30px;">
+                            {% if messages %}
+                            <div class="messages" style="margin-bottom: 20px;">
+                                {% for message in messages %}
+                                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert"> 
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            {# --- Form untuk Sorting dengan Dropdown --- #}
+                            <form method="GET" action="{% url 'merah:show_vaksinasi_klien' %}" style="margin-bottom: 25px; display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; background-color: #f9fafb; padding: 20px; border-radius: 8px;">
+                                <div style="flex: 1; min-width: 200px;">
+                                    <label for="sort_by_select" style="display: block; margin-bottom: 8px; font-weight: 500; color: #4a5568; font-size: 14px;">Urutkan Berdasarkan:</label>
+                                    <select name="sort_by" id="sort_by_select" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background-color: #fff; color: #4a5568; font-size: 14px;">
+                                        <option value="pet_name" {% if current_sort_by == 'pet_name' %}selected{% endif %}>Nama Hewan</option>
+                                        <option value="vaccine_name" {% if current_sort_by == 'vaccine_name' %}selected{% endif %}>Nama Vaksin</option>
+                                    </select>
+                                </div>
+                                <div style="flex: 1; min-width: 150px;">
+                                    <label for="order_select" style="display: block; margin-bottom: 8px; font-weight: 500; color: #4a5568; font-size: 14px;">Urutan:</label>
+                                    <select name="order" id="order_select" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 6px; background-color: #fff; color: #4a5568; font-size: 14px;">
+                                        <option value="asc" {% if current_order == 'asc' %}selected{% endif %}>Ascending (A-Z / Terlama)</option>
+                                        <option value="desc" {% if current_order == 'desc' %}selected{% endif %}>Descending (Z-A / Terbaru)</option>
+                                    </select>
+                                </div>
+                                <button type="submit" style="padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; border: none; cursor: pointer; font-size: 14px; height: fit-content;">Terapkan</button>
+                            </form>
+                            {# --- Akhir Form Sorting --- #}
+
+                            <div class="table-section">
+                                {% if vaksinasi_list %} 
+                                    <div class="table-responsive" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                                        <table class="table table-hover mb-0" style="border-collapse: collapse; width: 100%;">
+                                            <thead style="background-color: #f9fafb;">
+                                                <tr>
+                                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 5%;">No.</th>
+                                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">Nama Hewan</th>
+                                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 25%;">Nama Vaksin</th>
+                                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 15%;">ID Vaksin</th>
+                                                    <th style="padding: 12px 16px; text-align: right; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 15%;">Harga Vaksin</th>
+                                                    <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #5a6477; border-bottom: 1px solid #eaedf2; width: 20%;">Tgl & Waktu Kunjungan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in vaksinasi_list %}
+                                                <tr style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='white'">
+                                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ forloop.counter }}</td>
+                                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ item.nama_hewan }}</td>
+                                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ item.nama_vaksin }}</td>
+                                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ item.id_vaksin }}</td>
+                                                    <td style="padding: 12px 16px; text-align: right; color: #333; border-bottom: 1px solid #eaedf2;">Rp {{ item.harga_vaksin|floatformat:0 }}</td>
+                                                    <td style="padding: 12px 16px; text-align: left; color: #333; border-bottom: 1px solid #eaedf2;">{{ item.tanggal_waktu_kunjungan|date:"d M Y, H:i" }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <div class="table-info" style="margin-top: 20px; padding: 15px; background-color: #f8fafc; border-radius: 8px; border-left: 4px solid #5a85e2;">
+                                        <span style="font-size: 14px; color: #5a6477; font-weight: 500;">
+                                            Total Riwayat Vaksinasi: <strong>{{ vaksinasi_list|length }}</strong>
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    <div class="empty-state" style="padding: 60px 30px; text-align: center; background-color: #f9fafb; border-radius: 12px; margin-top: 20px;">
+                                        <div style="margin-bottom: 20px;"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.6;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
+                                        <h4 style="color: #5a6477; font-size: 20px; font-weight: 600; margin-bottom: 10px;">Belum Ada Riwayat Vaksinasi</h4>
+                                        <p style="color: #64748b; margin: 0; font-size: 15px; line-height: 1.5;">Riwayat vaksinasi hewan peliharaan Anda akan muncul di sini.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</div>
+{% endblock %}

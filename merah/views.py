@@ -683,3 +683,66 @@ def show_klien_detail(request, no_identitas):
             "pets": client_pets if client_pets else [],
         }
         return render(request, "show_klien_detail.html", context)
+
+def show_vaksinasi_klien(request):
+    logged_user = request.session.get('logged_user', None)
+
+    if not logged_user or logged_user.get('role') not in ['klien_individu', 'klien_perusahaan']: 
+        messages.error(request, "Anda harus login sebagai klien untuk mengakses halaman ini.")
+        return redirect('putih:login')
+
+    client_no_identitas = logged_user.get('no_identitas')
+    if not client_no_identitas:
+        messages.error(request, "Data identitas klien tidak ditemukan. Silakan login kembali.")
+        return redirect('putih:login')
+
+    sort_by = request.GET.get('sort_by', 'pet_name').lower()
+    order = request.GET.get('order', 'desc').lower() 
+
+    allowed_sort_by = {
+        'pet_name': 'K.nama_hewan',
+        'vaccine_name': 'V.nama',
+    }
+    
+    if order not in ['asc', 'desc']:
+        order = 'desc'
+
+    order_by_column = allowed_sort_by[sort_by]
+    order_direction = "ASC" if order == 'asc' else "DESC"
+
+    sql = f"""
+        SELECT
+            k.nama_hewan,
+            v.nama AS nama_vaksin,
+            v.kode AS id_vaksin,
+            v.harga AS harga_vaksin,
+            k.timestamp_awal AS tanggal_waktu_kunjungan
+        FROM
+            KUNJUNGAN k
+        JOIN
+            VAKSIN v ON K.kode_vaksin = v.kode
+        WHERE
+            k.no_identitas_klien = '{client_no_identitas}'
+            AND K.kode_vaksin IS NOT NULL
+        ORDER BY
+            {order_by_column} {order_direction}, K.id_kunjungan {order_direction};
+    """
+    
+    vaksinasi_list_result = query(sql)
+    print(vaksinasi_list_result)
+    vaksinasi_list = []
+
+    if isinstance(vaksinasi_list_result, list):
+        vaksinasi_list = vaksinasi_list_result
+
+    elif isinstance(vaksinasi_list_result, dict) and vaksinasi_list_result.get("status") == "error":
+        messages.error(request, f"Gagal mengambil data riwayat vaksinasi: {vaksinasi_list_result.get('data')}")
+
+
+    context = {
+        'logged_user': logged_user,
+        'vaksinasi_list': vaksinasi_list,
+        'current_sort_by': sort_by,
+        'current_order': order,
+    }
+    return render(request, 'show_vaksinasi_klien.html', context)

@@ -15,4 +15,5 @@ urlpatterns = [
     path('delete_vaksin/<str:kode_vaksin>/', views.delete_vaksin, name='delete_vaksin'),
     path('show_data_klien/', views.show_data_klien, name='show_data_klien'),
     path('show_data_klien/<str:no_identitas>/', views.show_klien_detail, name='show_klien_detail'),
+    path('show_vaksinasi_klien/', views.show_vaksinasi_klien, name='show_vaksinasi_klien'),
 ]
