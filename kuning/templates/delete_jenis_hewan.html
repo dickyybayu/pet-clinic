@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,10 +60,18 @@
   <div class="delete-container">
     <h4>Konfirmasi Penghapusan</h4>
     <p>Apakah kamu yakin ingin menghapus <strong class="text-danger">Jenis Hewan</strong> dengan kode <strong class="text-danger">{{ id_jenis }}</strong>?</p>
-    <div class="d-flex justify-content-center">
-      <a href="{% url 'kuning:jenis_list' %}" class="btn btn-cancel">Batal</a>
-      <button class="btn btn-danger-custom">Hapus</button>
-    </div>
+
+    {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="d-flex justify-content-center">
+        <a href="{% url 'kuning:jenis_list' %}" class="btn btn-cancel">Batal</a>
+        <button type="submit" class="btn btn-danger-custom">Hapus</button>
+      </div>
+    </form>
   </div>
 </body>
 </html>
