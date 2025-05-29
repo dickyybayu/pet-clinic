@@ -1,269 +1,74 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile Front-Desk Officer</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f7fa;
-    }
-    .container {
-      margin-top: 30px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: calc(100vh - 80px);
-      padding: 20px;
-    }
-    .profile-card {
-      width: 100%;
-      max-width: 900px;
-      background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-      margin: 0 auto;
-      overflow: hidden;
-    }
-    .card-header {
-      background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%);
-      padding: 25px 30px;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .card-header h2 {
-      font-size: 26px;
-      margin: 0;
-      font-weight: 600;
-    }
-    .profile-icon {
-      background-color: rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
-      width: 64px;
-      height: 64px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .card-body {
-      padding: 30px;
-    }
-    .info-row {
-      display: flex;
-      margin-bottom: 18px;
-      border-bottom: 1px solid #eaedf2;
-      padding-bottom: 15px;
-    }
-    .info-row:last-of-type {
-      border-bottom: none;
-      margin-bottom: 0;
-    }
-    .label {
-      width: 35%;
-      font-weight: 600;
-      color: #5a6477;
-      min-width: 150px;
-    }
-    .value {
-      width: 65%;
-      color: #333;
-      word-wrap: break-word;
-    }
-    .footer-buttons {
-      margin-top: 30px;
-      display: flex;
-      justify-content: flex-end;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-    .footer-buttons a {
-      text-decoration: none;
-      padding: 12px 24px;
-      border-radius: 6px;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      border: none;
-      font-size: 14px;
-    }
-    .btn-password {
-      background-color: #f0f2f5;
-      color: #4a5568;
-    }
-    .btn-password:hover {
-      background-color: #e2e8f0;
-    }
-    .btn-update {
-      background-color: #5a85e2;
-      color: white;
-    }
-    .btn-update:hover {
-      background-color: #4c7bd9;
-    }
-    
+{% extends 'base.html' %}
 
-    .error-message {
-      background-color: #fee;
-      color: #c53030;
-      padding: 15px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      border-left: 4px solid #c53030;
-    }
-    
-    /* Messages styling */
-    .messages-container {
-      margin-bottom: 20px;
-    }
-    
-    .alert {
-      padding: 15px;
-      border-radius: 6px;
-      border-left-width: 4px;
-      margin-bottom: 10px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .alert-success {
-      background-color: #ecfdf5;
-      border-left-color: #10b981;
-      color: #047857;
-    }
-    
-    .alert-error {
-      background-color: #fef2f2;
-      border-left-color: #ef4444;
-      color: #b91c1c;
-    }
-    
-    .alert-warning {
-      background-color: #fffbeb;
-      border-left-color: #f59e0b;
-      color: #b45309;
-    }
-    
-    .alert-info {
-      background-color: #eff6ff;
-      border-left-color: #3b82f6;
-      color: #1e40af;
-    }
-    
-    .alert-icon {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-    }
-  </style>
-</head>
-<body>
-  {% include 'navbar_frontdesk.html' %}
-  
-  <div class="container">
-    {% if logged_user %}
-    <div class="profile-card">
-      <div class="card-header">
-        <h2>Profile Front-Desk Officer</h2>
-        <div class="profile-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
+{% block content %}
+<div style="margin-top: 30px;">
+  <div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); background-color: #f5f7fa;">
+    <div class="profile-card" style="width: 100%; max-width: 800px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px 20px; overflow: hidden;">
+      
+      <!-- Card Header -->
+      <div style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2 style="font-size: 26px; margin: 0; font-weight: 600;">Profile Front Desk Officer</h2>
+          <div style="background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
         </div>
       </div>
 
-      <div class="card-body">
-        <!-- Messages Display -->
-        {% if messages %}
-        <div class="messages-container">
-          {% for message in messages %}
-          <div class="alert alert-{{ message.tags }}">
-            {% if message.tags == 'success' %}
-              <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-            {% elif message.tags == 'error' %}
-              <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            {% elif message.tags == 'warning' %}
-              <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            {% else %}
-              <svg class="alert-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            {% endif %}
-            <span>{{ message }}</span>
+      <!-- Card Body -->
+      <div style="padding: 30px;">
+        <div class="profile-info">
+
+          <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Nomor Pegawai</div>
+            <div style="width: 65%; color: #333;">{{ logged_user.no_pegawai }}</div>
           </div>
-          {% endfor %}
-        </div>
-        {% endif %}
-        <div class="info-row">
-          <div class="label">Nomor Identitas</div>
-          <div class="value">{{ logged_user.no_pegawai|default:"N/A" }}</div>
-        </div>
-        
-        <div class="info-row">
-          <div class="label">Email</div>
-          <div class="value">{{ logged_user.email|default:"N/A" }} </div>
-        </div>
-        
-        <div class="info-row">
-          <div class="label">Tanggal Diterima</div>
-          <div class="value">
-            {% load iso_filters %} 
-            {% if logged_user.tanggal_mulai_kerja %}
+
+          <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Email</div>
+            <div style="width: 65%; color: #333;">{{ logged_user.email }}</div>
+          </div>
+
+          <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Tanggal Mulai Kerja</div>
+            <div style="width: 65%; color: #333;">
+              {% load iso_filters %}
               {{ logged_user.tanggal_mulai_kerja|parse_iso|date:"d F Y" }}
-            {% else %}
-              N/A
-            {% endif %}
+            </div>
           </div>
-        </div>
-        
-        <div class="info-row">
-          <div class="label">Tanggal Akhir Kerja</div>
-          <div class="value">
-            {% load iso_filters %} 
-            {% if logged_user.tanggal_akhir_kerja %}
-              {{ logged_user.tanggal_akhir_kerja |parse_iso|date:"d F Y" }}
-            {% else %}
-              -
-            {% endif %}
+
+          <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Tanggal Akhir Kerja</div>
+            <div style="width: 65%; color: #333;">
+              {% if logged_user.tanggal_akhir_kerja %}
+                {{ logged_user.tanggal_akhir_kerja|parse_iso|date:"d F Y" }}
+              {% else %}
+                -
+              {% endif %}
+            </div>
           </div>
-        </div>
-        
-        <div class="info-row">
-          <div class="label">Alamat</div>
-          <div class="value">{{ logged_user.address|default:"N/A" }}</div>
-        </div>
-        
-        <div class="info-row">
-          <div class="label">Nomor Telepon</div>
-          <div class="value">{{ logged_user.phone|default:"081234567895" }}</div>
+
+          <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Alamat</div>
+            <div style="width: 65%; color: #333;">{{ logged_user.address }}</div>
+          </div>
+
+          <div style="display: flex;">
+            <div style="width: 35%; font-weight: 600; color: #5a6477;">Nomor Telepon</div>
+            <div style="width: 65%; color: #333;">{{ logged_user.phone }}</div>
+          </div>
         </div>
 
-        <div class="footer-buttons">
-          <a href="{% url 'putih:update_password' %}" class="btn-password">Update Password</a>
-          <a href="{% url 'putih:update_front_desk' %}" class="btn-update"> Update Profil </a>
+        <!-- Footer Action Buttons -->
+        <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 15px;">
+          <a href="{% url 'putih:update_password' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500; transition: all 0.2s ease;">Update Password</a>
+          <a href="{% url 'putih:update_front_desk' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; transition: all 0.2s ease;">Update Profile</a>
         </div>
       </div>
     </div>
-    
-    {% else %}
-    <div class="error-message">
-      <h3>Akses Ditolak</h3>
-      <p>Anda tidak memiliki izin untuk mengakses halaman ini. Silakan login terlebih dahulu.</p>
-    </div>
-    {% endif %}
   </div>
-</body>
-</html>
+</div>
+{% endblock %}

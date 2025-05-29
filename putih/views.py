@@ -451,16 +451,102 @@ def show_profile(request, role):
     logged_user = request.session.get('logged_user', {})
     context = {'logged_user': logged_user}
 
-    if role in ['klien_individu', 'klien_perusahaan']:
+    email = logged_user.get('email')
+
+    if role == 'klien_individu':
+        profile = query(f"""
+            SELECT k.no_identitas, u.email, 
+                   TRIM(CONCAT(i.nama_depan, ' ', COALESCE(i.nama_tengah, ''), ' ', i.nama_belakang)) AS nama,
+                   k.tanggal_registrasi, u.alamat, u.nomor_telepon
+            FROM KLIEN k
+            JOIN "USER" u ON k.email = u.email
+            JOIN INDIVIDU i ON i.no_identitas_klien = k.no_identitas
+            WHERE u.email = '{email}'
+        """)[0]
+        context.update(profile)
         return render(request, 'profil_klien.html', context)
-    elif role == 'dokter':
-        return render(request, 'profil_dokter.html', context)
-    elif role == 'perawat':
-        return render(request, 'profil_perawat.html', context)
+
+    elif role == 'klien_perusahaan':
+        profile = query(f"""
+            SELECT k.no_identitas, u.email, p.nama_perusahaan,
+                   k.tanggal_registrasi, u.alamat, u.nomor_telepon
+            FROM KLIEN k
+            JOIN "USER" u ON k.email = u.email
+            JOIN PERUSAHAAN p ON p.no_identitas_klien = k.no_identitas
+            WHERE u.email = '{email}'
+        """)[0]
+        context.update(profile)
+        return render(request, 'profil_klien.html', context)
+
     elif role == 'front_desk':
+        profile = query(f"""
+            SELECT f.no_front_desk, u.email, p.tanggal_mulai_kerja, p.tanggal_akhir_kerja, 
+                   u.alamat, u.nomor_telepon
+            FROM FRONT_DESK f
+            JOIN PEGAWAI p ON f.no_front_desk = p.no_pegawai
+            JOIN "USER" u ON p.email_user = u.email
+            WHERE u.email = '{email}'
+        """)[0]
+        context.update(profile)
         return render(request, 'profil_front_desk.html', context)
-    else:
-        return HttpResponseNotFound("Role tidak ditemukan.")
+
+    elif role == 'dokter':
+        # Data dasar dokter
+        profile = query(f"""
+            SELECT d.no_dokter_hewan, tm.no_izin_praktik, u.email, p.tanggal_mulai_kerja, 
+                   p.tanggal_akhir_kerja, u.alamat, u.nomor_telepon
+            FROM DOKTER_HEWAN d
+            JOIN TENAGA_MEDIS tm ON d.no_dokter_hewan = tm.no_tenaga_medis
+            JOIN PEGAWAI p ON tm.no_tenaga_medis = p.no_pegawai
+            JOIN "USER" u ON p.email_user = u.email
+            WHERE u.email = '{email}'
+        """)[0]
+
+        # Sertifikat dokter
+        sertifikat = query(f"""
+            SELECT no_sertifikat_kompetensi AS nomor_sertifikat_kompetensi, nama_sertifikat
+            FROM SERTIFIKAT_KOMPETENSI
+            WHERE no_tenaga_medis = '{profile["no_dokter_hewan"]}'
+        """)
+
+        # Jadwal praktik
+        jadwal = query(f"""
+            SELECT hari, jam FROM JADWAL_PRAKTIK
+            WHERE no_dokter_hewan = '{profile["no_dokter_hewan"]}'
+        """)
+
+
+        context.update(profile)
+        context["sertifikat"] = sertifikat
+        context["jadwal"] = jadwal
+        print(profile)
+        return render(request, 'profil_dokter.html', context)
+
+    elif role == 'perawat':
+        profile = query(f"""
+            SELECT p.no_perawat_hewan, tm.no_izin_praktik, u.email, pg.tanggal_mulai_kerja, 
+                   pg.tanggal_akhir_kerja, u.alamat, u.nomor_telepon
+            FROM PERAWAT_HEWAN p
+            JOIN TENAGA_MEDIS tm ON p.no_perawat_hewan = tm.no_tenaga_medis
+            JOIN PEGAWAI pg ON tm.no_tenaga_medis = pg.no_pegawai
+            JOIN "USER" u ON pg.email_user = u.email
+            WHERE u.email = '{email}'
+        """)[0]
+
+        sertifikat = query(f"""
+            SELECT no_sertifikat_kompetensi AS nomor_sertifikat_kompetensi, nama_sertifikat
+            FROM SERTIFIKAT_KOMPETENSI
+            WHERE no_tenaga_medis = '{profile["no_perawat_hewan"]}'
+        """)
+
+        context.update(profile)
+        context["sertifikat"] = sertifikat
+
+        print(sertifikat)
+        return render(request, 'profil_perawat.html', context)
+
+    return HttpResponseNotFound("Role tidak ditemukan.")
+
 
 
 def logout(request):
