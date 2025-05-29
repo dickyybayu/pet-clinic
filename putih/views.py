@@ -428,6 +428,7 @@ def show_profile(request):
             WHERE u.email = '{email}'
         """)[0]
         context.update(profile)
+        print(profile)
         return render(request, 'profil_klien.html', context)
 
     elif role == 'front_desk':
@@ -504,49 +505,119 @@ def logout(request):
     messages.success(request, 'Berhasil logout!')
     return redirect('putih:login')
 
-def update_klien(request):
-    if request.method == 'POST':
-        address = request.POST.get('address')
-        phone = request.POST.get('phone')
-        first_name = request.POST.get('first_name')
-        middle_name = request.POST.get('middle_name', "")
-        last_name = request.POST.get('last_name')
-        company_name = request.POST.get('company_name')
+# def update_klien(request):
+#     if request.method == 'POST':
+#         address = request.POST.get('address')
+#         phone = request.POST.get('phone')
+#         first_name = request.POST.get('first_name')
+#         middle_name = request.POST.get('middle_name', "")
+#         last_name = request.POST.get('last_name')
+#         company_name = request.POST.get('company_name')
 
-        if company_name:
-            errors = validate_update_data(address, phone, company_name=company_name)
-        else:
-            errors = validate_update_data(address, phone, first_name=first_name, middle_name=middle_name, last_name=last_name)
+#         if company_name:
+#             errors = validate_update_data(address, phone, company_name=company_name)
+#         else:
+#             errors = validate_update_data(address, phone, first_name=first_name, middle_name=middle_name, last_name=last_name)
 
-        if errors:
-            context = {
-                'errors': errors,
-                **logged_pengguna,
-            }
-            return render(request, 'update_klien.html', context)
+#         if errors:
+#             context = {
+#                 'errors': errors,
+#                 **logged_pengguna,
+#             }
+#             return render(request, 'update_klien.html', context)
         
-        logged_pengguna['address'] = address
-        logged_pengguna['phone'] = phone
+#         logged_pengguna['address'] = address
+#         logged_pengguna['phone'] = phone
 
-        if company_name:
-            logged_pengguna['company_name'] = company_name
-        else:
-            logged_pengguna['first_name'] = first_name
-            logged_pengguna['middle_name'] = middle_name
-            logged_pengguna['last_name'] = last_name
+#         if company_name:
+#             logged_pengguna['company_name'] = company_name
+#         else:
+#             logged_pengguna['first_name'] = first_name
+#             logged_pengguna['middle_name'] = middle_name
+#             logged_pengguna['last_name'] = last_name
 
-        return redirect('putih:show_profile')
+#         return redirect('putih:show_profile')
 
-    context = {
-        **logged_pengguna,
-    }
-    return render(request, 'update_klien.html', context)
+#     context = {
+#         **logged_pengguna,
+#     }
+#     return render(request, 'update_klien.html', context)
 
 def update_klien_individu(request):
-    return render(request, 'update_klien_individu.html')
+    logged_user = request.session.get("logged_user", {})
+    if not logged_user or logged_user.get("role") != "klien_individu":
+        messages.error(request, "Akses ditolak.")
+        return redirect("putih:login")
+
+    if request.method == "POST":
+        address = request.POST.get("alamat")
+        phone = request.POST.get("nomor_telepon")
+        nama_depan = request.POST.get("nama_depan")
+        nama_tengah = request.POST.get("nama_tengah") or None
+        nama_belakang = request.POST.get("nama_belakang")
+
+        query(f"""
+            UPDATE "USER"
+            SET alamat = '{address}', nomor_telepon = '{phone}'
+            WHERE email = '{logged_user.get("email")}'
+        """)
+
+        query(f"""
+            UPDATE INDIVIDU
+            SET nama_depan = '{nama_depan}',
+                nama_tengah = {f"'{nama_tengah}'" if nama_tengah else "NULL"},
+                nama_belakang = '{nama_belakang}'
+            WHERE no_identitas_klien = '{logged_user.get("no_identitas")}'
+        """)
+
+        messages.success(request, "Profil berhasil diperbarui.")
+        return redirect("putih:show_profile")
+
+    data = query(f"""
+        SELECT u.alamat, u.nomor_telepon, i.nama_depan, i.nama_tengah, i.nama_belakang
+        FROM "USER" u
+        JOIN KLIEN k ON u.email = k.email
+        JOIN INDIVIDU i ON k.no_identitas = i.no_identitas_klien
+        WHERE u.email = '{logged_user.get("email")}'
+    """)[0]
+
+    return render(request, "update_klien.html", {"data": data, 'logged_user': logged_user})
 
 def update_klien_perusahaan(request):
-    return render(request, 'update_klien_perusahaan.html')
+    logged_user = request.session.get("logged_user", {})
+    if not logged_user or logged_user.get("role") != "klien_perusahaan":
+        messages.error(request, "Akses ditolak.")
+        return redirect("putih:login")
+
+    if request.method == "POST":
+        address = request.POST.get("alamat")
+        phone = request.POST.get("nomor_telepon")
+        nama_perusahaan = request.POST.get("nama_perusahaan")
+
+        query(f"""
+            UPDATE "USER"
+            SET alamat = '{address}', nomor_telepon = '{phone}'
+            WHERE email = '{logged_user.get("email")}'
+        """)
+
+        query(f"""
+            UPDATE PERUSAHAAN
+            SET nama_perusahaan = '{nama_perusahaan}'
+            WHERE no_identitas_klien = '{logged_user.get("no_identitas")}'
+        """)
+
+        messages.success(request, "Profil berhasil diperbarui.")
+        return redirect("putih:show_profile")
+
+    data = query(f"""
+        SELECT u.alamat, u.nomor_telepon, p.nama_perusahaan
+        FROM "USER" u
+        JOIN KLIEN k ON u.email = k.email
+        JOIN PERUSAHAAN p ON k.no_identitas = p.no_identitas_klien
+        WHERE u.email = '{logged_user.get("email")}'
+    """)[0]
+
+    return render(request, "update_klien.html", {"data": data, 'logged_user': logged_user})
 
 def update_dokter(request):
     return render(request, 'update_dokter.html')

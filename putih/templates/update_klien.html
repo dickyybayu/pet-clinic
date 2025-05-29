@@ -1,121 +1,97 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div style="margin-top: 30px;">
-    <div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); background-color: #f5f7fa;">
-        <div class="profile-card" style="width: 100%; max-width: 800px; background-color: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); margin: 30px 20px; overflow: hidden;">
-            <!-- Card Header -->
-            <div style="background: linear-gradient(135deg, #6ab3fd 0%, #5a85e2 100%); padding: 25px 30px; color: white;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2 style="font-size: 26px; margin: 0; font-weight: 600;">Edit Profile</h2>
-                    <div style="background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; width: 64px; height: 64px; display: flex; justify-content: center; align-items: center;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 20h9"></path>
-                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Card Body -->
-            <div style="padding: 30px;">
-                <form method="post" action="{% url 'putih:update_klien' %}">
-                    {% csrf_token %}
-                    
-                    <div class="profile-info">
-                        <!-- Non-editable fields -->
-                        <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
-                            <div style="width: 35%; font-weight: 600; color: #5a6477;">Nomor Identitas</div>
-                            <div style="width: 65%; color: #333;">{{ no_identitas }}</div>
-                        </div>
-                        
-                        <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
-                            <div style="width: 35%; font-weight: 600; color: #5a6477;">Email</div>
-                            <div style="width: 65%; color: #333;">{{ email }}</div>
-                        </div>
-                        
-                        <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
-                            <div style="width: 35%; font-weight: 600; color: #5a6477;">Tanggal Pendaftaran</div>
-                            <div style="width: 65%; color: #333;">{{ tanggal_reg|date:"d F Y" }}</div>
-                        </div>
-                        
-                        <!-- Editable fields -->
-                        {% if company_name %}
-                        <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
-                            <div style="width: 35%; font-weight: 600; color: #5a6477;">Nama Perusahaan</div>
-                            <div style="width: 65%;">
-                                <input type="text" name="company_name" value="{{ company_name }}" style="width: 100%; padding: 10px; border: 1px solid #dde2ea; border-radius: 6px; font-size: 15px;">
-                            </div>
-                        </div>
-                        {% else %}
-                        <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
-                            <div style="width: 35%; font-weight: 600; color: #5a6477;">Nama Depan</div>
-                            <div style="width: 65%;">
-                                <input type="text" name="first_name" value="{{ first_name }}" style="width: 100%; padding: 10px; border: 1px solid #dde2ea; border-radius: 6px; font-size: 15px;">
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
-                            <div style="width: 35%; font-weight: 600; color: #5a6477;">Nama Tengah</div>
-                            <div style="width: 65%;">
-                                <input type="text" name="middle_name" value="{{ middle_name }}" style="width: 100%; padding: 10px; border: 1px solid #dde2ea; border-radius: 6px; font-size: 15px;">
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
-                            <div style="width: 35%; font-weight: 600; color: #5a6477;">Nama Belakang</div>
-                            <div style="width: 65%;">
-                                <input type="text" name="last_name" value="{{ last_name }}" style="width: 100%; padding: 10px; border: 1px solid #dde2ea; border-radius: 6px; font-size: 15px;">
-                            </div>
-                        </div>
-                        {% endif %}
-                        
-                        <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid #eaedf2; padding-bottom: 15px;">
-                            <div style="width: 35%; font-weight: 600; color: #5a6477;">Alamat</div>
-                            <div style="width: 65%;">
-                                <textarea name="address" rows="3" style="width: 100%; padding: 10px; border: 1px solid #dde2ea; border-radius: 6px; font-size: 15px; resize: vertical;">{{ address }}</textarea>
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; margin-bottom: 18px;">
-                            <div style="width: 35%; font-weight: 600; color: #5a6477;">Nomor Telepon</div>
-                            <div style="width: 65%;">
-                                <input type="tel" name="phone" value="{{ phone }}" style="width: 100%; padding: 10px; border: 1px solid #dde2ea; border-radius: 6px; font-size: 15px;">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {% if errors %}
-                    <div style="margin: 20px 0; padding: 16px; background-color: #fef2f2; border-left: 4px solid #ef4444; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" style="width: 24px; height: 24px; color: #b91c1c; margin-right: 10px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <h3 style="margin: 0; font-size: 18px; color: #b91c1c; font-weight: 600;">Mohon perbaiki kesalahan berikut:</h3>
-                        </div>
-                        <ul style="list-style-type: none; margin: 0; padding: 0;">
-                            {% for field, error in errors.items %}
-                                <li style="padding: 8px 0 8px 34px; color: #991b1b; position: relative; margin-bottom: 4px;">
-                                    <span style="position: absolute; left: 0; top: 9px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </span>
-                                    <strong style="font-weight: 600;">{{ field|capfirst }}:</strong> {{ error }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Footer Action Buttons -->
-                    <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 15px;">
-                        <a href="{% url 'putih:show_profile' %}" style="text-decoration: none; padding: 10px 20px; border-radius: 6px; background-color: #f0f2f5; color: #4a5568; font-weight: 500; transition: all 0.2s ease;">Batal</a>
-                        <button type="submit" style="padding: 10px 20px; border-radius: 6px; background-color: #5a85e2; color: white; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s ease;">Simpan Perubahan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+<style>
+  .container {
+    max-width: 800px;
+    margin: 120px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  h2 {
+    color: #2d3748;
+    margin-bottom: 25px;
+  }
+
+  label {
+    display: block;
+    margin-top: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .button-group {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .btn-cancel, .btn-submit {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-cancel {
+    background-color: #f0f2f5;
+    color: #374151;
+    border: 1px solid #ccc;
+  }
+
+  .btn-submit {
+    background-color: #5a85e2;
+    color: white;
+  }
+</style>
+
+<div class="container">
+  <h2>Update Profil Klien</h2>
+
+  <form method="POST">
+    {% csrf_token %}
+    <label for="alamat">Alamat</label>
+    <input type="text" id="alamat" name="alamat" value="{{ data.alamat }}" required>
+
+    <label for="nomor_telepon">Nomor Telepon</label>
+    <input type="text" id="nomor_telepon" name="nomor_telepon" value="{{ data.nomor_telepon }}" required>
+
+    {% if logged_user.role == 'klien_individu' %}
+      <label for="nama_depan">Nama Depan</label>
+      <input type="text" id="nama_depan" name="nama_depan" value="{{ data.nama_depan }}" required>
+
+      <label for="nama_tengah">Nama Tengah</label>
+      <input type="text" id="nama_tengah" name="nama_tengah" value="{{ data.nama_tengah }}">
+
+      <label for="nama_belakang">Nama Belakang</label>
+      <input type="text" id="nama_belakang" name="nama_belakang" value="{{ data.nama_belakang }}" required>
+    {% elif logged_user.role == 'klien_perusahaan' %}
+      <label for="nama_perusahaan">Nama Perusahaan</label>
+      <input type="text" id="nama_perusahaan" name="nama_perusahaan" value="{{ data.nama_perusahaan }}" required>
+    {% endif %}
+
+    <div class="button-group">
+      <a href="{% url 'putih:show_profile' %}" class="btn-cancel">Batal</a>
+      <button type="submit" class="btn-submit">Simpan</button>
     </div>
+  </form>
 </div>
 {% endblock %}
