@@ -20,7 +20,7 @@ urlpatterns = [
     path('profil/update_password/', views.update_password, name='update_password'),
     
     path('profil/', views.show_profile, name='show_profile'),
-    path('profil/update/', views.update_klien, name='update_klien'),
+    # path('profil/update/', views.update_klien, name='update_klien'),
     path('logout/', views.logout, name='logout'),
 
 
@@ -29,6 +29,8 @@ urlpatterns = [
     path('profil/update_dokter/', views.update_dokter, name='update_dokter'),
     path('profil/update_perawat/', views.update_perawat, name='update_perawat'),
     path('profil/update_password_placeholder/', views.update_password_placeholder, name='update_password_placeholder'),
+    path('update_klien_individu/<str:id_klien>/', views.update_klien_individu, name='update_klien_individu'),
+    path('update_klien_perusahaan/<str:id_klien>/', views.update_klien_perusahaan, name='update_klien_perusahaan'),
 
 
 
