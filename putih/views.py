@@ -7,52 +7,6 @@ from django.contrib import messages
 from utils.query import query
 from utils.validators import *
 
-#Dummy Pengguna 
-pengguna = [
-    {
-         "email" : "akuindividuklien@gmail.com",
-         "password" : "Akun123!!",
-         "address" : "test",
-         "phone" : "123",
-         "no_identitas" : "2306206281",
-         "tanggal_reg" : datetime(2023, 1, 20),
-         "first_name" : "test",
-         "middle_name" : "test",
-         "last_name" : "test",
-    },
-    {
-         "email" : "akuperusahaanklien@gmail.com",
-         "password" : "Perusahaan123!!",
-         "address" : "test",
-         "phone" : "123",
-         "no_identitas" : "2306206282",
-         "tanggal_reg" : datetime(2023, 1, 20),
-         "company_name" : "test.inc",
-    },
-    {
-        "no_pegawai" : "1234",
-        "email" : "emailfrontdesk@gmail.com",
-        "password" : "Frontdesk123!!",
-        "phone" : "123",
-        "start_date" : datetime(2023, 1, 20),
-        "address" : "test",
-        "role" : "Frontdesk",
-    },
-    {
-        "doctor_id" : "123",
-        "no_pegawai": "2306206283",
-        "password" : "Akun123!!",
-        "start_date" : datetime(2023, 1, 20),
-        "end_date" : datetime(2023, 1, 20),
-        "email" : "akundokter@gmail.com",
-        "role"  : "Doctor"
-    },
-    {
-        "role" : "perawat",
-        "no_perawat" : "12345"
-    }
-    ]
-
 logged_pengguna = {}
 
 def home(request):
@@ -649,14 +603,13 @@ def update_front_desk(request):
                 query_pegawai_update_str = f"UPDATE \"PEGAWAI\" SET tanggal_akhir_kerja = '{db_tanggal_akhir_kerja}' WHERE no_pegawai = '{no_pegawai}'" # UNSAFE
             query(query_pegawai_update_str)
 
-            # Update session data
             request.session['logged_user']['address'] = new_alamat
             request.session['logged_user']['phone'] = new_nomor_telepon
             request.session['logged_user']['tanggal_akhir_kerja'] = db_tanggal_akhir_kerja 
             request.session.modified = True
 
             messages.success(request, "Profil berhasil diperbarui.")
-            return redirect('putih:show_profile', role=logged_user['role'])
+            return redirect('putih:show_profile')
 
         except Exception as e:
             messages.error(request, f"Terjadi kesalahan saat memperbarui profil: {str(e)}")
@@ -709,8 +662,7 @@ def update_password(request):
             if update_result is not None and int(update_result) >= 0:
                 messages.success(request, "Your password has been updated successfully.")
             
-                user_role = logged_user.get('role')
-                return redirect('putih:show_profile', role=user_role)
+                return redirect('putih:show_profile')
             
             else:
                 messages.error(request, "Failed to update password in the database. No changes were made or an error occurred.")
