@@ -1,97 +1,86 @@
-{% include "navbar.html" %}
+{% extends "base.html" %}
+{% load static %}
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>Update Treatment</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f7fa;
-      padding-top: 80px;
-    }
+{% block content %}
+<style>
+  .container {
+    max-width: 800px;
+    margin: 100px auto 40px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
+  }
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
-    }
+  h2 {
+    color: #2d3748;
+    margin-bottom: 25px;
+  }
 
-    h2 {
-      color: #2d3748;
-      margin-bottom: 25px;
-    }
+  label {
+    display: block;
+    margin-top: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+  }
 
-    label {
-      display: block;
-      margin-top: 20px;
-      font-weight: 600;
-      font-size: 14px;
-      color: #374151;
-    }
+  select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+  }
 
-    select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
+  .button-group {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
 
-    .button-group {
-      margin-top: 30px;
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-    }
+  .btn-cancel, .btn-submit {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+  }
 
-    .btn-cancel, .btn-submit {
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-    }
+  .btn-cancel {
+    background-color: #f0f2f5;
+    color: #374151;
+    border: 1px solid #ccc;
+  }
 
-    .btn-cancel {
-      background-color: #f0f2f5;
-      color: #374151;
-      border: 1px solid #ccc;
-    }
+  .btn-submit {
+    background-color: #5a85e2;
+    color: white;
+  }
+</style>
 
-    .btn-submit {
-      background-color: #5a85e2;
-      color: white;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>Update Treatment</h2>
+<div class="container">
+  <h2>Update Treatment</h2>
 
-    <form method="POST">
-      {% csrf_token %}
-      <label for="kode_perawatan">Jenis Perawatan</label>
-      <select name="kode_perawatan" id="kode_perawatan" required>
-        {% for p in daftar_perawatan %}
-          <option value="{{ p.kode_perawatan }}" {% if p.kode_perawatan == data.kode_perawatan %}selected{% endif %}>
-            {{ p.kode_perawatan }} - {{ p.nama_perawatan }}
-          </option>
-        {% endfor %}
-      </select>
+  <form method="POST">
+    {% csrf_token %}
+    <label for="kode_perawatan">Jenis Perawatan</label>
+    <select name="kode_perawatan" id="kode_perawatan" required>
+      {% for p in daftar_perawatan %}
+        <option value="{{ p.kode_perawatan }}" {% if p.kode_perawatan == data.kode_perawatan %}selected{% endif %}>
+          {{ p.kode_perawatan }} - {{ p.nama_perawatan }}
+        </option>
+      {% endfor %}
+    </select>
 
-      <div class="button-group">
-        <a href="{% url 'hijau:list_perawatan' %}" class="btn-cancel">Batal</a>
-        <button type="submit" class="btn-submit">Simpan</button>
-      </div>
-    </form>
-  </div>
-</body>
-</html>
+    <div class="button-group">
+      <a href="{% url 'hijau:list_perawatan' %}" class="btn-cancel">Batal</a>
+      <button type="submit" class="btn-submit">Simpan</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

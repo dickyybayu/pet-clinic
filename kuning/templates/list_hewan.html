@@ -1,3 +1,4 @@
+{% include "navbar.html" %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -52,57 +53,56 @@
     }
   </style>
 </head>
-    <body>
-        {% if role == "Front-Desk Officer" or role == "Klien" %}
-          <div class="table-container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-              <h4>List Hewan Peliharaan</h4>
-              <a href="{% url 'kuning:hewan_create' %}" class="btn btn-primary-custom">+ Create New Pet</a>
-            </div>
-        
-            <table class="table table-bordered align-middle text-center">
-              <thead class="table-light">
-                <tr>
-                  <th>No</th>
-                  <th>Pemilik</th>
-                  <th>Jenis Hewan</th>
-                  <th>Nama Hewan</th>
-                  <th>Tanggal Lahir</th>
-                  <th>Foto</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for hewan in hewan_list %}
-                <tr>
-                  <td>{{ forloop.counter }}</td>
-                  <td>{{ hewan.pemilik }}</td>
-                  <td>{{ hewan.jenis }}</td>
-                  <td>{{ hewan.nama }}</td>
-                  <td>{{ hewan.tanggal_lahir }}</td>
-                  <td><img src="{{ hewan.url_foto }}" class="hewan-foto" alt="Foto {{ hewan.nama }}"></td>
-        
-                  <td>
-                    <a href="{% url 'kuning:hewan_update' hewan.id %}" class="btn btn-sm btn-primary-custom mb-1">Update</a>
-                    {% if role == "Front-Desk Officer" %}
-                      <a href="{% url 'kuning:hewan_delete' hewan.id %}" class="btn btn-sm btn-danger-custom">Delete</a>
-                    {% endif %}
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="7" class="text-muted">Belum ada data hewan peliharaan.</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        
-        {% else %}
-          <div class="text-center my-5">
-            <h4 class="text-danger">❌ Akses Ditolak</h4>
-            <p>Hanya Front-Desk Officer dan Klien yang dapat melihat daftar hewan peliharaan.</p>
-            <a href="/" class="btn btn-primary mt-3">Kembali ke Beranda</a>
-          </div>
-        {% endif %}
-        
+<body>
+{% if role == "Front-Desk Officer" or role == "Klien" %}
+  <div class="table-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4>List Hewan Peliharaan</h4>
+      <a href="{% url 'kuning:hewan_create' %}" class="btn btn-primary-custom">+ Create New Pet</a>
+    </div>
+
+    <table class="table table-bordered align-middle text-center">
+      <thead class="table-light">
+        <tr>
+          <th>No</th>
+          <th>Pemilik</th>
+          <th>Jenis Hewan</th>
+          <th>Nama Hewan</th>
+          <th>Tanggal Lahir</th>
+          <th>Foto</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for hewan in hewan_list %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ hewan.pemilik }}</td>
+          <td>{{ hewan.jenis_hewan }}</td>
+          <td>{{ hewan.nama_hewan }}</td>
+          <td>{{ hewan.tanggal_lahir }}</td>
+          <td><img src="{{ hewan.url_foto }}" class="hewan-foto" alt="Foto {{ hewan.nama_hewan }}"></td>
+          <td>
+            <a href="{% url 'kuning:hewan_update' hewan.nama_hewan hewan.klien_id %}" class="btn btn-sm btn-primary-custom mb-1">Update</a>
+            {% if role == "Front-Desk Officer" %}
+              <a href="{% url 'kuning:hewan_delete' hewan.nama_hewan hewan.klien_id %}" class="btn btn-sm btn-danger-custom">Delete</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-muted">Belum ada data hewan peliharaan.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="text-center my-5">
+    <h4 class="text-danger">❌ Akses Ditolak</h4>
+    <p>Hanya Front-Desk Officer dan Klien yang dapat melihat daftar hewan peliharaan.</p>
+    <a href="/" class="btn btn-primary mt-3">Kembali ke Beranda</a>
+  </div>
+{% endif %}
+</body>
+</html>

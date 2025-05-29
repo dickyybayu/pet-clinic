@@ -1,367 +1,126 @@
-{% include "navbar.html" %}
+{% extends "base.html" %}
+{% load static %}
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>List Kunjungan</title>
-  <style>
-    /* --- semua style dari contoh kamu tetap --- */
-    /* --- semua style dari contoh kamu tetap --- */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      padding-top: 80px;
-      background-color: #f5f7fa;
-    }
+{% block content %}
+<div class="container" style="max-width: 1200px; margin: 100px auto 40px; padding: 30px;">
+  <h2 style="color: #4a5568; margin-bottom: 20px;">List Kunjungan</h2>
 
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 30px;
-    }
+  {% if is_front_desk %}
+    <a href="{% url 'hijau:create_kunjungan' %}" class="btn-create" style="background-color: #5a85e2; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 500; display: inline-block; margin-bottom: 20px;">+ Create New Kunjungan</a>
+  {% endif %}
 
-    h2 {
-      color: #4a5568;
-      margin-bottom: 20px;
-    }
-
-    .btn-create {
-      background-color: #5a85e2;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: 500;
-      display: inline-block;
-      margin-bottom: 20px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: white;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    th, td {
-      border: 1px solid #eee;
-      padding: 14px;
-      text-align: center;
-    }
-
-    th {
-      background-color: #f9fafb;
-      font-weight: 600;
-      color: #374151;
-    }
-
-    .button-container {
-      display: flex;
-      gap: 5px;
-      justify-content: center;
-    }
-
-    .btn {
-      padding: 8px 14px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-
-    .btn-update {
-      background-color: #5a85e2;
-      color: white;
-    }
-
-    .btn-delete {
-      background-color: #e74c3c;
-      color: white;
-    }
-
-    .btn-rekam {
-      background-color: #e2e8f0;
-      color: #1a202c;
-      font-weight: 600;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.5);
-    }
-
-    .modal-content {
-      background-color: #fff;
-      margin: 10% auto;
-      padding: 25px;
-      border-radius: 12px;
-      width: 400px;
-      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
-      text-align: center;
-    }
-
-    .modal-content h2 {
-      margin-top: 0;
-      color: #e53e3e;
-    }
-
-    .modal-buttons {
-      margin-top: 25px;
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .btn-modal-create {
-      background-color: #5a85e2;
-      color: white;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 6px;
-    }
-
-    .btn-modal-ok {
-      background-color: #f0f2f5;
-      border: 1px solid #d1d5db;
-      color: #374151;
-      padding: 8px 18px;
-      border-radius: 6px;
-    }
-
-    .btn-cancel {
-      background-color: #f0f2f5;
-      border: 1px solid #ccc;
-      color: #374151;
-      padding: 8px 18px;
-      border-radius: 6px;
-    }
-
-    .btn-confirm-delete {
-      background-color: #e74c3c;
-      color: white;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 6px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>List Kunjungan</h2>
-
-    {% if is_front_desk %}
-      <a href="{% url 'hijau:create_kunjungan' %}" class="btn-create">+ Create New Kunjungan</a>
-    {% endif %}
-
-    <table>
-      <thead>
-        <tr>
-          <th>ID Kunjungan</th>
-          <th>ID Klien</th>
-          <th>Nama Hewan</th>
-          <th>Metode Kunjungan</th>
-          <th>Waktu Mulai</th>
-          <th>Waktu Selesai</th>
-          <th>Rekam Medis</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for k in kunjungan %}
-        {% for k in kunjungan %}
-        <tr>
-          <td>{{ k.id_kunjungan }}</td>
-          <td>{{ k.no_identitas_klien }}</td>
-          <td>{{ k.nama_hewan }}</td>
-          <td>{{ k.tipe_kunjungan }}</td>
-          <td>{{ k.timestamp_awal }}</td>
-          <td>{{ k.timestamp_akhir|default:"-" }}</td>
-          <td>
-            <button
-              class="btn btn-rekam"
-              onclick="handleRekamMedisClick(this)"
-              data-id="{{ k.id_kunjungan }}"
-              data-suhu="{{ k.suhu }}"
-              data-berat="{{ k.berat_badan }}"
-              data-catatan="{{ k.catatan|default_if_none:'' }}"
-            >
-              Lihat
-            </button>
-          </td>
-          <td class="button-container">
+  <table style="width: 100%; border-collapse: collapse; background-color: white; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); border-radius: 8px; overflow: hidden;">
+    <thead>
+      <tr style="background-color: #f9fafb; font-weight: 600; color: #374151;">
+        <th style="padding: 14px;">ID Kunjungan</th>
+        <th style="padding: 14px;">ID Klien</th>
+        <th style="padding: 14px;">Nama Hewan</th>
+        <th style="padding: 14px;">Metode Kunjungan</th>
+        <th style="padding: 14px;">Waktu Mulai</th>
+        <th style="padding: 14px;">Waktu Selesai</th>
+        <th style="padding: 14px;">Rekam Medis</th>
+        <th style="padding: 14px;">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for k in kunjungan %}
+      <tr>
+        <td style="padding: 14px;">{{ k.id_kunjungan }}</td>
+        <td style="padding: 14px;">{{ k.no_identitas_klien }}</td>
+        <td style="padding: 14px;">{{ k.nama_hewan }}</td>
+        <td style="padding: 14px;">{{ k.tipe_kunjungan }}</td>
+        <td style="padding: 14px;">{{ k.timestamp_awal }}</td>
+        <td style="padding: 14px;">{{ k.timestamp_akhir|default:"-" }}</td>
+        <td style="padding: 14px;">
+          <button class="btn btn-rekam" onclick="handleRekamMedisClick(this)" data-id="{{ k.id_kunjungan }}" data-suhu="{{ k.suhu }}" data-berat="{{ k.berat_badan }}" data-catatan="{{ k.catatan|default_if_none:'' }}" style="background-color: #e2e8f0; color: #1a202c; font-weight: 600; padding: 8px 14px; border: none; border-radius: 6px;">
+            Lihat
+          </button>
+        </td>
+        <td class="button-container" style="display: flex; gap: 5px; justify-content: center; padding: 10px;">
           {% if is_front_desk %}
-            <a href="{% url 'hijau:update_kunjungan' k.id_kunjungan %}" class="btn btn-update">Update</a>
-            <button class="btn btn-delete" onclick="openDeleteModal('{{ k.id_kunjungan }}')">Delete</button>
-            
+            <a href="{% url 'hijau:update_kunjungan' k.id_kunjungan %}" class="btn btn-update" style="background-color: #5a85e2; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none;">Update</a>
+            <button class="btn btn-delete" onclick="openDeleteModal('{{ k.id_kunjungan }}')" style="background-color: #e74c3c; color: white; padding: 8px 14px; border-radius: 6px;">Delete</button>
           {% else %}
             <span style="color: #aaa; font-size: 0.9rem;">Tidak tersedia</span>
           {% endif %}
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="8">Belum ada data kunjungan.</td>
-        </tr>
-        {% endfor %}
-        {% empty %}
-        <tr>
-          <td colspan="8">Belum ada data kunjungan.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="8" style="padding: 20px; text-align: center;">Belum ada data kunjungan.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
-
-  <div id="rekamMedisModal" class="modal">
-    <div class="modal-content">
-      <h2>Rekam Medis tidak tersedia</h2>
-      <p>Belum ada rekam medis yang dibuat untuk kunjungan ini.</p>
-      <div class="modal-buttons">
-        <button class="btn-modal-create" onclick="redirectToCreate()">Buat</button>
-        <button class="btn-modal-ok" onclick="closeModal()">Tutup</button>
-      </div>
+<!-- Modal Rekam Medis -->
+<div id="rekamMedisModal" class="modal" style="display:none; position:fixed; z-index:999; left:0; top:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5);">
+  <div class="modal-content" style="background-color: #fff; margin: 10% auto; padding: 25px; border-radius: 12px; width: 400px; box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2); text-align: center;">
+    <h2 style="color: #e53e3e;">Rekam Medis tidak tersedia</h2>
+    <p>Belum ada rekam medis yang dibuat untuk kunjungan ini.</p>
+    <div style="margin-top: 25px; display: flex; justify-content: center; gap: 12px;">
+      <button class="btn-modal-create" onclick="redirectToCreate()" style="background-color: #5a85e2; color: white; padding: 8px 18px; border-radius: 6px; border: none;">Buat</button>
+      <button class="btn-modal-ok" onclick="closeModal()" style="background-color: #f0f2f5; border: 1px solid #ccc; color: #374151; padding: 8px 18px; border-radius: 6px;">Tutup</button>
     </div>
   </div>
+</div>
 
-  <div id="deleteModal" class="modal">
-    <div class="modal-content">
-      <h2 style="color: #e53e3e;">Delete Kunjungan</h2>
-      <p>Apakah kamu yakin untuk menghapus <strong>KUNJUNGAN</strong> dengan ID <span id="modalKunjunganId" style="color: #e53e3e;"></span>?</p>
-      <div class="modal-buttons">
-        <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-        <form id="deleteForm" method="POST">
-          {% csrf_token %}
-          <button type="submit" class="btn-confirm-delete">Confirm Deletion</button>
-        </form>
-      </div>
+<!-- Modal Delete -->
+<div id="deleteModal" class="modal" style="display:none; position:fixed; z-index:999; left:0; top:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5);">
+  <div class="modal-content" style="background-color: #fff; margin: 10% auto; padding: 25px; border-radius: 12px; width: 400px; text-align: center;">
+    <h2 style="color: #e53e3e;">Delete Kunjungan</h2>
+    <p>Apakah kamu yakin untuk menghapus <strong>KUNJUNGAN</strong> dengan ID <span id="modalKunjunganId" style="color: #e53e3e;"></span>?</p>
+    <div style="margin-top: 25px; display: flex; justify-content: center; gap: 12px;">
+      <button class="btn-cancel" onclick="closeDeleteModal()" style="background-color: #f0f2f5; padding: 8px 18px; border: 1px solid #ccc; border-radius: 6px;">Cancel</button>
+      <form id="deleteForm" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn-confirm-delete" style="background-color: #e74c3c; color: white; padding: 8px 18px; border-radius: 6px; border: none;">Confirm Deletion</button>
+      </form>
     </div>
   </div>
+</div>
 
-  <div id="updateModal" class="modal">
-    <div class="modal-content">
-      <h2>Update Waktu Selesai</h2>
-      <p>Masukkan <strong>waktu selesai</strong> untuk kunjungan ID: <span id="updateKunjunganId"></span></p>
-      <input type="datetime-local" id="timestampAkhirInput" style="margin-top: 15px; width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
-      <div class="modal-buttons" style="margin-top: 20px;">
-        <button class="btn-modal-ok" onclick="closeUpdateModal()">Batal</button>
-        <button class="btn-modal-create" onclick="submitUpdate()">Simpan</button>
-      </div>
-    </div>
-  </div>
+<script>
+  let currentRekamKunjunganId = "";
 
+  function handleRekamMedisClick(button) {
+    const id = button.dataset.id;
+    const suhu = button.dataset.suhu;
+    const berat = button.dataset.berat;
+    const catatan = button.dataset.catatan;
 
-  <script>
-    let currentRekamKunjunganId = "";
-
-    function openModal(id) {
+    if (suhu || berat || catatan.trim() !== "") {
+      window.location.href = `/hijau/rekam-medis/${id}/`;
+    } else {
       currentRekamKunjunganId = id;
-      document.getElementById('rekamMedisModal').style.display = 'block';
+      document.getElementById("rekamMedisModal").style.display = "block";
     }
+  }
 
-    function closeModal() {
-      document.getElementById('rekamMedisModal').style.display = 'none';
-    }
+  function redirectToCreate() {
+    if (!currentRekamKunjunganId) return;
+    window.location.href = `/hijau/rekam-medis/${currentRekamKunjunganId}/create/`;
+  }
 
-    function handleRekamMedisClick(button) {
-      const id = button.dataset.id;
-      const suhu = button.dataset.suhu;
-      const berat = button.dataset.berat;
-      const catatan = button.dataset.catatan;
+  function closeModal() {
+    document.getElementById("rekamMedisModal").style.display = "none";
+  }
 
-      if (suhu || berat || catatan.trim() !== "") {
-        // ada data tersedia, redirect langsung ke halaman detail
-        window.location.href = `/hijau/rekam-medis/${id}/`;
-      } else {
-        // Tampilkan modal pembuatan
-        currentRekamKunjunganId = id;
-        document.getElementById('rekamMedisModal').style.display = 'block';
-      }
-    }
+  function openDeleteModal(id) {
+    document.getElementById('modalKunjunganId').textContent = id;
+    document.getElementById('deleteForm').action = `/hijau/delete_kunjungan/${id}/`;
+    document.getElementById('deleteModal').style.display = 'block';
+  }
 
-    function redirectToCreate() {
-      if (!currentRekamKunjunganId) {
-        alert("Kunjungan tidak ditemukan.");
-        return;
-      }
-      window.location.href = `/hijau/rekam-medis/${currentRekamKunjunganId}/create/`;
-    }
-    
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+  }
 
-    function openDeleteModal(id) {
-      document.getElementById('modalKunjunganId').textContent = id;
-      const form = document.getElementById('deleteForm');
-      form.action = `/hijau/delete_kunjungan/${id}/`;  // Sesuaikan dengan URL Django
-      document.getElementById('deleteModal').style.display = 'block';
-    }
+  window.onclick = function(event) {
+    if (event.target === document.getElementById('rekamMedisModal')) closeModal();
+    if (event.target === document.getElementById('deleteModal')) closeDeleteModal();
+  };
+</script>
 
-    function closeDeleteModal() {
-      document.getElementById('deleteModal').style.display = 'none';
-    }
-
-
-    function confirmDelete() {
-      const id = document.getElementById('kunjunganId').textContent;
-      alert('Kunjungan dengan ID ' + id + ' berhasil dihapus.');
-      closeDeleteModal();
-    }
-
-    window.onclick = function(event) {
-      if (event.target === document.getElementById('rekamMedisModal')) closeModal();
-      if (event.target === document.getElementById('deleteModal')) closeDeleteModal();
-    }
-    let updateKunjunganId = "";
-
-    function openUpdateModal(id) {
-      updateKunjunganId = id;
-      document.getElementById('updateKunjunganId').textContent = id;
-      document.getElementById('timestampAkhirInput').value = "";
-      document.getElementById('updateModal').style.display = 'block';
-    }
-
-    function closeUpdateModal() {
-      document.getElementById('updateModal').style.display = 'none';
-    }
-
-    function submitUpdate() {
-      const timestamp = document.getElementById('timestampAkhirInput').value;
-      if (!timestamp) {
-        alert("Silakan isi waktu selesai kunjungan.");
-        return;
-      }
-
-      fetch(`/hijau/update/${updateKunjunganId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": "{{ csrf_token }}"
-        },
-        body: JSON.stringify({ timestamp_akhir: timestamp })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === "success") {
-          alert("Waktu selesai berhasil diperbarui.");
-          window.location.reload();
-        } else {
-          alert("Gagal update waktu selesai.");
-        }
-      });
-
-      closeUpdateModal();
-    }
-
-  </script>
-</body>
-</html>
+{% endblock %}

@@ -1,144 +1,155 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navbar</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Poppins', Arial, sans-serif;
-            background-color: #f5f5f5;
-        }
-        .navbar {
-            display: flex;
-            align-items: center;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            padding: 15px 30px;
-            color: white;
-            width: 100%;
-            box-sizing: border-box;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .brand {
-            font-size: 24px;
-            font-weight: 700;
-            flex: 1;
-            text-align: left;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-        }
-        .brand-icon {
-            margin-right: 12px;
-            font-size: 28px;
-        }
-        .navbar-center {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-        }
-        .navbar-right {
-            flex: 1;
-            display: flex;
-            justify-content: flex-end;
-        }
-        .nav-link {
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-            padding: 10px 16px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            position: relative;
-            white-space: nowrap;
-        }
-        .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            font-weight: 600;
-        }
-        .nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 30px;
-            height: 3px;
-            background-color: #6bd4ff;
-            border-radius: 2px;
-        }
-        .logout-btn {
-            background-color: #ff5252;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 6px rgba(255, 82, 82, 0.4);
-        }
-        .logout-btn:hover {
-            background-color: #ff3838;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(255, 82, 82, 0.5);
-        }
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                padding: 15px;
-            }
-            .brand {
-                margin-bottom: 15px;
-                justify-content: center;
-            }
-            .navbar-center {
-                margin: 10px 0;
-                width: 100%;
-            }
-            .navbar-right {
-                width: 100%;
-                justify-content: center;
-                margin-top: 15px;
-            }
-            .content {
-                margin-top: 160px;
-            }
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Navbar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      background-color: #f5f5f5;
+      padding-top: 80px; /* to avoid overlap with fixed navbar */
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      padding: 15px 30px;
+      color: white;
+      width: 100%;
+      box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-size: 24px;
+      font-weight: 700;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .brand-icon {
+      margin-right: 12px;
+      font-size: 28px;
+    }
+
+    .navbar-center {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 24px;
+      flex: 2;
+    }
+
+    .navbar-right {
+      display: flex;
+      justify-content: flex-end;
+      flex: 1;
+    }
+
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .logout-btn {
+      background-color: #ff5252;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(255, 82, 82, 0.4);
+    }
+
+    .logout-btn:hover {
+      background-color: #ff3838;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .navbar-center, .navbar-right {
+        width: 100%;
+        margin-top: 10px;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="navbar">
-        <div class="brand">
-            <i class="fas fa-paw brand-icon"></i>
-            Pet Clinic
-        </div>
-        <div class="navbar-center">
-            <a href="#" class="nav-link active">Dashboard</a>
-            <a href="#" class="nav-link">Kelola Hewan Peliharaan</a>
-            <a href="#" class="nav-link">Daftar Kunjungan</a>
-            <a href="#" class="nav-link">Daftar Vaksinasi</a>
-        </div>
-        <div class="navbar-right">
-            <form method="post" action="{% url 'putih:logout' %}">
-                {% csrf_token %}
-                <button type="submit" class="logout-btn">
-                    <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>Logout
-                </button>
-            </form>
-        </div>
+  <div class="navbar">
+    <div class="brand">
+      <i class="fas fa-paw brand-icon"></i>
+      Pet Clinic
     </div>
+
+    <div class="navbar-center">
+      <a href="{% url 'putih:show_profile'%}" class="nav-link">Dashboard</a>
+
+      {% if logged_user.role == 'klien_individu' or logged_user.role == 'klien_perusahaan' %}
+        <a href="#" class="nav-link">Kelola Hewan Peliharaan</a>
+        <a href="{% url 'hijau:list_kunjungan' %}" class="nav-link">Daftar Kunjungan</a>
+        <a href="#" class="nav-link">Daftar Vaksinasi</a>
+
+      {% elif logged_user.role == 'front_desk' %}
+        <a href="{% url 'kuning:jenis_list' %}" class="nav-link">Kelola Jenis Hewan</a>
+        <a href="{% url 'kuning:hewan_list' %}" class="nav-link">Kelola Hewan Peliharaan</a>
+        <a href="{% url 'hijau:list_kunjungan' %}" class="nav-link">Kelola Kunjungan</a>
+        <a href="#" class="nav-link">Daftar Klien</a>
+
+      {% elif logged_user.role == 'dokter' %}
+        <a href="{% url 'kuning:jenis_list' %}" class="nav-link">Daftar Jenis Hewan</a>
+        <a href="{% url 'hijau:list_perawatan' %}" class="nav-link">Perawatan Hewan</a>
+        <a href="{% url 'hijau:list_kunjungan' %}" class="nav-link">Daftar Kunjungan</a>
+        <a href="#" class="nav-link">Manajemen Obat</a>
+        <a href="#" class="nav-link">Manajemen Jenis Perawatan</a>
+        <a href="#" class="nav-link">Manajemen Pemberian Obat</a>
+        <a href="#" class="nav-link">Manajemen Vaksinasi Hewan</a>
+
+      {% elif logged_user.role == 'perawat' %}
+        <a href="#" class="nav-link">Manajemen Obat</a>
+        <a href="{% url 'hijau:list_perawatan' %}" class="nav-link">Manajemen Jenis Perawatan</a>
+        <a href="#" class="nav-link">Manajemen Vaksin</a>
+      {% endif %}
+    </div>
+
+    <div class="navbar-right">
+      <form method="post" action="{% url 'putih:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">
+          <i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>Logout
+        </button>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

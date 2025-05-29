@@ -439,16 +439,17 @@ def login_view(request):
                     logged_user['role'] = 'front_desk'
 
             request.session['logged_user'] = logged_user   
-            return redirect('putih:show_profile', role=logged_user['role'])
+            return redirect('putih:show_profile')
 
         context['message'] = "Invalid email or password"
     return render(request, 'login.html', context)
   
-def show_profile(request, role):
+def show_profile(request):
     logged_user = request.session.get('logged_user', {})
     context = {'logged_user': logged_user}
 
     email = logged_user.get('email')
+    role = logged_user.get('role')
 
     if role == 'klien_individu':
         profile = query(f"""
@@ -516,7 +517,6 @@ def show_profile(request, role):
         context.update(profile)
         context["sertifikat"] = sertifikat
         context["jadwal"] = jadwal
-        print(profile)
         return render(request, 'profil_dokter.html', context)
 
     elif role == 'perawat':
@@ -539,7 +539,6 @@ def show_profile(request, role):
         context.update(profile)
         context["sertifikat"] = sertifikat
 
-        print(sertifikat)
         return render(request, 'profil_perawat.html', context)
 
     return HttpResponseNotFound("Role tidak ditemukan.")

@@ -1,3 +1,4 @@
+{% include "navbar.html" %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -49,11 +50,11 @@
 </head>
 <body>
 
-{% if role == "Front-Desk Officer" or role == "Dokter Hewan" %}
+{% if role == "front_desk" or role == "dokter" %}
 <div class="table-container">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h4>List Jenis Hewan</h4>
-    {% if role == "Front-Desk Officer" %}
+    {% if role == "front_desk" %}
       <a href="{% url 'kuning:jenis_create' %}" class="btn btn-primary-custom">+ Tambah Jenis Hewan</a>
     {% endif %}
   </div>
@@ -64,7 +65,7 @@
         <th>No</th>
         <th>ID Jenis</th>
         <th>Nama Jenis</th>
-        {% if role == "Front-Desk Officer" %}
+        {% if role == "front_desk" %}
           <th>Aksi</th>
         {% endif %}
       </tr>
@@ -75,7 +76,7 @@
         <td>{{ forloop.counter }}</td>
         <td>{{ jenis.id }}</td>
         <td>{{ jenis.nama }}</td>
-        {% if role == "Front-Desk Officer" %}
+        {% if role == "front_desk" %}
         <td>
           <a href="{% url 'kuning:jenis_update' jenis.id %}" class="btn btn-sm btn-primary-custom">Update</a>
           {% if jenis.bisa_dihapus %}
@@ -86,7 +87,7 @@
       </tr>
       {% empty %}
       <tr>
-        <td colspan="{% if role == 'Front-Desk Officer' %}4{% else %}3{% endif %}" class="text-muted">
+        <td colspan="{% if role == 'front_desk' %}4{% else %}3{% endif %}" class="text-muted">
           Belum ada jenis hewan yang terdaftar.
         </td>
       </tr>

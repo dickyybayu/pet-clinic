@@ -10,6 +10,6 @@ urlpatterns = [
     path('jenis-hewan/delete/<str:id_jenis>/', views.delete_jenis_hewan, name='jenis_delete'),
     path('hewan-peliharaan/', views.list_hewan, name='hewan_list'),
     path('hewan-peliharaan/create/', views.create_hewan, name='hewan_create'),
-    path('hewan-peliharaan/update/<str:id_hewan>/', views.update_hewan, name='hewan_update'),
-    path('hewan-peliharaan/delete/<str:id_hewan>/', views.delete_hewan, name='hewan_delete'),
+    path('hewan-peliharaan/update/<str:nama_hewan>/<uuid:no_identitas_klien>/', views.update_hewan, name='hewan_update'),
+    path('hewan-peliharaan/delete/<str:nama_hewan>/<uuid:no_identitas_klien>/', views.delete_hewan, name='hewan_delete'),
 ]
