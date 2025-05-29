@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from datetime import datetime
@@ -5,6 +6,8 @@ from django.contrib import messages
 import uuid
 
 from utils.query import query
+from utils.validators import *
+from django.views.decorators.http import require_POST
 
 
 logged_doctor = {
@@ -223,8 +226,6 @@ def create_vaksinasi(request):
             stok
         FROM
             vaksin
-        ORDER BY 
-            kode ASC;
         '''
 
         kunjungan = query(kunjungan)
@@ -306,6 +307,7 @@ def update_vaksinasi(request, id_kunjungan):
     }
     return render(request, 'update_vaksinasi.html', context)
 
+@require_POST
 def delete_vaksinasi(request, id_kunjungan):
     logged_user = request.session.get('logged_user', None)
     if not logged_user or logged_user.get('role') != 'dokter':
@@ -331,43 +333,48 @@ def is_vaksin_used(kode_vaksin):
     return kode_vaksin in used_vaksin
 
 def create_vaksin(request):
+    logged_user = request.session.get('logged_user', None)
+    context = { }
+
+    if not logged_user or logged_user.get('role') != 'perawat':
+        messages.error(request, "Anda harus login atau memiliki role perawat untuk akses vaksin.")
+        return redirect('putih:login')
+
     if request.method == 'POST':
-        kode_vaksin = uuid.uuid4()
-
-        # Validasi nama_vaksin
-        nama_vaksin = request.POST.get('nama_vaksin')
-        if not nama_vaksin or len(nama_vaksin) > 50:
-            messages.error(request, "Nama vaksin tidak valid. Nama vaksin harus ada dan tidak lebih dari 50 karakter.")
-            return redirect('merah:create_vaksin')
-        
-        # Validasi harga
+        kode = str(uuid.uuid4())[:6]
+        nama_vaksin = request.POST.get('nama').strip()
         harga = request.POST.get('harga')
-        try:
-            harga = int(harga)
-            if harga <= 0:
-                messages.error(request, "Harga vaksin tidak valid. Harga harus lebih besar dari 0.")
-                return redirect('merah:create_vaksin')
-        except ValueError:
-            messages.error(request, "Harga vaksin harus berupa angka.")
-            return redirect('merah:create_vaksin')
-        
-        # Validasi stok
         stok = request.POST.get('stok')
-        try:
-            stok = int(stok)
-            if stok < 0:
-                messages.error(request, "Stok vaksin tidak valid. Stok tidak boleh kurang dari 0.")
-                return redirect('merah:create_vaksin')
-        except ValueError:
-            messages.error(request, "Stok vaksin harus berupa angka.")
-            return redirect('merah:create_vaksin')
+        print(nama_vaksin, harga, stok)
 
-        vaksin.append({
-            "kode_vaksin": kode_vaksin,
-            "nama_vaksin": nama_vaksin,
-            "harga": harga,
-            "stok": stok,
-        })
+        field_errors = {}
+
+        nama_vaksin_val_errors = validate_nama_vaksin(nama_vaksin)
+        if nama_vaksin_val_errors:
+            field_errors['nama'] =nama_vaksin_val_errors
+
+        harga_val_errors = validate_harga(harga)
+        if harga_val_errors:
+            field_errors['harga'] = harga_val_errors
+        
+        stok_errors = validate_stok_vaksin(stok)
+        if stok_errors:
+            field_errors['stok'] = stok_errors
+        
+
+        if field_errors:
+            context['errors'] = field_errors
+            return render(request, 'create_vaksin.html', context)
+        
+        sql = f'''
+        INSERT INTO vaksin (kode, nama, harga, stok)
+        VALUES ('{kode}', '{nama_vaksin}', {harga}, {stok});
+        '''
+
+        hasil_vaksin = query(sql)
+        if isinstance(hasil_vaksin, dict) and hasil_vaksin.get("status") == "error":
+            messages.error(request, hasil_vaksin.get('data'))
+            return render(request, 'create_vaksin.html', context)
         
         messages.success(request, "Vaksin berhasil ditambahkan.")
         return redirect('merah:show_vaksin')
@@ -376,98 +383,180 @@ def create_vaksin(request):
 
 def show_vaksin(request):
     logged_user = request.session.get('logged_user', None)
-    all_vaccines = []
 
-    if logged_user:
-        search_query = request.GET.get('search_query', '').strip()
-
-        sql = f'''
-        SELECT * from vaksin 
-        WHERE  stok > 0 AND harga > 0
-        '''
-
-        if search_query:
-            sql += f" AND nama ILIKE '%{search_query.replace('%', '%%').replace('_', '__')}%'"
-        
-        sql += " ORDER BY kode desc;"
-        all_vaccines = query(sql)
-    else:
-        messages.error(request, "Anda harus login atau memiliki role perawat untuk melihat data vaksin.")
+    if not logged_user or logged_user.get('role') != 'perawat':
+        messages.error(request, "Anda harus login atau memiliki peran perawat untuk akses vaksin.")
         return redirect('putih:login')
+    
+    search_query = request.GET.get('search_query', '').strip()
+    all_vaccines = []
+    
+    sql = """
+        SELECT kode, nama, harga, stok 
+        FROM vaksin 
+    """
+
+
+    if search_query:
+        search_term = f"%{search_query.replace('%', '%%').replace('_', '__')}%"
+        sql += f" WHERE nama ILIKE '%{search_term}%'"
+    
+    vaccine_result = query(sql)
+
+    if isinstance(vaccine_result, list):
+        vakin_in_kunjungan = "SELECT DISTINCT kode_vaksin FROM KUNJUNGAN WHERE kode_vaksin IS NOT NULL;"
+        kode_in_kunjungan = query(vakin_in_kunjungan)
+        
+        kode_vakin_terpakai = set()
+        if isinstance(kode_in_kunjungan, list):
+            for item in kode_in_kunjungan:
+                if item.get('kode_vaksin'): 
+                    kode_vakin_terpakai.add(item.get('kode_vaksin'))
+
+        for vaccine in vaccine_result:
+            vaccine['is_used'] = vaccine.get('kode') in kode_vakin_terpakai
+            all_vaccines.append(vaccine)
+
+    elif isinstance(vaccine_result, dict) and vaccine_result.get("status") == "error":
+        messages.error(request, f"Gagal mengambil data vaksin: {vaccine_result.get('data')}")
+    else:
+        messages.warning(request, "Data vaksin tidak dapat dimuat.")
 
     context = {
-        "vaccines": all_vaccines if isinstance(all_vaccines, list) else [],
-        'logged_user': logged_user
+        "vaccines": all_vaccines,
+        'logged_user': logged_user,
+        "search_query": search_query
     }
-    return render(request, 'show_vaksin.html', context)
+    return render(request, 'show_vaksin.html', context) 
     
 def update_vaksin(request, kode_vaksin):
-    vaksin_to_update = next((v for v in vaksin if str(v["kode_vaksin"]) == str(kode_vaksin)), None)
+    logged_user = request.session.get('logged_user', None)
+    context = { }
 
-    if not vaksin_to_update:
+    if not logged_user or logged_user.get('role') != 'perawat':
+        messages.error(request, "Anda harus login atau memiliki role perawat untuk akses vaksin.")
+        return redirect('putih:login')
+    
+    sql = f'''
+    SELECT * FROM vaksin WHERE kode = '{kode_vaksin}' AND stok > 0 AND harga > 0;
+    '''
+    
+    vaksin_to_update = query(sql)
+    if not vaksin_to_update or not isinstance(vaksin_to_update, list) or len(vaksin_to_update) == 0:
         messages.error(request, "Vaksin tidak ditemukan.")
         return redirect('merah:show_vaksin')
+    
+    vaksin_to_update = vaksin_to_update[0]
+    context['vaksin'] = vaksin_to_update
 
     if request.method == 'POST':
-        nama_vaksin = request.POST.get('nama_vaksin')
+        nama_vaksin = request.POST.get('nama').strip()
         harga = request.POST.get('harga')
 
-        if not nama_vaksin or len(nama_vaksin) > 50:
-            messages.error(request, "Nama vaksin tidak valid.")
-            return redirect('merah:update_vaksin', kode_vaksin=kode_vaksin)
+        field_errors = {}
 
-        try:
-            harga = int(harga)
-            if harga <= 0:
-                raise ValueError
-        except ValueError:
-            messages.error(request, "Harga vaksin tidak valid.")
-            return redirect('merah:update_vaksin', kode_vaksin=kode_vaksin)
+        nama_vaksin_val_errors = validate_nama_vaksin(nama_vaksin)
+        if nama_vaksin_val_errors:
+            field_errors['nama'] =nama_vaksin_val_errors
 
-        vaksin_to_update["nama_vaksin"] = nama_vaksin
-        vaksin_to_update["harga"] = harga
+        harga_val_errors = validate_harga(harga)
+        if harga_val_errors:
+            field_errors['harga'] = harga_val_errors
+        
+        if field_errors:
+            context['errors'] = field_errors
+            return render(request, 'update_vaksin.html', context)
+        
+        sql = f'''
+        UPDATE vaksin
+        SET nama = '{nama_vaksin}', harga = {harga}
+        WHERE kode = '{kode_vaksin}';
+        '''
+        
+        hasil_vaksin = query(sql)
+        if isinstance(hasil_vaksin, dict) and hasil_vaksin.get("status") == "error":
+            messages.error(request, hasil_vaksin.get('data'))
+            return render(request, 'update_vaksin.html', context)
+
         messages.success(request, "Vaksin berhasil diperbarui.")
         return redirect('merah:show_vaksin')
-
-    return render(request, 'update_vaksin.html', {'vaksin': vaksin_to_update})
+        
+    return render(request, 'update_vaksin.html', {'vaksin': vaksin_to_update,})
 
 def update_stok_vaksin(request, kode_vaksin):
-    vaksin_to_update = next((v for v in vaksin if str(v["kode_vaksin"]) == str(kode_vaksin)), None)
+    logged_user = request.session.get('logged_user', None)
+    context = { }
 
-    if not vaksin_to_update:
+    if not logged_user or logged_user.get('role') != 'perawat':
+        messages.error(request, "Anda harus login atau memiliki role perawat untuk akses vaksin.")
+        return redirect('putih:login')
+    
+    sql = f'''
+    SELECT * FROM vaksin WHERE kode = '{kode_vaksin}' AND stok > 0 AND harga > 0;
+    '''
+    
+    vaksin_to_update = query(sql)
+    if not vaksin_to_update or not isinstance(vaksin_to_update, list) or len(vaksin_to_update) == 0:
         messages.error(request, "Vaksin tidak ditemukan.")
         return redirect('merah:show_vaksin')
+    
+    vaksin_to_update = vaksin_to_update[0]
+    context['vaksin'] = vaksin_to_update
 
     if request.method == 'POST':
         stok = request.POST.get('stok')
+        field_errors = {}
 
-        stok = request.POST.get('stok')
-        try:
-            stok = int(stok)
-            if stok < 0:
-                messages.error(request, "Stok vaksin tidak valid. Stok tidak boleh kurang dari 0.")
-                return redirect('merah:update_stok_vaksin')
-        except ValueError:
-            messages.error(request, "Stok vaksin harus berupa angka.")
-            return redirect('merah:update_stok_vaksin')
-
-        vaksin_to_update["stok"] = stok
+        stok_val_errors = validate_harga(stok)
+        if stok_val_errors:
+            field_errors['harga'] = stok_val_errors
+        
+        if field_errors:
+            context['errors'] = field_errors
+            return render(request, 'update_stok_vaksin.html', context)
+        
+        sql = f'''
+        UPDATE vaksin
+        SET stok = '{stok}'
+        WHERE kode = '{kode_vaksin}';
+        '''
+        
+        hasil_vaksin = query(sql)
+        if isinstance(hasil_vaksin, dict) and hasil_vaksin.get("status") == "error":
+            messages.error(request, hasil_vaksin.get('data'))
+            return render(request, 'update_stok_vaksin.html', context)
 
         messages.success(request, "Stok vaksin berhasil diperbarui.")
         return redirect('merah:show_vaksin')
+        
+    return render(request, 'update_stok_vaksin.html', {'vaksin': vaksin_to_update,})
 
-    return render(request, 'update_stok_vaksin.html', {'vaksin': vaksin_to_update})
-
+@require_POST
 def delete_vaksin(request, kode_vaksin):
-    selected_vaksin = next((v for v in vaksin if v['kode_vaksin'] == kode_vaksin), None)
-    
-    if kode_vaksin:
-        vaksin.remove(selected_vaksin)
-        messages.success(request, f"Vaksin {selected_vaksin.get('nama_vaksin')} dengan ID {kode_vaksin} berhasil dihapus.")
-    else:
-        messages.error(request, "Vaksin tidak ditemukan.")
+    logged_user = request.session.get('logged_user', None)
 
-    return redirect('merah:show_vaksin')
+    if not logged_user or logged_user.get('role') != 'perawat':
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'error', 'message': 'Akses ditolak. Anda tidak memiliki izin.'}, status=403)
+        else:
+            messages.error(request, "Akses ditolak. Anda tidak memiliki izin untuk melakukan aksi ini.")
+            return redirect('merah:show_vaksin')
+
+    sql_delete = f"DELETE FROM vaksin WHERE kode = '{kode_vaksin}';"
+
+    result = query(sql_delete)
+    print(result)
+
+    if isinstance(result, dict) and result.get("status") == "error":
+        error_message = result.get('data', 'Gagal menghapus vaksin.')
+        return JsonResponse({'status': 'error', 'message': error_message}, status=400) 
+    
+    elif isinstance(result, dict) and "rowcount" in result and result.get("rowcount", 0) == 0:
+        return JsonResponse({'status': 'error', 'message': f"Vaksin dengan kode {kode_vaksin} tidak ditemukan atau tidak terhapus."}, status=404)
+    
+    else: 
+        messages.success(request, f"Vaksin dengan kode {kode_vaksin} berhasil dihapus.")
+        return JsonResponse({'status': 'success', 'message': f"Vaksin dengan kode {kode_vaksin} berhasil dihapus."})
 
 # R VAKSIN FRONT DESK
 def show_data_klien(request):
@@ -587,7 +676,6 @@ def show_klien_detail(request, no_identitas):
 
         sql_pets = sql_pets.replace("%s", f"'{str(no_identitas)}'")
         client_pets = query(sql_pets) 
-        print(client_pets)
 
         context = {
             "logged_user": logged_user,

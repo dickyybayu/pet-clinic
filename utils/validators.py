@@ -73,7 +73,6 @@ def validate_end_date(start_date_str, end_date_str):
     
     return errors
 
-
 def validate_password_update(user_email, old_password_input, new_password1, new_password2, query_func):
     errors = {}
 
@@ -109,4 +108,28 @@ def validate_password_update(user_email, old_password_input, new_password1, new_
         except Exception as e:
             errors.setdefault('old_password', []).append("Error verifying old password.")
             
+    return errors
+
+def validate_nama_vaksin(nama):
+    errors = []
+    if not nama:
+        errors.append("Nama vaksin tidak boleh kosong.")
+    elif len(nama) > 50:
+        errors.append("Nama vaksin tidak boleh lebih dari 50 karakter.")
+    return errors
+
+def validate_harga(harga):
+    errors = []
+    if not harga:
+        errors.append("Harga vaksin tidak boleh kosong.")
+    elif not isinstance(harga, (str)) or int(harga) < 0:
+        errors.append("Harga vaksin harus berupa angka positif.")
+    return errors
+
+def validate_stok_vaksin(stok):
+    errors = []
+    if not stok:
+        errors.append("Stok vaksin tidak boleh kosong.")
+    elif not isinstance(stok, str) or int(stok) < 0:
+        errors.append("Stok vaksin harus berupa angka positif.")
     return errors
