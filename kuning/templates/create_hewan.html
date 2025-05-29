@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,14 +62,16 @@
 <body>
   <div class="form-container">
     <h4>Create New Pet</h4>
-    <form>
-      {% if role == "Front-Desk Officer" %}
+    <form method="post">
+      {% csrf_token %}
+
+      {% if role == "front_desk" %}
       <div class="mb-3">
         <label class="form-label">Pemilik</label>
-        <select class="form-select" required>
+        <select class="form-select" name="pemilik_id" required>
           <option value="" selected disabled>Pilih pemilik</option>
           {% for klien in daftar_klien %}
-            <option value="{{ klien.id }}">{{ klien.nama }}</option>
+            <option value="{{ klien.no_identitas }}">{{ klien.nama_klien }}</option>
           {% endfor %}
         </select>
       </div>
@@ -76,7 +79,7 @@
 
       <div class="mb-3">
         <label class="form-label">Jenis Hewan</label>
-        <select class="form-select" required>
+        <select class="form-select" name="id_jenis" required>
           <option value="" selected disabled>Pilih jenis hewan</option>
           {% for jenis in daftar_jenis %}
             <option value="{{ jenis.id }}">{{ jenis.nama }}</option>
@@ -86,17 +89,17 @@
 
       <div class="mb-3">
         <label class="form-label">Nama Hewan Peliharaan</label>
-        <input type="text" class="form-control" placeholder="Nama Hewan" required />
+        <input type="text" name="nama" class="form-control" placeholder="Nama Hewan" required />
       </div>
 
       <div class="mb-3">
         <label class="form-label">Tanggal Lahir Hewan</label>
-        <input type="date" class="form-control" required />
+        <input type="date" name="tanggal_lahir" class="form-control" required />
       </div>
 
       <div class="mb-3">
         <label class="form-label">URL Foto Hewan</label>
-        <input type="url" class="form-control" placeholder="https://example.com" required />
+        <input type="url" name="url_foto" class="form-control" placeholder="https://example.com" required />
       </div>
 
       <div class="d-flex justify-content-end">
