@@ -362,7 +362,6 @@ def delete_hewan(request, nama_hewan, no_identitas_klien):
         return redirect('login')
 
     role = logged_user['role']
-
     if role != 'front_desk':
         return HttpResponseForbidden("Hanya Front-Desk Officer yang dapat menghapus hewan.")
 
@@ -383,25 +382,40 @@ def delete_hewan(request, nama_hewan, no_identitas_klien):
     hewan = result[0]
 
     if request.method == 'POST':
-        delete_query = f"""
-            DELETE FROM HEWAN
-            WHERE nama = '{nama_hewan}' AND no_identitas_klien = '{no_identitas_klien}'
-        """
-        result = query(delete_query)
+        try:
+            delete_kunjungan_query = f"""
+                DELETE FROM KUNJUNGAN
+                WHERE nama_hewan = '{nama_hewan}' AND no_identitas_klien = '{no_identitas_klien}'
+                  AND timestamp_akhir IS NOT NULL
+            """
+            query(delete_kunjungan_query)
 
-        if isinstance(result, dict) and result.get("status") == "error":
+            delete_hewan_query = f"""
+                DELETE FROM HEWAN
+                WHERE nama = '{nama_hewan}' AND no_identitas_klien = '{no_identitas_klien}'
+            """
+            result = query(delete_hewan_query)
+
+            if isinstance(result, dict) and result.get("status") == "error":
+                return render(request, 'delete_hewan.html', {
+                    'role': role,
+                    'hewan': hewan,
+                    'error': result["data"],
+                    'logged_user': logged_user
+                })
+
+            return redirect('kuning:hewan_list')
+
+        except Exception as e:
             return render(request, 'delete_hewan.html', {
                 'role': role,
                 'hewan': hewan,
-                'error': result["data"] , 
+                'error': str(e),
                 'logged_user': logged_user
             })
 
-        return redirect('kuning:hewan_list')
-
-    context = {
+    return render(request, 'delete_hewan.html', {
         'role': role,
         'hewan': hewan,
         'logged_user': logged_user
-    }
-    return render(request, 'delete_hewan.html', context)
+    })
